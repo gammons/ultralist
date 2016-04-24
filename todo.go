@@ -1,11 +1,13 @@
 package todolist
 
+import "time"
+
 type Todo struct {
 	Id        string
 	Subject   string
 	Projects  []string
 	Contexts  []string
-	Due       string
+	Due       time.Time
 	Completed bool
 	Archived  bool
 }
