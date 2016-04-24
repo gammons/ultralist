@@ -17,7 +17,7 @@ func (p *Parser) Parse(input string) *Todo {
 	todo.Projects = p.Projects(input)
 	todo.Contexts = p.Contexts(input)
 	if p.hasDue(input) {
-		todo.Due = p.Due(input)
+		todo.FormattedDue = p.Due(input)
 	}
 	return todo
 }
@@ -64,13 +64,10 @@ func (p *Parser) Due(input string) time.Time {
 		return now.New(n).Monday().AddDate(0, 0, 7)
 	case res == "tuesday" || res == "tue":
 		n := now.BeginningOfDay()
-		return now.New(n).Tuesday().AddDate(0, 0, 7)
+		return now.New(n).Monday().AddDate(0, 0, 1)
 	case res == "wednesday" || res == "wed":
 		n := now.BeginningOfDay()
-		return now.New(n).Wednesday().AddDate(0, 0, 7)
-	case res == "wednesday" || res == "wed":
-		n := now.BeginningOfDay()
-		return now.New(n).Wednesday().AddDate(0, 0, 7)
+		return now.New(n).Monday().AddDate(0, 0, 2)
 	case res == "next week":
 		n := now.BeginningOfDay()
 		return now.New(n).Monday().AddDate(0, 0, 7)
