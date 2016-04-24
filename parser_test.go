@@ -55,7 +55,7 @@ func TestParseContexts(t *testing.T) {
 func TestDueToday(t *testing.T) {
 	parser := &Parser{}
 	todo := parser.Parse("do this thing with @bob and @mary due today")
-	if todo.Due != now.BeginningOfDay() {
+	if todo.FormattedDue != now.BeginningOfDay() {
 		fmt.Println("Date is different", todo.Due, time.Now())
 	}
 }
@@ -63,7 +63,7 @@ func TestDueToday(t *testing.T) {
 func TestDueTomorrow(t *testing.T) {
 	parser := &Parser{}
 	todo := parser.Parse("do this thing with @bob and @mary due tomorrow")
-	if todo.Due != now.BeginningOfDay().AddDate(0, 0, 1) {
+	if todo.FormattedDue != now.BeginningOfDay().AddDate(0, 0, 1) {
 		fmt.Println("Date is different", todo.Due, time.Now())
 	}
 }
