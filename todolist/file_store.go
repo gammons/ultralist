@@ -30,5 +30,8 @@ func (f *FileStore) Load() {
 		fmt.Println("Error reading json data", jerr)
 		os.Exit(1)
 	}
+}
 
+func (f *FileStore) Todos() []Todo {
+	return f.Data
 }

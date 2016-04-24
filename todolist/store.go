@@ -2,10 +2,11 @@ package todolist
 
 type Store interface {
 	Load()
-	Save()
+	Todos() []Todo
+	//Save()
 
-	Find(id int) Todo
-	Add(t *Todo)
-	Remove(t *Todo)
-	NextId() int
+	//Find(id int) Todo
+	//Add(t *Todo)
+	//Remove(t *Todo)
+	//NextId() int
 }

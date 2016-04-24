@@ -3,35 +3,29 @@ package main
 import (
 	"fmt"
 	"os"
-	"strconv"
-	"text/tabwriter"
+	"strings"
 
 	"github.com/gammons/todolist/todolist"
 )
 
 func main() {
-	store := todolist.NewFileStore()
-	store.Load()
-
-	doOutput(store.Data)
+	if len(os.Args) <= 1 {
+		usage()
+		os.Exit(0)
+	}
+	routeInput(os.Args[1])
 }
 
-func doOutput(todos []todolist.Todo) {
-	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
-
-	for _, item := range todos {
-		str := strconv.Itoa(item.Id) + "\t" + completedText(item.Completed) + "\t" + item.Subject
-		fmt.Fprintln(w, str)
-		//fmt.Fprintln(w,
-	}
-	w.Flush()
+func usage() {
+	fmt.Println("usage")
 }
 
-func completedText(completed bool) string {
-	if completed {
-		return "[x]"
-	} else {
-		return "[ ]"
+func routeInput(command string) {
+	app := todolist.NewApp()
+	input := strings.Join(os.Args[1:], " ")
+	switch {
+	case command == "l" || command == "list":
+		app.ListTodos(input)
 	}
+
 }
