@@ -1,22 +1,12 @@
-package todolist
+package main
 
-import "time"
+import "fmt"
+import "github.com/gammons/todolist/todolist"
 
-type Todo struct {
-	Id           int
-	Subject      string
-	Projects     []string
-	Contexts     []string
-	Due          string
-	FormattedDue time.Time
-	Completed    bool
-	Archived     bool
-}
-
-func NewTodo() *Todo {
-	return &Todo{Completed: false, Archived: false}
-}
-
-func (t Todo) Valid() bool {
-	return (t.Subject != "")
+func main() {
+	store := todolist.NewFileStore()
+	store.Load()
+	for _, item := range store.Data {
+		fmt.Println(item)
+	}
 }
