@@ -13,19 +13,18 @@ func main() {
 		usage()
 		os.Exit(0)
 	}
-	routeInput(os.Args[1])
+	input := strings.Join(os.Args[1:], " ")
+	routeInput(os.Args[1], input)
 }
 
 func usage() {
 	fmt.Println("usage")
 }
 
-func routeInput(command string) {
+func routeInput(command string, input string) {
 	app := todolist.NewApp()
-	input := strings.Join(os.Args[1:], " ")
 	switch {
 	case command == "l" || command == "list":
 		app.ListTodos(input)
 	}
-
 }

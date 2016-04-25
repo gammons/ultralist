@@ -12,25 +12,31 @@ import (
 )
 
 type Formatter struct {
-	Todos  []Todo
-	Writer *tabwriter.Writer
+	GroupedTodos *GroupedTodos
+	Writer       *tabwriter.Writer
 }
 
-func NewFormatter(todos []Todo) *Formatter {
+func NewFormatter(todos *GroupedTodos) *Formatter {
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
-	formatter := &Formatter{Todos: todos, Writer: w}
+	formatter := &Formatter{GroupedTodos: todos, Writer: w}
 	return formatter
 }
 
 func (f *Formatter) Print() {
-	for _, todo := range f.Todos {
-		yellow := color.New(color.FgYellow).SprintFunc()
+	yellow := color.New(color.FgYellow).SprintFunc()
+	cyan := color.New(color.FgCyan).SprintFunc()
 
-		fmt.Fprintf(f.Writer, "     \t%s\t%s\t%s\t\n",
-			yellow(strconv.Itoa(todo.Id)),
-			f.formatCompleted(todo.Completed),
-			f.formatSubject(todo.Subject))
+	for key, todos := range f.GroupedTodos.Groups {
+		fmt.Fprintf(f.Writer, "\n   \t%s\n", cyan(key))
+
+		for _, todo := range todos {
+			fmt.Fprintf(f.Writer, "     \t%s\t%s\t%s\t\n",
+				yellow(strconv.Itoa(todo.Id)),
+				f.formatCompleted(todo.Completed),
+				f.formatSubject(todo.Subject))
+		}
+
 	}
 	f.Writer.Flush()
 }
