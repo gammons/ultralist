@@ -1,6 +1,9 @@
 package todolist
 
-import "regexp"
+import (
+	"fmt"
+	"regexp"
+)
 
 type App struct {
 	TodoStore Store
@@ -12,8 +15,17 @@ func NewApp() *App {
 	return app
 }
 
-func (a *App) ListTodos(input string) {
+func (a *App) AddTodo(input string) {
+	parser := &Parser{}
+	todo := parser.Parse(input)
 
+	a.TodoStore.Add(todo)
+	a.TodoStore.Save()
+	fmt.Println("Todo added.")
+}
+
+func (a *App) ListTodos(input string) {
+	//filtered := NewFilter(a.TodoStore.Todos()).filter()
 	grouped := a.getGroups(input)
 
 	formatter := NewFormatter(grouped)

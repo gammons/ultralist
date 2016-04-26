@@ -3,14 +3,14 @@ package todolist
 import "time"
 
 type Todo struct {
-	Id           int
-	Subject      string
-	Projects     []string
-	Contexts     []string
-	Due          string
-	FormattedDue time.Time
-	Completed    bool
-	Archived     bool
+	Id           int       `json:"id"`
+	Subject      string    `json:"subject"`
+	Projects     []string  `json:"projects"`
+	Contexts     []string  `json:"contexts"`
+	Due          string    `json:"due"`
+	FormattedDue time.Time `json:"-"`
+	Completed    bool      `json:"completed"`
+	Archived     bool      `json:"archived"`
 }
 
 func NewTodo() *Todo {

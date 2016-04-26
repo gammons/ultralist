@@ -26,5 +26,7 @@ func routeInput(command string, input string) {
 	switch {
 	case command == "l" || command == "list":
 		app.ListTodos(input)
+	case command == "a" || command == "add":
+		app.AddTodo(input)
 	}
 }
