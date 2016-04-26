@@ -11,7 +11,7 @@ import (
 
 type Parser struct{}
 
-func (p *Parser) Parse(input string) *Todo {
+func (p *Parser) ParseNewTodo(input string) *Todo {
 	todo := NewTodo()
 	todo.Subject = p.Subject(input)
 	todo.Projects = p.Projects(input)

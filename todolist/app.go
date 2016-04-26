@@ -17,7 +17,7 @@ func NewApp() *App {
 
 func (a *App) AddTodo(input string) {
 	parser := &Parser{}
-	todo := parser.Parse(input)
+	todo := parser.ParseNewTodo(input)
 
 	a.TodoStore.Add(todo)
 	a.TodoStore.Save()
