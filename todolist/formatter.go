@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"text/tabwriter"
+	"time"
 
 	"github.com/fatih/color"
 )
@@ -24,21 +25,69 @@ func NewFormatter(todos *GroupedTodos) *Formatter {
 }
 
 func (f *Formatter) Print() {
-	yellow := color.New(color.FgYellow).SprintFunc()
 	cyan := color.New(color.FgCyan).SprintFunc()
 
 	for key, todos := range f.GroupedTodos.Groups {
 		fmt.Fprintf(f.Writer, "\n   \t%s\n", cyan(key))
-
 		for _, todo := range todos {
-			fmt.Fprintf(f.Writer, "     \t%s\t%s\t%s\t\n",
-				yellow(strconv.Itoa(todo.Id)),
-				f.formatCompleted(todo.Completed),
-				f.formatSubject(todo.Subject))
+			f.printTodo(todo)
 		}
 
 	}
 	f.Writer.Flush()
+}
+
+func (f *Formatter) printTodo(todo Todo) {
+	yellow := color.New(color.FgYellow).SprintFunc()
+	fmt.Fprintf(f.Writer, "     \t%s\t%s\t%s\t%s\t\n",
+		yellow(strconv.Itoa(todo.Id)),
+		f.formatCompleted(todo.Completed),
+		f.formatDue(todo.Due),
+		f.formatSubject(todo.Subject))
+}
+
+func (f *Formatter) formatDue(due string) string {
+	if due == "" {
+		return ""
+	}
+	dueTime, err := time.Parse("2006-01-02", due)
+
+	if err != nil {
+		panic(err)
+	}
+
+	blue := color.New(color.FgBlue).SprintFunc()
+	red := color.New(color.FgRed).SprintFunc()
+
+	if isToday(dueTime) {
+		return blue("today")
+	} else if isTomorrow(dueTime) {
+		return blue("tomorrow")
+	} else if isPastDue(dueTime) {
+		return red(dueTime.Format("Mon Jan 2"))
+	} else {
+		return blue(dueTime.Format("Mon Jan 2"))
+	}
+}
+
+func isToday(t time.Time) bool {
+	nowYear, nowMonth, nowDay := time.Now().Date()
+	timeYear, timeMonth, timeDay := t.Date()
+	return nowYear == timeYear &&
+		nowMonth == timeMonth &&
+		nowDay == timeDay
+}
+
+func isTomorrow(t time.Time) bool {
+	nowYear, nowMonth, nowDay := time.Now().AddDate(0, 0, 1).Date()
+	timeYear, timeMonth, timeDay := t.Date()
+	return nowYear == timeYear &&
+		nowMonth == timeMonth &&
+		nowDay == timeDay
+}
+
+func isPastDue(t time.Time) bool {
+	return time.Now().After(t)
 }
 
 func (f *Formatter) formatSubject(subject string) string {

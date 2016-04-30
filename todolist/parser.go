@@ -17,7 +17,7 @@ func (p *Parser) ParseNewTodo(input string) *Todo {
 	todo.Projects = p.Projects(input)
 	todo.Contexts = p.Contexts(input)
 	if p.hasDue(input) {
-		todo.FormattedDue = p.Due(input)
+		todo.Due = p.Due(input, time.Now())
 	}
 	return todo
 }
@@ -49,31 +49,78 @@ func (p *Parser) hasDue(input string) bool {
 	return r.MatchString(input)
 }
 
-func (p *Parser) Due(input string) time.Time {
+func (p *Parser) Due(input string, day time.Time) string {
 	r, _ := regexp.Compile(`due .*$`)
 
 	res := r.FindString(input)
 	res = res[4:len(res)]
 	switch {
 	case res == "today":
-		return now.BeginningOfDay()
+		return now.BeginningOfDay().Format("2006-01-02")
 	case res == "tomorrow" || res == "tom":
-		return now.BeginningOfDay().AddDate(0, 0, 1)
+		return now.BeginningOfDay().AddDate(0, 0, 1).Format("2006-01-02")
 	case res == "monday" || res == "mon":
-		n := now.BeginningOfDay()
-		return now.New(n).Monday().AddDate(0, 0, 7)
+		return p.monday(day)
 	case res == "tuesday" || res == "tue":
-		n := now.BeginningOfDay()
-		return now.New(n).Monday().AddDate(0, 0, 1)
+		return p.tuesday(day)
 	case res == "wednesday" || res == "wed":
-		n := now.BeginningOfDay()
-		return now.New(n).Monday().AddDate(0, 0, 2)
+		return p.wednesday(day)
+	case res == "thursday" || res == "thu":
+		return p.thursday(day)
+	case res == "friday" || res == "fri":
+		return p.friday(day)
+	case res == "saturday" || res == "sat":
+		return p.saturday(day)
+	case res == "sunday" || res == "sun":
+		return p.sunday(day)
 	case res == "next week":
 		n := now.BeginningOfDay()
-		return now.New(n).Monday().AddDate(0, 0, 7)
+		return now.New(n).Monday().AddDate(0, 0, 7).Format("2006-01-02")
 	}
-	//return now.Parse(input)
-	return time.Now()
+	return time.Now().Format("2006-01-02")
+}
+
+func (p *Parser) monday(day time.Time) string {
+	mon := now.New(day).Monday()
+	return p.thisOrNextWeek(mon, day)
+}
+
+func (p *Parser) tuesday(day time.Time) string {
+	tue := now.New(day).Monday().AddDate(0, 0, 1)
+	return p.thisOrNextWeek(tue, day)
+}
+
+func (p *Parser) wednesday(day time.Time) string {
+	tue := now.New(day).Monday().AddDate(0, 0, 2)
+	return p.thisOrNextWeek(tue, day)
+}
+
+func (p *Parser) thursday(day time.Time) string {
+	tue := now.New(day).Monday().AddDate(0, 0, 3)
+	return p.thisOrNextWeek(tue, day)
+}
+
+func (p *Parser) friday(day time.Time) string {
+	tue := now.New(day).Monday().AddDate(0, 0, 4)
+	return p.thisOrNextWeek(tue, day)
+}
+
+func (p *Parser) saturday(day time.Time) string {
+	tue := now.New(day).Monday().AddDate(0, 0, 5)
+	return p.thisOrNextWeek(tue, day)
+}
+
+func (p *Parser) sunday(day time.Time) string {
+	tue := now.New(day).Monday().AddDate(0, 0, 6)
+	return p.thisOrNextWeek(tue, day)
+}
+
+func (p *Parser) thisOrNextWeek(day time.Time, pivotDay time.Time) string {
+	if day.Before(pivotDay) {
+		return day.AddDate(0, 0, 7).Format("2006-01-02")
+	} else {
+		return day.Format("2006-01-02")
+	}
 }
 
 func (p *Parser) matchWords(input string, r *regexp.Regexp) []string {
