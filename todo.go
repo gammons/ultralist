@@ -28,5 +28,7 @@ func routeInput(command string, input string) {
 		app.ListTodos(input)
 	case command == "a" || command == "add":
 		app.AddTodo(input)
+	case command == "d" || command == "del":
+		app.DeleteTodo(input)
 	}
 }

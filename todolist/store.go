@@ -7,7 +7,8 @@ type Store interface {
 	Add(t *Todo)
 	Save()
 
-	//Find(id int) Todo
-	//Remove(t *Todo)
+	IndexOf(t *Todo) int
+	FindById(id int) *Todo
+	Delete(id int)
 	NextId() int
 }

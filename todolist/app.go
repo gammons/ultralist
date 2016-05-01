@@ -3,6 +3,7 @@ package todolist
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 )
 
 type App struct {
@@ -22,6 +23,28 @@ func (a *App) AddTodo(input string) {
 	a.TodoStore.Add(todo)
 	a.TodoStore.Save()
 	fmt.Println("Todo added.")
+}
+
+func (a *App) DeleteTodo(input string) {
+	id := a.getId(input)
+	if id != -1 {
+		a.TodoStore.Delete(id)
+		a.TodoStore.Save()
+		fmt.Println("Todo deleted.")
+	} else {
+		fmt.Println("Could not find id.")
+	}
+}
+
+func (a *App) getId(input string) int {
+
+	re, _ := regexp.Compile("\\d+")
+	if re.MatchString(input) {
+		id, _ := strconv.Atoi(re.FindString(input))
+		return id
+	} else {
+		return -1
+	}
 }
 
 func (a *App) ListTodos(input string) {

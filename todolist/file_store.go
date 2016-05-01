@@ -23,6 +23,35 @@ func (f *FileStore) Add(todo *Todo) {
 	f.Data = append(f.Data, *todo)
 }
 
+func (f *FileStore) FindById(id int) *Todo {
+	for _, todo := range f.Data {
+		if todo.Id == id {
+			return &todo
+		}
+	}
+	return nil
+}
+
+func (f *FileStore) Delete(id int) {
+	i := -1
+	for index, todo := range f.Data {
+		if todo.Id == id {
+			i = index
+		}
+	}
+
+	f.Data = append(f.Data[:i], f.Data[i+1:]...)
+}
+
+func (f *FileStore) IndexOf(todoToFind *Todo) int {
+	for i, todo := range f.Data {
+		if todo.Id == todoToFind.Id {
+			return i
+		}
+	}
+	return -1
+}
+
 func (f *FileStore) Load() {
 	data, err := ioutil.ReadFile(f.FileLocation)
 	if err != nil {
