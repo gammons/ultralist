@@ -36,6 +36,14 @@ func (a *App) DeleteTodo(input string) {
 	}
 }
 
+func (a *App) ListTodos(input string) {
+	//filtered := NewFilter(a.TodoStore.Todos()).filter()
+	grouped := a.getGroups(input)
+
+	formatter := NewFormatter(grouped)
+	formatter.Print()
+}
+
 func (a *App) getId(input string) int {
 
 	re, _ := regexp.Compile("\\d+")
@@ -45,14 +53,6 @@ func (a *App) getId(input string) int {
 	} else {
 		return -1
 	}
-}
-
-func (a *App) ListTodos(input string) {
-	//filtered := NewFilter(a.TodoStore.Todos()).filter()
-	grouped := a.getGroups(input)
-
-	formatter := NewFormatter(grouped)
-	formatter.Print()
 }
 
 func (a *App) getGroups(input string) *GroupedTodos {

@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/user"
+	"sort"
 )
 
 type FileStore struct {
@@ -73,7 +74,18 @@ func (f *FileStore) Save() {
 	}
 }
 
+type ByDate []Todo
+
+func (a ByDate) Len() int      { return len(a) }
+func (a ByDate) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a ByDate) Less(i, j int) bool {
+	t1Due := a[i].CalculateDueTime()
+	t2Due := a[j].CalculateDueTime()
+	return t1Due.Before(t2Due)
+}
+
 func (f *FileStore) Todos() []Todo {
+	sort.Sort(ByDate(f.Data))
 	return f.Data
 }
 
