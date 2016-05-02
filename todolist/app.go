@@ -109,7 +109,7 @@ func (a *App) getGroups(input string, todos []Todo) *GroupedTodos {
 	if contextRegex.MatchString(input) {
 		grouped = grouper.GroupByContext(todos)
 	} else if projectRegex.MatchString(input) {
-		grouped = grouper.GroupByContext(todos)
+		grouped = grouper.GroupByProject(todos)
 	} else {
 		grouped = grouper.GroupByNothing(todos)
 	}

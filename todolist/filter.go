@@ -12,7 +12,26 @@ func NewFilter(todos []Todo) *TodoFilter {
 
 func (f *TodoFilter) Filter(input string) []Todo {
 	f.Todos = f.filterArchived(input)
+
+	if f.isFilteringByProjects(input) {
+		f.Todos = f.filterProjects(input)
+	}
+
+	if f.isFilteringByContexts(input) {
+		f.Todos = f.filterContexts(input)
+	}
+
 	return f.Todos
+}
+
+func (t *TodoFilter) isFilteringByProjects(input string) bool {
+	parser := &Parser{}
+	return len(parser.Projects(input)) > 0
+}
+
+func (t *TodoFilter) isFilteringByContexts(input string) bool {
+	parser := &Parser{}
+	return len(parser.Contexts(input)) > 0
 }
 
 func (f *TodoFilter) filterArchived(input string) []Todo {
@@ -22,6 +41,40 @@ func (f *TodoFilter) filterArchived(input string) []Todo {
 	} else {
 		return f.getUnarchived()
 	}
+}
+
+func (f *TodoFilter) filterProjects(input string) []Todo {
+	parser := &Parser{}
+	projects := parser.Projects(input)
+	var ret []Todo
+
+	for _, todo := range f.Todos {
+		for _, todoProject := range todo.Projects {
+			for _, project := range projects {
+				if project == todoProject {
+					ret = AddTodoIfNotThere(ret, todo)
+				}
+			}
+		}
+	}
+	return ret
+}
+
+func (f *TodoFilter) filterContexts(input string) []Todo {
+	parser := &Parser{}
+	contexts := parser.Contexts(input)
+	var ret []Todo
+
+	for _, todo := range f.Todos {
+		for _, todoContext := range todo.Contexts {
+			for _, context := range contexts {
+				if context == todoContext {
+					ret = AddTodoIfNotThere(ret, todo)
+				}
+			}
+		}
+	}
+	return ret
 }
 
 func (f *TodoFilter) getArchived() []Todo {
