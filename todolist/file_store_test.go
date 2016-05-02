@@ -44,3 +44,12 @@ func TestDelete(t *testing.T) {
 	store.Delete(1)
 	assert.Equal(1, len(store.Data))
 }
+
+func TestComplete(t *testing.T) {
+	assert := assert.New(t)
+	store := &FileStore{FileLocation: "todos.json"}
+	store.Load()
+	assert.Equal(false, store.FindById(1).Completed)
+	store.Complete(1)
+	assert.Equal(true, store.FindById(1).Completed)
+}

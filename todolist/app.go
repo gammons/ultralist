@@ -36,6 +36,17 @@ func (a *App) DeleteTodo(input string) {
 	}
 }
 
+func (a *App) CompleteTodo(input string) {
+	id := a.getId(input)
+	if id != -1 {
+		a.TodoStore.Complete(id)
+		a.TodoStore.Save()
+		fmt.Println("Todo completed.")
+	} else {
+		fmt.Println("Could not find id.")
+	}
+}
+
 func (a *App) ListTodos(input string) {
 	//filtered := NewFilter(a.TodoStore.Todos()).filter()
 	grouped := a.getGroups(input)
