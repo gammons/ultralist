@@ -53,3 +53,12 @@ func TestComplete(t *testing.T) {
 	store.Complete(1)
 	assert.Equal(true, store.FindById(1).Completed)
 }
+
+func TestUncomplete(t *testing.T) {
+	assert := assert.New(t)
+	store := &FileStore{FileLocation: "todos.json"}
+	store.Load()
+	assert.Equal(true, store.FindById(2).Completed)
+	store.Uncomplete(2)
+	assert.Equal(false, store.FindById(2).Completed)
+}

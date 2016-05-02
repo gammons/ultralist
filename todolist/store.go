@@ -9,6 +9,7 @@ type Store interface {
 	Delete(id int)
 
 	Complete(id int)
+	Uncomplete(id int)
 
 	IndexOf(t *Todo) int
 	FindById(id int) *Todo

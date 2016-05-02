@@ -51,6 +51,13 @@ func (f *FileStore) Complete(id int) {
 	f.Data = append(f.Data, *todo)
 }
 
+func (f *FileStore) Uncomplete(id int) {
+	todo := f.FindById(id)
+	todo.Completed = false
+	f.Delete(id)
+	f.Data = append(f.Data, *todo)
+}
+
 func (f *FileStore) IndexOf(todoToFind *Todo) int {
 	for i, todo := range f.Data {
 		if todo.Id == todoToFind.Id {
