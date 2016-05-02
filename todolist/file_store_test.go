@@ -54,6 +54,23 @@ func TestComplete(t *testing.T) {
 	assert.Equal(true, store.FindById(1).Completed)
 }
 
+func TestArchive(t *testing.T) {
+	assert := assert.New(t)
+	store := &FileStore{FileLocation: "todos.json"}
+	store.Load()
+	assert.Equal(false, store.FindById(2).Archived)
+	store.Archive(2)
+	assert.Equal(true, store.FindById(2).Archived)
+}
+func TestUnarchive(t *testing.T) {
+	assert := assert.New(t)
+	store := &FileStore{FileLocation: "todos.json"}
+	store.Load()
+	assert.Equal(true, store.FindById(1).Archived)
+	store.Unarchive(1)
+	assert.Equal(false, store.FindById(1).Archived)
+}
+
 func TestUncomplete(t *testing.T) {
 	assert := assert.New(t)
 	store := &FileStore{FileLocation: "todos.json"}

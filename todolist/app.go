@@ -58,6 +58,28 @@ func (a *App) UncompleteTodo(input string) {
 	}
 }
 
+func (a *App) ArchiveTodo(input string) {
+	id := a.getId(input)
+	if id != -1 {
+		a.TodoStore.Archive(id)
+		a.TodoStore.Save()
+		fmt.Println("Todo archived.")
+	} else {
+		fmt.Println("Could not find id.")
+	}
+}
+
+func (a *App) UnarchiveTodo(input string) {
+	id := a.getId(input)
+	if id != -1 {
+		a.TodoStore.Unarchive(id)
+		a.TodoStore.Save()
+		fmt.Println("Todo unarchived.")
+	} else {
+		fmt.Println("Could not find id.")
+	}
+}
+
 func (a *App) ListTodos(input string) {
 	//filtered := NewFilter(a.TodoStore.Todos()).filter()
 	grouped := a.getGroups(input)

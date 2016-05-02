@@ -34,5 +34,9 @@ func routeInput(command string, input string) {
 		app.CompleteTodo(input)
 	case command == "uc" || command == "uncomplete":
 		app.UncompleteTodo(input)
+	case command == "ar" || command == "archive":
+		app.ArchiveTodo(input)
+	case command == "uar" || command == "unarchive":
+		app.UnarchiveTodo(input)
 	}
 }

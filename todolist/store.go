@@ -11,6 +11,9 @@ type Store interface {
 	Complete(id int)
 	Uncomplete(id int)
 
+	Archive(id int)
+	Unarchive(id int)
+
 	IndexOf(t *Todo) int
 	FindById(id int) *Todo
 	NextId() int

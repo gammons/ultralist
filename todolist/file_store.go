@@ -58,6 +58,20 @@ func (f *FileStore) Uncomplete(id int) {
 	f.Data = append(f.Data, *todo)
 }
 
+func (f *FileStore) Archive(id int) {
+	todo := f.FindById(id)
+	todo.Archived = true
+	f.Delete(id)
+	f.Data = append(f.Data, *todo)
+}
+
+func (f *FileStore) Unarchive(id int) {
+	todo := f.FindById(id)
+	todo.Archived = false
+	f.Delete(id)
+	f.Data = append(f.Data, *todo)
+}
+
 func (f *FileStore) IndexOf(todoToFind *Todo) int {
 	for i, todo := range f.Data {
 		if todo.Id == todoToFind.Id {
