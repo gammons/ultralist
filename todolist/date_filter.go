@@ -19,6 +19,8 @@ func (f *DateFilter) FilterDate(input string) []Todo {
 	r, _ := regexp.Compile(`due .*$`)
 	match := r.FindString(input)
 	switch {
+	case match == "agenda":
+		return f.filterAgenda(now.BeginningOfDay())
 	case match == "due tod" || match == "due today":
 		return f.filterToday(now.BeginningOfDay())
 	case match == "due tom" || match == "due tomorrow":
@@ -45,6 +47,18 @@ func (f *DateFilter) FilterDate(input string) []Todo {
 		return f.filterOverdue(now.BeginningOfDay())
 	}
 	return f.Todos
+}
+
+func (f *DateFilter) filterAgenda(pivot time.Time) []Todo {
+	var ret []Todo
+
+	for _, todo := range f.Todos {
+		dueTime, _ := time.Parse("2006-01-02", todo.Due)
+		if dueTime.Before(pivot) || todo.Due == pivot.Format("2006-01-02") {
+			ret = append(ret, todo)
+		}
+	}
+	return ret
 }
 
 func (f *DateFilter) filterToday(pivot time.Time) []Todo {
