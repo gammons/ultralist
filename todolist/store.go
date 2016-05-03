@@ -3,7 +3,7 @@ package todolist
 type Store interface {
 	Load()
 	Save()
-	Todos() []Todo
+	Todos() []*Todo
 
 	Add(t *Todo)
 	Delete(id int)

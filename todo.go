@@ -112,5 +112,7 @@ func routeInput(command string, input string) {
 		app.ArchiveTodo(input)
 	case command == "uar" || command == "unarchive":
 		app.UnarchiveTodo(input)
+	case command == "ac":
+		app.ArchiveCompleted()
 	}
 }

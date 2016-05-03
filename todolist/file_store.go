@@ -11,7 +11,7 @@ import (
 
 type FileStore struct {
 	FileLocation string
-	Data         []Todo
+	Data         []*Todo
 }
 
 func NewFileStore() *FileStore {
@@ -21,13 +21,13 @@ func NewFileStore() *FileStore {
 
 func (f *FileStore) Add(todo *Todo) {
 	todo.Id = f.NextId()
-	f.Data = append(f.Data, *todo)
+	f.Data = append(f.Data, todo)
 }
 
 func (f *FileStore) FindById(id int) *Todo {
 	for _, todo := range f.Data {
 		if todo.Id == id {
-			return &todo
+			return todo
 		}
 	}
 	return nil
@@ -48,28 +48,28 @@ func (f *FileStore) Complete(id int) {
 	todo := f.FindById(id)
 	todo.Completed = true
 	f.Delete(id)
-	f.Data = append(f.Data, *todo)
+	f.Data = append(f.Data, todo)
 }
 
 func (f *FileStore) Uncomplete(id int) {
 	todo := f.FindById(id)
 	todo.Completed = false
 	f.Delete(id)
-	f.Data = append(f.Data, *todo)
+	f.Data = append(f.Data, todo)
 }
 
 func (f *FileStore) Archive(id int) {
 	todo := f.FindById(id)
 	todo.Archived = true
 	f.Delete(id)
-	f.Data = append(f.Data, *todo)
+	f.Data = append(f.Data, todo)
 }
 
 func (f *FileStore) Unarchive(id int) {
 	todo := f.FindById(id)
 	todo.Archived = false
 	f.Delete(id)
-	f.Data = append(f.Data, *todo)
+	f.Data = append(f.Data, todo)
 }
 
 func (f *FileStore) IndexOf(todoToFind *Todo) int {
@@ -102,7 +102,7 @@ func (f *FileStore) Save() {
 	}
 }
 
-type ByDate []Todo
+type ByDate []*Todo
 
 func (a ByDate) Len() int      { return len(a) }
 func (a ByDate) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
@@ -112,7 +112,7 @@ func (a ByDate) Less(i, j int) bool {
 	return t1Due.Before(t2Due)
 }
 
-func (f *FileStore) Todos() []Todo {
+func (f *FileStore) Todos() []*Todo {
 	sort.Sort(ByDate(f.Data))
 	return f.Data
 }

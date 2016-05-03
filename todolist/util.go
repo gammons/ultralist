@@ -15,7 +15,7 @@ func AddIfNotThere(arr []string, items []string) []string {
 	return arr
 }
 
-func AddTodoIfNotThere(arr []Todo, item Todo) []Todo {
+func AddTodoIfNotThere(arr []*Todo, item *Todo) []*Todo {
 	there := false
 	for _, arrItem := range arr {
 		if item.Id == arrItem.Id {

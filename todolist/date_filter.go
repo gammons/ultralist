@@ -8,14 +8,14 @@ import (
 )
 
 type DateFilter struct {
-	Todos []Todo
+	Todos []*Todo
 }
 
-func NewDateFilter(todos []Todo) *DateFilter {
+func NewDateFilter(todos []*Todo) *DateFilter {
 	return &DateFilter{Todos: todos}
 }
 
-func (f *DateFilter) FilterDate(input string) []Todo {
+func (f *DateFilter) FilterDate(input string) []*Todo {
 	r, _ := regexp.Compile(`due .*$`)
 	match := r.FindString(input)
 	switch {
@@ -49,8 +49,8 @@ func (f *DateFilter) FilterDate(input string) []Todo {
 	return f.Todos
 }
 
-func (f *DateFilter) filterAgenda(pivot time.Time) []Todo {
-	var ret []Todo
+func (f *DateFilter) filterAgenda(pivot time.Time) []*Todo {
+	var ret []*Todo
 
 	for _, todo := range f.Todos {
 		dueTime, _ := time.Parse("2006-01-02", todo.Due)
@@ -61,8 +61,8 @@ func (f *DateFilter) filterAgenda(pivot time.Time) []Todo {
 	return ret
 }
 
-func (f *DateFilter) filterToday(pivot time.Time) []Todo {
-	var ret []Todo
+func (f *DateFilter) filterToday(pivot time.Time) []*Todo {
+	var ret []*Todo
 	for _, todo := range f.Todos {
 		if todo.Due == pivot.Format("2006-01-02") {
 			ret = append(ret, todo)
@@ -71,8 +71,8 @@ func (f *DateFilter) filterToday(pivot time.Time) []Todo {
 	return ret
 }
 
-func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []Todo {
-	var ret []Todo
+func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []*Todo {
+	var ret []*Todo
 	filtered := f.filterThisWeek(pivot)
 	for _, todo := range filtered {
 		dueTime, _ := time.Parse("2006-01-02", todo.Due)
@@ -84,8 +84,8 @@ func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []Todo {
 	return ret
 }
 
-func (f *DateFilter) filterTomorrow(pivot time.Time) []Todo {
-	var ret []Todo
+func (f *DateFilter) filterTomorrow(pivot time.Time) []*Todo {
+	var ret []*Todo
 	pivot = pivot.AddDate(0, 0, 1)
 	for _, todo := range f.Todos {
 		if todo.Due == pivot.Format("2006-01-02") {
@@ -95,8 +95,8 @@ func (f *DateFilter) filterTomorrow(pivot time.Time) []Todo {
 	return ret
 }
 
-func (f *DateFilter) filterThisWeek(pivot time.Time) []Todo {
-	var ret []Todo
+func (f *DateFilter) filterThisWeek(pivot time.Time) []*Todo {
+	var ret []*Todo
 
 	begin := f.findSunday(pivot)
 	end := begin.AddDate(0, 0, 7)
@@ -110,8 +110,8 @@ func (f *DateFilter) filterThisWeek(pivot time.Time) []Todo {
 	return ret
 }
 
-func (f *DateFilter) filterNextWeek(pivot time.Time) []Todo {
-	var ret []Todo
+func (f *DateFilter) filterNextWeek(pivot time.Time) []*Todo {
+	var ret []*Todo
 
 	begin := f.findSunday(pivot).AddDate(0, 0, 7)
 	end := begin.AddDate(0, 0, 7)
@@ -125,8 +125,8 @@ func (f *DateFilter) filterNextWeek(pivot time.Time) []Todo {
 	return ret
 }
 
-func (f *DateFilter) filterOverdue(pivot time.Time) []Todo {
-	var ret []Todo
+func (f *DateFilter) filterOverdue(pivot time.Time) []*Todo {
+	var ret []*Todo
 
 	pivotDate := pivot.Format("2006-01-02")
 

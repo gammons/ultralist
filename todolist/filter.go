@@ -3,14 +3,14 @@ package todolist
 import "regexp"
 
 type TodoFilter struct {
-	Todos []Todo
+	Todos []*Todo
 }
 
-func NewFilter(todos []Todo) *TodoFilter {
+func NewFilter(todos []*Todo) *TodoFilter {
 	return &TodoFilter{Todos: todos}
 }
 
-func (f *TodoFilter) Filter(input string) []Todo {
+func (f *TodoFilter) Filter(input string) []*Todo {
 	f.Todos = f.filterArchived(input)
 	f.Todos = f.filterProjects(input)
 	f.Todos = f.filterContexts(input)
@@ -29,7 +29,7 @@ func (t *TodoFilter) isFilteringByContexts(input string) bool {
 	return len(parser.Contexts(input)) > 0
 }
 
-func (f *TodoFilter) filterArchived(input string) []Todo {
+func (f *TodoFilter) filterArchived(input string) []*Todo {
 	r, _ := regexp.Compile(`l archived$`)
 	if r.MatchString(input) {
 		return f.getArchived()
@@ -38,13 +38,13 @@ func (f *TodoFilter) filterArchived(input string) []Todo {
 	}
 }
 
-func (f *TodoFilter) filterProjects(input string) []Todo {
+func (f *TodoFilter) filterProjects(input string) []*Todo {
 	if !f.isFilteringByProjects(input) {
 		return f.Todos
 	}
 	parser := &Parser{}
 	projects := parser.Projects(input)
-	var ret []Todo
+	var ret []*Todo
 
 	for _, todo := range f.Todos {
 		for _, todoProject := range todo.Projects {
@@ -58,13 +58,13 @@ func (f *TodoFilter) filterProjects(input string) []Todo {
 	return ret
 }
 
-func (f *TodoFilter) filterContexts(input string) []Todo {
+func (f *TodoFilter) filterContexts(input string) []*Todo {
 	if !f.isFilteringByContexts(input) {
 		return f.Todos
 	}
 	parser := &Parser{}
 	contexts := parser.Contexts(input)
-	var ret []Todo
+	var ret []*Todo
 
 	for _, todo := range f.Todos {
 		for _, todoContext := range todo.Contexts {
@@ -78,8 +78,8 @@ func (f *TodoFilter) filterContexts(input string) []Todo {
 	return ret
 }
 
-func (f *TodoFilter) getArchived() []Todo {
-	var ret []Todo
+func (f *TodoFilter) getArchived() []*Todo {
+	var ret []*Todo
 	for _, todo := range f.Todos {
 		if todo.Archived == true {
 			ret = append(ret, todo)
@@ -88,8 +88,8 @@ func (f *TodoFilter) getArchived() []Todo {
 	return ret
 }
 
-func (f *TodoFilter) getUnarchived() []Todo {
-	var ret []Todo
+func (f *TodoFilter) getUnarchived() []*Todo {
+	var ret []*Todo
 	for _, todo := range f.Todos {
 		if todo.Archived == false {
 			ret = append(ret, todo)

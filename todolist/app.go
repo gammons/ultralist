@@ -80,6 +80,15 @@ func (a *App) UnarchiveTodo(input string) {
 	}
 }
 
+func (a *App) ArchiveCompleted() {
+	for _, todo := range a.TodoStore.Todos() {
+		if todo.Completed {
+			todo.Archived = true
+		}
+	}
+	a.TodoStore.Save()
+}
+
 func (a *App) ListTodos(input string) {
 	filtered := NewFilter(a.TodoStore.Todos()).Filter(input)
 	grouped := a.getGroups(input, filtered)
@@ -99,7 +108,7 @@ func (a *App) getId(input string) int {
 	}
 }
 
-func (a *App) getGroups(input string, todos []Todo) *GroupedTodos {
+func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 	grouper := &Grouper{}
 	contextRegex, _ := regexp.Compile(`by c.*$`)
 	projectRegex, _ := regexp.Compile(`by p.*$`)

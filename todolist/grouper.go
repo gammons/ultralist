@@ -3,11 +3,11 @@ package todolist
 type Grouper struct{}
 
 type GroupedTodos struct {
-	Groups map[string][]Todo
+	Groups map[string][]*Todo
 }
 
-func (g *Grouper) GroupByContext(todos []Todo) *GroupedTodos {
-	groups := map[string][]Todo{}
+func (g *Grouper) GroupByContext(todos []*Todo) *GroupedTodos {
+	groups := map[string][]*Todo{}
 
 	allContexts := []string{}
 
@@ -27,8 +27,8 @@ func (g *Grouper) GroupByContext(todos []Todo) *GroupedTodos {
 	return &GroupedTodos{Groups: groups}
 }
 
-func (g *Grouper) GroupByProject(todos []Todo) *GroupedTodos {
-	groups := map[string][]Todo{}
+func (g *Grouper) GroupByProject(todos []*Todo) *GroupedTodos {
+	groups := map[string][]*Todo{}
 
 	allProjects := []string{}
 
@@ -47,8 +47,8 @@ func (g *Grouper) GroupByProject(todos []Todo) *GroupedTodos {
 	return &GroupedTodos{Groups: groups}
 }
 
-func (g *Grouper) GroupByNothing(todos []Todo) *GroupedTodos {
-	groups := map[string][]Todo{}
+func (g *Grouper) GroupByNothing(todos []*Todo) *GroupedTodos {
+	groups := map[string][]*Todo{}
 	groups["all"] = todos
 	return &GroupedTodos{Groups: groups}
 }

@@ -37,7 +37,7 @@ func (f *Formatter) Print() {
 	f.Writer.Flush()
 }
 
-func (f *Formatter) printTodo(todo Todo) {
+func (f *Formatter) printTodo(todo *Todo) {
 	yellow := color.New(color.FgYellow).SprintFunc()
 	fmt.Fprintf(f.Writer, "     \t%s\t%s\t%s\t%s\t\n",
 		yellow(strconv.Itoa(todo.Id)),

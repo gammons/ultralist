@@ -33,7 +33,7 @@ func TestIndexOf(t *testing.T) {
 	store.Load()
 
 	assert.Equal(-1, store.IndexOf(todo))
-	assert.Equal(0, store.IndexOf(&store.Data[0]))
+	assert.Equal(0, store.IndexOf(store.Data[0]))
 }
 
 func TestDelete(t *testing.T) {
