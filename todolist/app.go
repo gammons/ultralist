@@ -87,6 +87,7 @@ func (a *App) ArchiveCompleted() {
 		}
 	}
 	a.TodoStore.Save()
+	fmt.Println("All archived todos completed.")
 }
 
 func (a *App) ListTodos(input string) {
