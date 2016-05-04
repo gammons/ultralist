@@ -53,17 +53,17 @@ func (f *Formatter) printTodo(todo *Todo) {
 }
 
 func (f *Formatter) formatDue(due string) string {
+	blue := color.New(color.FgBlue).SprintFunc()
+	red := color.New(color.FgRed).SprintFunc()
+
 	if due == "" {
-		return ""
+		return blue(" ")
 	}
 	dueTime, err := time.Parse("2006-01-02", due)
 
 	if err != nil {
 		panic(err)
 	}
-
-	blue := color.New(color.FgBlue).SprintFunc()
-	red := color.New(color.FgRed).SprintFunc()
 
 	if isToday(dueTime) {
 		return blue("today")
