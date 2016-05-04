@@ -55,6 +55,8 @@ func (p *Parser) Due(input string, day time.Time) string {
 	res := r.FindString(input)
 	res = res[4:len(res)]
 	switch {
+	case res == "none":
+		return ""
 	case res == "today":
 		return now.BeginningOfDay().Format("2006-01-02")
 	case res == "tomorrow" || res == "tom":

@@ -42,7 +42,7 @@ func usage() {
 	blueBold.Println("\nListing todos")
 	fmt.Println("  When listing todos, you can filter and group the output.\n")
 
-	fmt.Println("  todo l due (agenda|tod|today|tom|tomorrow|overdue|this week|next week|mon|tue|wed|thu|fri|sat|sun)")
+	fmt.Println("  todo l due (agenda|tod|today|tom|tomorrow|overdue|this week|next week|mon|tue|wed|thu|fri|sat|sun|none)")
 	fmt.Println("  todo l overdue")
 
 	cyan.Println("  Filtering by date:\n")
@@ -93,6 +93,8 @@ func usage() {
 	blueBold.Println("\nEditing due dates")
 	yellow.Println("\ttodo e 33 due mon")
 	fmt.Println("\tEdits the todo with 33 and sets the due date to this coming Monday\n")
+	yellow.Println("\ttodo e 33 due none")
+	fmt.Println("\tEdits the todo with 33 and removes the due date\n")
 
 	blueBold.Println("\nDeleting")
 	yellow.Println("\ttodo d 33")
