@@ -90,6 +90,10 @@ func usage() {
 	yellow.Println("\ttodo l archived")
 	fmt.Println("\tlist all archived todos\n")
 
+	blueBold.Println("\nEditing due dates")
+	yellow.Println("\ttodo e 33 due mon")
+	fmt.Println("\tEdits the todo with 33 and sets the due date to this coming Monday\n")
+
 	blueBold.Println("\nDeleting")
 	yellow.Println("\ttodo d 33")
 	fmt.Println("\tDeletes a todo with id 33\n")
@@ -97,22 +101,24 @@ func usage() {
 
 func routeInput(command string, input string) {
 	app := todolist.NewApp()
-	switch {
-	case command == "l" || command == "list":
+	switch command {
+	case "l", "list":
 		app.ListTodos(input)
-	case command == "a" || command == "add":
+	case "a", "add":
 		app.AddTodo(input)
-	case command == "d" || command == "del":
+	case "d", "del":
 		app.DeleteTodo(input)
-	case command == "c" || command == "complete":
+	case "c", "complete":
 		app.CompleteTodo(input)
-	case command == "uc" || command == "uncomplete":
+	case "uc", "uncomplete":
 		app.UncompleteTodo(input)
-	case command == "ar" || command == "archive":
+	case "ar", "archive":
 		app.ArchiveTodo(input)
-	case command == "uar" || command == "unarchive":
+	case "uar", "unarchive":
 		app.UnarchiveTodo(input)
-	case command == "ac":
+	case "ac":
 		app.ArchiveCompleted()
+	case "e", "edit":
+		app.EditTodoDue(input)
 	}
 }

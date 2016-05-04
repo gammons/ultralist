@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"time"
 )
 
 type App struct {
@@ -75,6 +76,19 @@ func (a *App) UnarchiveTodo(input string) {
 		a.TodoStore.Unarchive(id)
 		a.TodoStore.Save()
 		fmt.Println("Todo unarchived.")
+	} else {
+		fmt.Println("Could not find id.")
+	}
+}
+
+func (a *App) EditTodoDue(input string) {
+	id := a.getId(input)
+	if id != -1 {
+		todo := a.TodoStore.FindById(id)
+		parser := &Parser{}
+		todo.Due = parser.Due(input, time.Now())
+		a.TodoStore.Save()
+		fmt.Println("Todo due date updated.")
 	} else {
 		fmt.Println("Could not find id.")
 	}
