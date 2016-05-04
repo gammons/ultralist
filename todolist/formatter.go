@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"text/tabwriter"
@@ -27,12 +28,17 @@ func NewFormatter(todos *GroupedTodos) *Formatter {
 func (f *Formatter) Print() {
 	cyan := color.New(color.FgCyan).SprintFunc()
 
-	for key, todos := range f.GroupedTodos.Groups {
+	var keys []string
+	for key, _ := range f.GroupedTodos.Groups {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	for _, key := range keys {
 		fmt.Fprintf(f.Writer, "\n   \t%s\n", cyan(key))
-		for _, todo := range todos {
+		for _, todo := range f.GroupedTodos.Groups[key] {
 			f.printTodo(todo)
 		}
-
 	}
 	f.Writer.Flush()
 }
