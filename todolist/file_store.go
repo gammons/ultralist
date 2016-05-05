@@ -84,14 +84,22 @@ func (f *FileStore) IndexOf(todoToFind *Todo) int {
 func (f *FileStore) Load() {
 	data, err := ioutil.ReadFile(f.FileLocation)
 	if err != nil {
-		fmt.Println("Error reading file", err)
-		os.Exit(1)
+		fmt.Println("No todo file found at ~/.todos.json!")
+		fmt.Println("Initializing new todo repo at ~/.todos.json")
+		f.Initialize()
+		return
 	}
 
 	jerr := json.Unmarshal(data, &f.Data)
 	if jerr != nil {
 		fmt.Println("Error reading json data", jerr)
 		os.Exit(1)
+	}
+}
+
+func (f *FileStore) Initialize() {
+	if err := ioutil.WriteFile(f.FileLocation, []byte("[]"), 0644); err != nil {
+		fmt.Println("Error writing json file", err)
 	}
 }
 
