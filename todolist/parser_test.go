@@ -104,10 +104,28 @@ func TestTuesdayOnWednesday(t *testing.T) {
 	assert.Equal("2016-05-03", parser.tuesday(now))
 }
 
-//func TestDueNextWeek(t *testing.T) {
-//	parser := &Parser{}
-//
-//	fmt.Println("about to parse")
-//	todo := parser.Parse("do this thing with @bob and @mary due next week")
-//	fmt.Println(todo.Due)
-//}
+func TestDueOnSpecificDate(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	assert.Equal("2016-05-02", parser.Due("due may 2", time.Now()))
+}
+
+func TestDueOnSpecificDateEuropean(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	assert.Equal("2016-05-02", parser.Due("due 2 may", time.Now()))
+}
+
+func TestDueIntelligentlyChoosesCorrectYear(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	marchTime, _ := time.Parse("2006-01-02", "2016-03-25")
+	januaryTime, _ := time.Parse("2006-01-02", "2016-01-05")
+	septemberTime, _ := time.Parse("2006-01-02", "2016-09-25")
+	decemberTime, _ := time.Parse("2006-01-02", "2016-12-25")
+
+	assert.Equal("2016-01-10", parser.parseArbitraryDate("jan 10", januaryTime))
+	assert.Equal("2016-01-10", parser.parseArbitraryDate("jan 10", marchTime))
+	assert.Equal("2017-01-10", parser.parseArbitraryDate("jan 10", septemberTime))
+	assert.Equal("2017-01-10", parser.parseArbitraryDate("jan 10", decemberTime))
+}

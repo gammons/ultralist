@@ -3,6 +3,7 @@ package todolist
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -56,32 +57,61 @@ func (p *Parser) Due(input string, day time.Time) string {
 
 	res := r.FindString(input)
 	res = res[4:len(res)]
-	switch {
-	case res == "none":
+	switch res {
+	case "none":
 		return ""
-	case res == "today":
+	case "today":
 		return now.BeginningOfDay().Format("2006-01-02")
-	case res == "tomorrow" || res == "tom":
+	case "tomorrow", "tom":
 		return now.BeginningOfDay().AddDate(0, 0, 1).Format("2006-01-02")
-	case res == "monday" || res == "mon":
+	case "monday", "mon":
 		return p.monday(day)
-	case res == "tuesday" || res == "tue":
+	case "tuesday", "tue":
 		return p.tuesday(day)
-	case res == "wednesday" || res == "wed":
+	case "wednesday", "wed":
 		return p.wednesday(day)
-	case res == "thursday" || res == "thu":
+	case "thursday", "thu":
 		return p.thursday(day)
-	case res == "friday" || res == "fri":
+	case "friday", "fri":
 		return p.friday(day)
-	case res == "saturday" || res == "sat":
+	case "saturday", "sat":
 		return p.saturday(day)
-	case res == "sunday" || res == "sun":
+	case "sunday", "sun":
 		return p.sunday(day)
-	case res == "next week":
+	case "next week":
 		n := now.BeginningOfDay()
 		return now.New(n).Monday().AddDate(0, 0, 7).Format("2006-01-02")
 	}
-	return time.Now().Format("2006-01-02")
+	return p.parseArbitraryDate(res, time.Now())
+}
+
+func (p *Parser) parseArbitraryDate(_date string, pivot time.Time) string {
+	d1 := p.parseArbitraryDateWithYear(_date, pivot.Year())
+
+	var diff1 time.Duration
+	if d1.After(time.Now()) {
+		diff1 = d1.Sub(pivot)
+	} else {
+		diff1 = pivot.Sub(d1)
+	}
+	d2 := p.parseArbitraryDateWithYear(_date, pivot.Year()+1)
+	if d2.Sub(pivot) > diff1 {
+		return d1.Format("2006-01-02")
+	} else {
+		return d2.Format("2006-01-02")
+	}
+}
+
+func (p *Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {
+	res := strings.Join([]string{_date, strconv.Itoa(year)}, " ")
+	if date, err := time.Parse("Jan 2 2006", res); err == nil {
+		return date
+	}
+
+	if date, err := time.Parse("2 Jan 2006", res); err == nil {
+		return date
+	}
+	panic(fmt.Errorf("Could not parse the date you gave me: '%s'", _date))
 }
 
 func (p *Parser) monday(day time.Time) string {
