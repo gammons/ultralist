@@ -13,8 +13,12 @@ type App struct {
 
 func NewApp() *App {
 	app := &App{TodoStore: NewFileStore()}
-	app.TodoStore.Load()
 	return app
+}
+
+func (a *App) InitializeRepo() {
+	a.TodoStore.Initialize()
+	fmt.Println("Todo repo initialized.")
 }
 
 func (a *App) AddTodo(input string) {

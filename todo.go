@@ -122,5 +122,7 @@ func routeInput(command string, input string) {
 		app.ArchiveCompleted()
 	case "e", "edit":
 		app.EditTodoDue(input)
+	case "init":
+		app.InitializeRepo()
 	}
 }

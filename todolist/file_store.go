@@ -5,26 +5,27 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/user"
 	"sort"
 )
 
 type FileStore struct {
 	FileLocation string
 	Data         []*Todo
+	Loaded       bool
 }
 
 func NewFileStore() *FileStore {
-	usr, _ := user.Current()
-	return &FileStore{FileLocation: usr.HomeDir + "/.todos.json"}
+	return &FileStore{FileLocation: ".todos.json", Loaded: false}
 }
 
 func (f *FileStore) Add(todo *Todo) {
+	f.Load()
 	todo.Id = f.NextId()
 	f.Data = append(f.Data, todo)
 }
 
 func (f *FileStore) FindById(id int) *Todo {
+	f.Load()
 	for _, todo := range f.Data {
 		if todo.Id == id {
 			return todo
@@ -34,6 +35,7 @@ func (f *FileStore) FindById(id int) *Todo {
 }
 
 func (f *FileStore) Delete(id int) {
+	f.Load()
 	i := -1
 	for index, todo := range f.Data {
 		if todo.Id == id {
@@ -45,6 +47,7 @@ func (f *FileStore) Delete(id int) {
 }
 
 func (f *FileStore) Complete(id int) {
+	f.Load()
 	todo := f.FindById(id)
 	todo.Completed = true
 	f.Delete(id)
@@ -52,6 +55,7 @@ func (f *FileStore) Complete(id int) {
 }
 
 func (f *FileStore) Uncomplete(id int) {
+	f.Load()
 	todo := f.FindById(id)
 	todo.Completed = false
 	f.Delete(id)
@@ -59,6 +63,7 @@ func (f *FileStore) Uncomplete(id int) {
 }
 
 func (f *FileStore) Archive(id int) {
+	f.Load()
 	todo := f.FindById(id)
 	todo.Archived = true
 	f.Delete(id)
@@ -66,6 +71,7 @@ func (f *FileStore) Archive(id int) {
 }
 
 func (f *FileStore) Unarchive(id int) {
+	f.Load()
 	todo := f.FindById(id)
 	todo.Archived = false
 	f.Delete(id)
@@ -82,12 +88,15 @@ func (f *FileStore) IndexOf(todoToFind *Todo) int {
 }
 
 func (f *FileStore) Load() {
+	if f.Loaded {
+		return
+	}
+
 	data, err := ioutil.ReadFile(f.FileLocation)
 	if err != nil {
-		fmt.Println("No todo file found at ~/.todos.json!")
-		fmt.Println("Initializing new todo repo at ~/.todos.json")
-		f.Initialize()
-		return
+		fmt.Println("No todo file found!")
+		fmt.Println("Initialize a new todo repo by running 'todo init'")
+		os.Exit(0)
 	}
 
 	jerr := json.Unmarshal(data, &f.Data)
@@ -95,6 +104,7 @@ func (f *FileStore) Load() {
 		fmt.Println("Error reading json data", jerr)
 		os.Exit(1)
 	}
+	f.Loaded = true
 }
 
 func (f *FileStore) Initialize() {
@@ -121,6 +131,7 @@ func (a ByDate) Less(i, j int) bool {
 }
 
 func (f *FileStore) Todos() []*Todo {
+	f.Load()
 	sort.Sort(ByDate(f.Data))
 	return f.Data
 }
