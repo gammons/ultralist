@@ -108,6 +108,11 @@ func (f *FileStore) Load() {
 }
 
 func (f *FileStore) Initialize() {
+	_, err := ioutil.ReadFile(f.FileLocation)
+	if err == nil {
+		fmt.Println("It looks like a .todos.json file already exists!  Doing nothing.")
+		os.Exit(0)
+	}
 	if err := ioutil.WriteFile(f.FileLocation, []byte("[]"), 0644); err != nil {
 		fmt.Println("Error writing json file", err)
 	}
