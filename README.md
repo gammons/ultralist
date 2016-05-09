@@ -17,7 +17,7 @@ The first command you will want to run is `todo init`.
 Todo repo initialized.
 ```
 
-**Adding todos**
+#### Adding todos
 
 Adding todos is as simple as using the `add` or `a` command.
 
@@ -26,12 +26,16 @@ Adding todos is as simple as using the `add` or `a` command.
 Todo added.
 ```
 
-When you add a todo, you can add a `+project` or a `@context`, which you can use for grouping or filtering.
+**Projects and Contexts**
+
+When you add a todo, you can add one or more `+project`s or `@context`s, which you can use for grouping or filtering.
 
 ```
 ~ todo a Did @mary talk with @bob about the +devopsProject? due tod
 Todo added.
 ```
+
+**Dates**
 
 You can also add a due date by adding `due <date>` at the end.  Below is a list of phrases that `due` can recognize:
 
@@ -53,7 +57,7 @@ You can also use specific dates, provided the are in the format of `jan 2` or `2
 * `todo a chat with @nick due may 15`
 * `todo a chat with @nick due 15 may`
 
-**Listing todos**
+#### Listing todos
 
 ## FAQ
 
