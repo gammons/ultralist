@@ -1,6 +1,8 @@
 # Todolist
 
-Todolist is a simple and very fast task manager for the command line.  It is based on the [Getting Things Done][gtd] methodology.
+Todolist is a simple and very fast task manager for the command line.  It is based on the (Getting Things Done)[gtd] methodology.
+
+[gtd]: http://lifehacker.com/productivity-101-a-primer-to-the-getting-things-done-1551880955
 
 ## Installation
 
@@ -58,6 +60,19 @@ You can also use specific dates, provided the are in the format of `jan 2` or `2
 * `todo a chat with @nick due 15 may`
 
 #### Listing todos
+
+Listing todos outputs a nice formatted list.
+
+**`todo list`**
+
+<pre>
+<span style="color:teal;">all</span>
+<span style="color:olive;">1</span> [ ] <span style="color:blue;">tomorrow</span>  Talk with <span style="color:red;">@bob</span> about the <span style="color:purple;">+devopsProject</span>
+<span style="color:olive;">2</span> [ ] <span style="color:blue;">Wed May 11</span> did <span style="color:red;">@mary</span> needs to repair the flux capacitor for the <span style="color:purple;">+timeTravel</span> project
+</pre>
+
+
+This will list all unarchived todos.
 
 ## FAQ
 
