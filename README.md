@@ -21,7 +21,7 @@ Todo repo initialized.
 
 Adding todos is as simple as using the `add` or `a` command.
 
-```
+```bash
 ~ todo add Talk with @bob about the +devopsProject due tuesday
 Todo added.
 ```
