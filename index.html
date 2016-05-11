@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags always come first -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://chriskempson.github.io/base16/css/base16-default.css" />
+    <link rel="stylesheet" href="style.css" />
+
+  </head>
+  <body>
+
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1>Todolist</h1>
+        <p class="lead">A very fast, simple task manager for the command line, based upon GTD.</p>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+
+        <div class="col-md-4">
+          <p>Menu</p>
+          <ul>
+            <li>Download</li>
+            <li>Something else</li>
+          </ul>
+        </div>
+
+        <div class="col-md-8">
+					<div class="card card-block">
+						<h3 class="card-title">Download todolist</h3>
+            <p class="card-text">Major changes: None!  This is the initial release!</p>
+						<p class="card-text">
+            The latest version of Todolist (including building the source on your own) is on the Github project page.</p>
+						<a href="#" class="btn btn-primary">Download v0.1.0</a>
+					</div>
+
+          <h2>What is this?</h2>
+          <p>Todolist allows you to manage your tasks in the terminal.  It is simple, very fast, and stays out of the way.  Todolist is based upon the <a href="https://en.wikipedia.org/wiki/Getting_Things_Done">Getting Things Done</a> method, and has the concept of due dates, projects and contexts.</p>
+
+          <h2>Installation</h2>
+          <p>Simply copy the <code>todo</code> binary to a location in your <code>$PATH</code>.</p>
+
+          <a href="#quickstart"><h2>Quick start</h2></a>
+
+          <strong>1: Initialize your todos repo</strong>
+          <p>First, run <code>todo init</code> to intialize the .todos.json repo in the directory you are in.</p>
+
+          <pre class='todo base00-background base06'>
+<span class="base08">~</span> todo init
+Todo repo initialized.
+          </pre>
+
+          <strong>2: Add a couple todos</strong>
+
+          <p>You can add a todo by using the <code>add</code> or <code>a</code> directive:</p>
+
+          <pre class='todo base01-background base06'>
+<span class="base08">~</span> todo add Chat with @bob about +currentProject due today
+Todo added.
+<span class="base08">~</span> todo a +devops update my master password due fri
+Todo added.
+          </pre>
+
+          <strong>3: List todos</strong>
+
+          <p>This is the heart of the system.  You can filter and group your todos.  If the built-in filtering is not powerful enough for your tastes, you can always pipe the output to <code>grep</code>!
+
+          <pre class='todo base01-background base06'>
+<span class="base08">~</span> todo list
+<span class='group'>all</span>
+<table>
+<tr>
+<td class='num'>1</td>
+<td>[ ]</td>
+<td class='date'>tomorrow</td>
+<td>Talk with <span class ="cont">@bob</span> about the <span class="proj">+bigProject</span></td>
+</tr>
+<tr>
+<td class='num'>2</td>
+<td>[ ]</td>
+<td class='date'>Fri May 13</td>
+<td><span class="proj">+devops</span> update my master password</td>
+</tr>
+</table>
+
+          </pre>
+
+          <p><code>todo list</code> takes many arguments. You can filter by a due date:</p>
+
+          <pre class='todo base01-background base06'>
+<span class="base08">~</span> todo list due tom
+<span class='group'>all</span>
+<table>
+<tr>
+<td class='num'>1</td>
+<td>[ ]</td>
+<td class='date'>tomorrow</td>
+<td>Talk with <span class ="cont">@bob</span> about the <span class="proj">+bigProject</span></td>
+</tr>
+</table>
+
+          </pre>
+
+          <p>You can also group by project or context.</p>
+
+          <pre class='todo base01-background base06'>
+<span class="base08">~</span> todo list by project
+
+<span class='group'>bigProject</span>
+<table>
+<tr>
+<td class='num'>1</td>
+<td>[ ]</td>
+<td class='date'>tomorrow</td>
+<td>Talk with <span class ="cont">@bob</span> about the <span class="proj">+bigProject</span></td>
+</tr>
+</table>
+<span class='group'>devops</span>
+<table>
+<tr>
+<td class='num'>2</td>
+<td>[ ]</td>
+<td class='date'>Fri May 13</td>
+<td><span class="proj">+devops</span> update my master password</td>
+</tr>
+</table>
+
+          </pre>
+
+          <strong>4: Complete a todo </strong>
+
+          <p>Completing a todo is done by using <code>todo complete <id></code> or <code>todo c <id></code>.</p>
+
+          <pre class='todo base01-background base06'>
+<span class="base08">~</span> todo complete 1
+Todo completed.
+<span class="base08">~</span> todo c 2
+Todo completed.
+          </pre>
+
+          <p>Now, if you list your todos, you'll see that all have been completed:</p>
+
+          <pre class='todo base01-background base06'>
+<span class="base08">~</span> todo list
+<span class='group'>all</span>
+<table>
+<tr>
+<td class='num'>1</td>
+<td>[x]</td>
+<td class='date'>tomorrow</td>
+<td>Talk with <span class ="cont">@bob</span> about the <span class="proj">+bigProject</span></td>
+</tr>
+<tr>
+<td class='num'>2</td>
+<td>[x]</td>
+<td class='date'>Fri May 13</td>
+<td><span class="proj">+devops</span> update my master password</td>
+</tr>
+</table>
+          </pre>
+
+          <strong>5: Archive completed todos</strong>
+
+          <p>Finally, after all the work has been done, you can archive the todos so they are cleared off the list.</p>
+          <p>You can archive each one individually by running <code>todo ar <id></code>, but since we have many completed todos today, we can run <code>todo ac</code> instead, which will archive all completed todos.</p>
+
+          <pre class='todo base01-background base06'>
+<span class="base08">~</span> todo ac
+All completed todos archived.
+          </pre>
+
+          <p>And that's it!  You now know 90% of what you need to in order to use Todolist. </p>
+
+          <h2>Command reference</h2>
+          <h3>Adding todos</h3>
+          <p>Add a todo by running <code>todo add</code> or <code>todo a</code>, and then filling out the details of the todo.</p>
+          <ul>
+            <li><code>+projects</code> and <code>@contexts</code> can be inserted into the todo body. Currently they can only be one word long.</li>
+            <li>Todolist is expecting the due date at the <i>end</i>.</li>
+          </ul>
+          <strong>Due date format</strong>
+          <ul>
+            <li>For things due today or tomorrow, you can use <code>due today</code> and <code>due tomorrow</code>.  You can also use <code>due tod</code> or <code>due tom</code>.</li>
+            <li>For things due this week, you can use the first 3 letters of the day name.  For instance, <code>due mon</code> or <code>due thu</code>.  Todolist will always look forward, so if today is a Wednesday, and you specify <code>due mon</code>, it will be for <i>next</i> Monday.
+              <li>For specific dates, you can use either <code>due may 2</code> or <code>due 2 may</code>.  The month is always lowercase and 3 letters.
+          </ul>
+          <p>Examples:</p>
+
+          <pre class='todo base01-background base06'>
+<span class="base08">~</span> todo a update the staging db with @frank due tom
+Todo added.
+<span class="base08">~</span> todo a @pomodoro I need to think about our job tier structure due wed
+Todo added.
+<span class="base08">~</span> todo a meet with @jake and @adrian about the +importImprovement project due jun 23
+Todo added.
+          </pre>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- jQuery first, then Bootstrap JS. -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
+  </body>
+</html>

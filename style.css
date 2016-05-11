@@ -1,0 +1,34 @@
+pre.todo {
+  padding: 20px;
+  white-space: pre;
+}
+
+span.group {
+  margin-left: 40px;
+}
+
+table td {
+  padding-left: 40px;
+}
+
+.group {
+  color: #75b5aa;
+}
+
+.num {
+  color: #f4bf75;
+}
+
+.date {
+  color: #6a9fb5;
+}
+
+.proj {
+  color: #aa759f;
+}
+
+.cont {
+  color: #ac4142;
+}
+
+
