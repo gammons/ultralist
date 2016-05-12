@@ -48,8 +48,9 @@ func (p *Parser) Contexts(input string) []string {
 }
 
 func (p *Parser) hasDue(input string) bool {
-	r, _ := regexp.Compile(`due \w+$`)
-	return r.MatchString(input)
+	r1, _ := regexp.Compile(`due \w+$`)
+	r2, _ := regexp.Compile(`due \w+ \d+$`)
+	return (r1.MatchString(input) || r2.MatchString(input))
 }
 
 func (p *Parser) Due(input string, day time.Time) string {
