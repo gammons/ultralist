@@ -1,7 +1,6 @@
 package todolist
 
 import (
-	"fmt"
 	"regexp"
 	"time"
 
@@ -17,12 +16,12 @@ func NewDateFilter(todos []*Todo) *DateFilter {
 }
 
 func (f *DateFilter) FilterDate(input string) []*Todo {
-	if input == "agenda" {
-		fmt.Println("input IS agenda")
+	agendaRegex, _ := regexp.Compile(`agenda .*$`)
+	if agendaRegex.MatchString(input) {
 		return f.filterAgenda(now.BeginningOfDay())
 	}
-	r, _ := regexp.Compile(`due .*$`)
 
+	r, _ := regexp.Compile(`due .*$`)
 	match := r.FindString(input)
 	switch {
 	case match == "due tod" || match == "due today":
