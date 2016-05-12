@@ -42,7 +42,7 @@ func usage() {
 	blueBold.Println("\nListing todos")
 	fmt.Println("  When listing todos, you can filter and group the output.\n")
 
-	fmt.Println("  todo l due (agenda|tod|today|tom|tomorrow|overdue|this week|next week|mon|tue|wed|thu|fri|sat|sun|none)")
+	fmt.Println("  todo l due (tod|today|tom|tomorrow|overdue|this week|next week|mon|tue|wed|thu|fri|sat|sun|none)")
 	fmt.Println("  todo l overdue")
 
 	cyan.Println("  Filtering by date:\n")
@@ -54,7 +54,7 @@ func usage() {
 	fmt.Println("\tlists all todos due monday\n")
 	yellow.Println("\ttodo l overdue")
 	fmt.Println("\tlists all todos where the due date is in the past\n")
-	yellow.Println("\ttodo l agenda")
+	yellow.Println("\ttodo agenda")
 	fmt.Println("\tlists all todos where the due date is today or in the past\n")
 
 	cyan.Println("  Grouping:")
@@ -104,7 +104,7 @@ func usage() {
 func routeInput(command string, input string) {
 	app := todolist.NewApp()
 	switch command {
-	case "l", "list":
+	case "l", "list", "agenda":
 		app.ListTodos(input)
 	case "a", "add":
 		app.AddTodo(input)

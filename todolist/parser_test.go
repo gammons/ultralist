@@ -72,7 +72,6 @@ func TestDueTomorrow(t *testing.T) {
 func TestDueSpecific(t *testing.T) {
 	assert := assert.New(t)
 	parser := &Parser{}
-	fmt.Println("Parsing new todo")
 	todo := parser.ParseNewTodo("do this thing with @bob and @mary due jun 1")
 	assert.Equal("2016-06-01", todo.Due)
 }
