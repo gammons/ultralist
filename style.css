@@ -1,3 +1,7 @@
+h2 {
+  margin-top: 30px;
+  border-bottom: 1px solid #ddd;
+}
 pre.todo {
   padding: 20px;
   white-space: pre;

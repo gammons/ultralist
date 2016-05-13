@@ -178,6 +178,16 @@ All completed todos archived.
 
           <p>And that's it!  You now know 90% of what you need to in order to use Todolist. </p>
 
+          <h2>Workflow</h2>
+          Todos can be in one of 3 states:
+
+          <ul>
+            <li><b>Incomplete</b> - Incomplete todos will show up on all filtering</li>
+            <li><b>Complete</b> - Completed todos will still show up on all filtering.</li>
+            <li><b>Archived</b> - Archived todos will only show up when running <code>todo list archived</code>.</li>
+          </ul>
+          <p>Typically you'll create the todo, complete it, then archive it at the end of the day.</p>
+
           <h2>Command reference</h2>
           <h3>Adding todos</h3>
           <p>Add a todo by running <code>todo add</code> or <code>todo a</code>, and then filling out the details of the todo.</p>
@@ -202,10 +212,21 @@ Todo added.
 Todo added.
           </pre>
 
+          <h3>Completeing and un-completing todos</h3>
+
+          <p><code>todo complete <id></code> or <code>todo c <id></code> - complete a todo by its id.</p>
+          <p><code>todo uncomplete <id></code> or <code>todo uc <id></code> - un-complete a todo by its id.</p>
+
+          <h3>Archiving and unarchiving todos</h3>
+
+          <p><code>todo archive <id></code> or <code>todo ar <id></code> - archive a todo by its id.</p>
+          <p><code>todo unarchive <id></code> - unarchive a todo by its id.</p>
+
+          <h3>Archiving and unarchiving todos</h3>
+
         </div>
       </div>
     </div>
-
     <!-- jQuery first, then Bootstrap JS. -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/js/bootstrap.min.js" integrity="sha384-vZ2WRJMwsjRMW/8U7i6PWi6AlO1L79snBrmgiDpgIWJ82z8eA5lenwvxbMV1PAh7" crossorigin="anonymous"></script>
