@@ -1,6 +1,7 @@
 # Todolist
 
 ![](https://goreportcard.com/badge/github.com/gammons/todolist)
+![](https://travis-ci.org/gammons/todolist.svg)
 
 Todolist is a simple and very fast task manager for the command line.  It is based on the [Getting Things Done](gtd) methodology.
 
