@@ -43,6 +43,7 @@
 
           <h2>What is this?</h2>
           <p>Todolist allows you to manage your tasks in the terminal.  It is simple, very fast, and stays out of the way.  Todolist is based upon the <a href="https://en.wikipedia.org/wiki/Getting_Things_Done">Getting Things Done</a> method, and has the concept of due dates, projects and contexts.</p>
+          <p>Todo lists are specific to the directory you are in.</p>
 
           <h2>Installation</h2>
           <p>Simply copy the <code>todo</code> binary to a location in your <code>$PATH</code>.</p>
@@ -169,7 +170,7 @@ Todo completed.
           <strong>5: Archive completed todos</strong>
 
           <p>Finally, after all the work has been done, you can archive the todos so they are cleared off the list.</p>
-          <p>You can archive each one individually by running <code>todo ar <id></code>, but since we have many completed todos today, we can run <code>todo ac</code> instead, which will archive all completed todos.</p>
+          <p>You can archive each one individually by running <code>todo ar [id]</code>, but since we have many completed todos today, we can run <code>todo ac</code> instead, which will archive all completed todos.</p>
 
           <pre class='todo base01-background base06'>
 <span class="base08">~</span> todo ac
@@ -188,8 +189,7 @@ All completed todos archived.
           </ul>
           <p>Typically you'll create the todo, complete it, then archive it at the end of the day.</p>
 
-          <h2>Command reference</h2>
-          <h3>Adding todos</h3>
+          <h2>Adding todos</h2>
           <p>Add a todo by running <code>todo add</code> or <code>todo a</code>, and then filling out the details of the todo.</p>
           <ul>
             <li><code>+projects</code> and <code>@contexts</code> can be inserted into the todo body. Currently they can only be one word long.</li>
@@ -199,7 +199,7 @@ All completed todos archived.
           <ul>
             <li>For things due today or tomorrow, you can use <code>due today</code> and <code>due tomorrow</code>.  You can also use <code>due tod</code> or <code>due tom</code>.</li>
             <li>For things due this week, you can use the first 3 letters of the day name.  For instance, <code>due mon</code> or <code>due thu</code>.  Todolist will always look forward, so if today is a Wednesday, and you specify <code>due mon</code>, it will be for <i>next</i> Monday.
-              <li>For specific dates, you can use either <code>due may 2</code> or <code>due 2 may</code>.  The month is always lowercase and 3 letters.
+              <li>For specific dates, you can use either <code>due may 2</code> or <code>due 2 may</code>.  The month is always lowercase and 3 letters.</li>
           </ul>
           <p>Examples:</p>
 
@@ -212,17 +212,52 @@ Todo added.
 Todo added.
           </pre>
 
-          <h3>Completeing and un-completing todos</h3>
+          <h2>Completing and un-completing todos</h2>
 
-          <p><code>todo complete <id></code> or <code>todo c <id></code> - complete a todo by its id.</p>
-          <p><code>todo uncomplete <id></code> or <code>todo uc <id></code> - un-complete a todo by its id.</p>
+          <p><code>todo complete [id]</code> or <code>todo c <id></code> - complete a todo by its id.</p>
+          <p><code>todo uncomplete [id]</code> or <code>todo uc <id></code> - un-complete a todo by its id.</p>
 
-          <h3>Archiving and unarchiving todos</h3>
+          <h2>Archiving and unarchiving todos</h2>
 
-          <p><code>todo archive <id></code> or <code>todo ar <id></code> - archive a todo by its id.</p>
-          <p><code>todo unarchive <id></code> - unarchive a todo by its id.</p>
+          <p><code>todo archive [id]</code> or <code>todo ar [id]</code> - archive a todo by its id.</p>
+          <p><code>todo unarchive [id]</code> - unarchive a todo by its id.</p>
 
-          <h3>Archiving and unarchiving todos</h3>
+          <h2>Listing todos</h2>
+          <p><code>todo list</code> or <code>todo l</code> - list all unarchived todos</p>
+          <p><code>todo l archived</code> - list all archived todos</p>
+
+          <p><b>Note:</b> By default, Todolist will always filter archived todos.  You can only see archived todos by running <code>todo list archived.</code></p>
+
+          <b>Filtering by due date</b>
+          <p><code>todo l agenda</code> - List todos due today or are overdue</p>
+          <p><code>todo l overdue</code> - List all todos that are overdue</p>
+          <p><code>todo l due today</code> or <code>todo l due tod</code>- List all todos due today</p>
+          <p><code>todo l due tomorrow</code> or <code>todo l due tomorrow</code>- List all todos due tomorrow</p>
+
+          <b>Filtering by a day of the week</b>
+          <p><code>todo l due mon</code> - List all todos due
+          <p><code>todo l due this week</code> - List all todos due this week.</p>
+
+          <b>Showing all todos</b>
+          <p><code>todo l due tomorrow</code> or <code>todo l due tomorrow</code>- List all todos due tomorrow</p>
+
+          <p>Todos can be grouped by project or context.</p>
+          <b>Grouping</b>
+          <p>Todos can be grouped by project or context.</p>
+
+          <h2>Editing todos</h2>
+          <p>Todolist currently supports editing a due date only.  If you need to fully edit a todo, it is recommended to delete and re-add the todo.</p>
+          <p><code>todo e [id] due [due]</code> - edit a todo's due date. </p>
+          <p>Examples:</p>
+          <ul>
+            <li><code>todo e 133 due tod</code> - edit todo with id 133 and set its due date to today.</li>
+            <li><code>todo e 56 due jun 20</code> - edit todo with id 56 and set its due date to June 20..</li>
+          </ul>
+
+          <h2>Deleting todos</h2>
+
+          <h2>Rationale and Limitations</h2>
+          <p>Todolist will have a hard time adding a todo that has a keyword in it.</p>
 
         </div>
       </div>
