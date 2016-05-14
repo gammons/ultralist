@@ -99,6 +99,8 @@ func usage() {
 	blueBold.Println("\nDeleting")
 	yellow.Println("\ttodo d 33")
 	fmt.Println("\tDeletes a todo with id 33\n")
+	fmt.Println("Todolist was lovingly crafted by Grant Ammons (https://twitter.com/gammons).")
+	fmt.Println("For full documentation, please visit http://todolist.site")
 }
 
 func routeInput(command string, input string) {
