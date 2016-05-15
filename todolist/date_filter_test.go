@@ -81,8 +81,8 @@ func TestFilterDay(t *testing.T) {
 	assert := assert.New(t)
 
 	var todos []*Todo
-	mondayTodo := &Todo{Id: 1, Subject: "one", Due: now.Monday().Format("2006-01-02")}
-	tuesdayTodo := &Todo{Id: 2, Subject: "two", Due: now.Monday().AddDate(0, 0, 1).Format("2006-01-02")}
+	mondayTodo := &Todo{Id: 1, Subject: "one", Due: now.Sunday().AddDate(0, 0, 1).Format("2006-01-02")}
+	tuesdayTodo := &Todo{Id: 2, Subject: "two", Due: now.Sunday().AddDate(0, 0, 2).Format("2006-01-02")}
 
 	todos = append(todos, mondayTodo)
 	todos = append(todos, tuesdayTodo)

@@ -8,11 +8,12 @@ import (
 )
 
 type DateFilter struct {
-	Todos []*Todo
+	Todos    []*Todo
+	Location *time.Location
 }
 
 func NewDateFilter(todos []*Todo) *DateFilter {
-	return &DateFilter{Todos: todos}
+	return &DateFilter{Todos: todos, Location: time.Now().Location()}
 }
 
 func (f *DateFilter) FilterDate(input string) []*Todo {
@@ -56,7 +57,7 @@ func (f *DateFilter) filterAgenda(pivot time.Time) []*Todo {
 	var ret []*Todo
 
 	for _, todo := range f.Todos {
-		dueTime, _ := time.Parse("2006-01-02", todo.Due)
+		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
 		if dueTime.Before(pivot) || todo.Due == pivot.Format("2006-01-02") {
 			ret = append(ret, todo)
 		}
@@ -78,7 +79,7 @@ func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []*Todo {
 	var ret []*Todo
 	filtered := f.filterThisWeek(pivot)
 	for _, todo := range filtered {
-		dueTime, _ := time.Parse("2006-01-02", todo.Due)
+		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
 		if dueTime.Weekday() == day {
 			ret = append(ret, todo)
 		}
@@ -101,12 +102,12 @@ func (f *DateFilter) filterTomorrow(pivot time.Time) []*Todo {
 func (f *DateFilter) filterThisWeek(pivot time.Time) []*Todo {
 	var ret []*Todo
 
-	begin := f.findSunday(pivot)
+	begin := now.New(f.findSunday(pivot)).BeginningOfDay()
 	end := begin.AddDate(0, 0, 7)
 
 	for _, todo := range f.Todos {
-		dueTime, _ := time.Parse("2006-01-02", todo.Due)
-		if begin.Before(dueTime) && end.After(dueTime) {
+		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
+		if (begin.Before(dueTime) || begin.Equal(dueTime)) && end.After(dueTime) {
 			ret = append(ret, todo)
 		}
 	}
@@ -120,7 +121,7 @@ func (f *DateFilter) filterNextWeek(pivot time.Time) []*Todo {
 	end := begin.AddDate(0, 0, 7)
 
 	for _, todo := range f.Todos {
-		dueTime, _ := time.Parse("2006-01-02", todo.Due)
+		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
 		if begin.Before(dueTime) && end.After(dueTime) {
 			ret = append(ret, todo)
 		}
@@ -134,7 +135,7 @@ func (f *DateFilter) filterOverdue(pivot time.Time) []*Todo {
 	pivotDate := pivot.Format("2006-01-02")
 
 	for _, todo := range f.Todos {
-		dueTime, _ := time.Parse("2006-01-02", todo.Due)
+		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
 		if dueTime.Before(pivot) && pivotDate != todo.Due {
 			ret = append(ret, todo)
 		}
