@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	Version = "0.1.0"
+	VERSION = "0.1.0"
 )
 
 func main() {
@@ -29,7 +29,7 @@ func usage() {
 
 	blueBold := blue.Add(color.Bold)
 
-	fmt.Printf("todo v%s, a simple, command line based, GTD-style todo manager\n", Version)
+	fmt.Printf("todo v%s, a simple, command line based, GTD-style todo manager\n", VERSION)
 
 	blueBold.Println("\nAdding todos")
 	fmt.Println("  the 'a' command adds todos.")
