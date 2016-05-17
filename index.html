@@ -5,14 +5,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Todolist:  A very fast, simple task manager for the commandline, based upon GTD</title>
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
     <link rel="stylesheet" href="https://chriskempson.github.io/base16/css/base16-default.css" />
     <link rel="stylesheet" href="style.css" />
+    <script src="https://use.fontawesome.com/5447dbe53e.js"></script>
 
   </head>
   <body>
+
+    <a href="https://github.com/gammons/todolist"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a></a>
 
     <div class="jumbotron jumbotron-fluid">
       <div class="container">
@@ -24,37 +28,49 @@
     <div class="container">
       <div class="row">
 
-        <div class="col-md-4">
-          <p>Menu</p>
+        <div class="col-md-3">
+          <h4>Main menu</h4>
           <ul>
-            <li>Download</li>
-            <li>Something else</li>
+            <li><a href="#what">What is this?</a></li>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#quickstart">Quick start</a></li>
+            <li><a href="#workflow">Todo workflow</a></li>
+          </ul>
+          <h4>Reference</h4>
+          <ul>
+            <li><a href="#adding">Adding todos </a></li>
+            <li><a href="#completing">Completing / Uncompleting todos </a></li>
+            <li><a href="#archiving">Archiving / Unarchiving todos</a></li>
+            <li><a href="#editing">Editing todos</a></li>
+            <li><a href="#editing">Listing, filtering and grouping todos</a></li>
           </ul>
         </div>
 
-        <div class="col-md-8">
+        <div class="col-md-9">
 					<div class="card card-block">
 						<h3 class="card-title">Download todolist</h3>
             <p class="card-text">Major changes: None!  This is the initial release!</p>
 						<p class="card-text">
             The latest version of Todolist (including building the source on your own) is on the Github project page.</p>
-						<a href="#" class="btn btn-primary">Download v0.1.0</a>
+						<a href="https://github.com/gammons/todolist/releases" class="btn btn-primary">Download v0.1.0</a>
 					</div>
 
-          <h2>What is this?</h2>
+          <a class="bk" name="what"><h2>What is this?</h2></a>
           <p>Todolist allows you to manage your tasks in the terminal.  It is simple, very fast, and stays out of the way.  Todolist is based upon the <a href="https://en.wikipedia.org/wiki/Getting_Things_Done">Getting Things Done</a> method, and has the concept of due dates, projects and contexts.</p>
           <p>Todo lists are specific to the directory you are in.</p>
 
-          <h2>Installation</h2>
-          <p>Simply copy the <code>todo</code> binary to a location in your <code>$PATH</code>.</p>
+          <a class="bk" name="installation"><h2>Installation</h2></a>
+          <p>Simply download + copy the <code>todolist</code> binary to a location in your <code>$PATH</code>.</p>
+          <p>If you have Golang installed, you can also just run <code>go install github.com/gammons/todolist</code>.</p>
 
-          <a href="#quickstart"><h2>Quick start</h2></a>
+
+          <a class="bk" name="quickstart"><h2>Quick start</h2></a>
 
           <strong>1: Initialize your todos repo</strong>
-          <p>First, run <code>todo init</code> to intialize the .todos.json repo in the directory you are in.</p>
+          <p>First, run <code>todolist init</code> to intialize the .todos.json repo in the directory you are in.</p>
 
           <pre class='todo base00-background base06'>
-<span class="base08">~</span> todo init
+<span class="base08">~</span> todolist init
 Todo repo initialized.
           </pre>
 
@@ -63,9 +79,9 @@ Todo repo initialized.
           <p>You can add a todo by using the <code>add</code> or <code>a</code> directive:</p>
 
           <pre class='todo base01-background base06'>
-<span class="base08">~</span> todo add Chat with @bob about +currentProject due today
+<span class="base08">~</span> todolist add Chat with @bob about +currentProject due today
 Todo added.
-<span class="base08">~</span> todo a +devops update my master password due fri
+<span class="base08">~</span> todolist a +devops update my master password due fri
 Todo added.
           </pre>
 
@@ -74,7 +90,7 @@ Todo added.
           <p>This is the heart of the system.  You can filter and group your todos.  If the built-in filtering is not powerful enough for your tastes, you can always pipe the output to <code>grep</code>!
 
           <pre class='todo base01-background base06'>
-<span class="base08">~</span> todo list
+<span class="base08">~</span> todolist list
 <span class='group'>all</span>
 <table>
 <tr>
@@ -93,10 +109,10 @@ Todo added.
 
           </pre>
 
-          <p><code>todo list</code> takes many arguments. You can filter by a due date:</p>
+          <p><code>todolist list</code> takes many arguments. You can filter by a due date:</p>
 
           <pre class='todo base01-background base06'>
-<span class="base08">~</span> todo list due tom
+<span class="base08">~</span> todolist list due tom
 <span class='group'>all</span>
 <table>
 <tr>
@@ -112,7 +128,7 @@ Todo added.
           <p>You can also group by project or context.</p>
 
           <pre class='todo base01-background base06'>
-<span class="base08">~</span> todo list by project
+<span class="base08">~</span> todolist list by project
 
 <span class='group'>bigProject</span>
 <table>
@@ -137,19 +153,19 @@ Todo added.
 
           <strong>4: Complete a todo </strong>
 
-          <p>Completing a todo is done by using <code>todo complete <id></code> or <code>todo c <id></code>.</p>
+          <p>Completing a todo is done by using <code>todolist complete <id></code> or <code>todolist c <id></code>.</p>
 
           <pre class='todo base01-background base06'>
-<span class="base08">~</span> todo complete 1
+<span class="base08">~</span> todolist complete 1
 Todo completed.
-<span class="base08">~</span> todo c 2
+<span class="base08">~</span> todolist c 2
 Todo completed.
           </pre>
 
           <p>Now, if you list your todos, you'll see that all have been completed:</p>
 
           <pre class='todo base01-background base06'>
-<span class="base08">~</span> todo list
+<span class="base08">~</span> todolist list
 <span class='group'>all</span>
 <table>
 <tr>
@@ -170,29 +186,29 @@ Todo completed.
           <strong>5: Archive completed todos</strong>
 
           <p>Finally, after all the work has been done, you can archive the todos so they are cleared off the list.</p>
-          <p>You can archive each one individually by running <code>todo ar [id]</code>, but since we have many completed todos today, we can run <code>todo ac</code> instead, which will archive all completed todos.</p>
+          <p>You can archive each one individually by running <code>todolist ar [id]</code>, but since we have many completed todos today, we can run <code>todolist ac</code> instead, which will archive all completed todos.</p>
 
           <pre class='todo base01-background base06'>
-<span class="base08">~</span> todo ac
+<span class="base08">~</span> todolist ac
 All completed todos archived.
           </pre>
 
           <p>And that's it!  You now know 90% of what you need to in order to use Todolist. </p>
 
-          <h2>Workflow</h2>
-          Todos can be in one of 3 states:
+          <a class="bk" name="workflow"><h2>Todo Workflow</h2></a>
+          <p>Todos can be in one of 3 states:</p>
 
           <ul>
             <li><b>Incomplete</b> - Incomplete todos will show up on all filtering</li>
             <li><b>Complete</b> - Completed todos will still show up on all filtering.</li>
-            <li><b>Archived</b> - Archived todos will only show up when running <code>todo list archived</code>.</li>
+            <li><b>Archived</b> - Archived todos will only show up when running <code>todolist list archived</code>.</li>
           </ul>
           <p>Typically you'll create the todo, complete it, then archive it at the end of the day.</p>
 
-          <h2>Adding todos</h2>
-          <p>Add a todo by running <code>todo add</code> or <code>todo a</code>, and then filling out the details of the todo.</p>
+          <a class="bk" name="adding"><h2>Adding todos</h2></a>
+          <p>Add a todolist by running <code>todolist add</code> or <code>todolist a</code>, and then filling out the details of the todo.</p>
           <ul>
-            <li><code>+projects</code> and <code>@contexts</code> can be inserted into the todo body. Currently they can only be one word long.</li>
+            <li><code>+projects</code> and <code>@contexts</code> can be inserted into the todolist body. Currently they can only be one word long.</li>
             <li>Todolist is expecting the due date at the <i>end</i>.</li>
           </ul>
           <strong>Due date format</strong>
@@ -204,61 +220,90 @@ All completed todos archived.
           <p>Examples:</p>
 
           <pre class='todo base01-background base06'>
-<span class="base08">~</span> todo a update the staging db with @frank due tom
+<span class="base08">~</span> todolist a update the staging db with @frank due tom
 Todo added.
-<span class="base08">~</span> todo a @pomodoro I need to think about our job tier structure due wed
+<span class="base08">~</span> todolist a @pomodoro I need to think about our job tier structure due wed
 Todo added.
-<span class="base08">~</span> todo a meet with @jake and @adrian about the +importImprovement project due jun 23
+<span class="base08">~</span> todolist a meet with @jake and @adrian about the +importImprovement project due jun 23
 Todo added.
+<span class="base08">~</span> todolist l
+
+<table>
+<tr>
+<td class='num'>1</td>
+<td>[ ]</td>
+<td class='date'>tomorrow</td>
+<td>update the staging db with <span class="cont">@frank</span></td>
+</tr>
+<tr>
+<td class='num'>2</td>
+<td>[ ]</td>
+<td class='date'>tomorrow</td>
+<td><span class="cont">@pomodoro</span> I need to think about our job tier structure</td>
+</tr>
+<tr>
+<td class='num'>3</td>
+<td>[ ]</td>
+<td class='date'>Thu Jun 23</td>
+<td>meet with <span class="cont">@jake</span> and <span class="cont">@adrian</span> about the <span class="proj">+importImprovement</span> project</td>
+</tr>
+</table>
           </pre>
 
-          <h2>Completing and un-completing todos</h2>
+          <a class="bk" name="completing"><h2>Completing and un-completing todos</h2></a>
 
-          <p><code>todo complete [id]</code> or <code>todo c <id></code> - complete a todo by its id.</p>
-          <p><code>todo uncomplete [id]</code> or <code>todo uc <id></code> - un-complete a todo by its id.</p>
+          <p><code>todolist complete [id]</code> or <code>todolist c [id]</code> - complete a todo by its id.</p>
+          <p><code>todolist uncomplete [id]</code> or <code>todolist uc [id]</code> - un-complete a todo by its id.</p>
 
-          <h2>Archiving and unarchiving todos</h2>
+          <a class="bk" name="archiving"><h2>Archiving and unarchiving todos</h2></a>
 
-          <p><code>todo archive [id]</code> or <code>todo ar [id]</code> - archive a todo by its id.</p>
-          <p><code>todo unarchive [id]</code> - unarchive a todo by its id.</p>
+          <p><code>todolist archive [id]</code> or <code>todolist ar [id]</code> - archive a todo by its id.</p>
+          <p><code>todolist unarchive [id]</code> - unarchive a todo by its id.</p>
 
-          <h2>Listing todos</h2>
-          <p><code>todo list</code> or <code>todo l</code> - list all unarchived todos</p>
-          <p><code>todo l archived</code> - list all archived todos</p>
+          <a class="bk" name="listing"><h2>Listing, filtering, and grouping todos</h2></a>
+          <p><code>todolist list</code> or <code>todolist l</code> - list all unarchived todos</p>
+          <p><code>todolist l archived</code> - list all archived todos</p>
 
           <p><b>Note:</b> By default, Todolist will always filter archived todos.  You can only see archived todos by running <code>todo list archived.</code></p>
 
           <b>Filtering by due date</b>
-          <p><code>todo l agenda</code> - List todos due today or are overdue</p>
-          <p><code>todo l overdue</code> - List all todos that are overdue</p>
-          <p><code>todo l due today</code> or <code>todo l due tod</code>- List all todos due today</p>
-          <p><code>todo l due tomorrow</code> or <code>todo l due tomorrow</code>- List all todos due tomorrow</p>
+          <p><code>todolist l agenda</code> - List todos due today or are overdue</p>
+          <p><code>todolist l overdue</code> - List all todos that are overdue</p>
+          <p><code>todolist l due today</code> or <code>todo l due tod</code>- List all todos due today</p>
+          <p><code>todolist l due tomorrow</code> or <code>todo l due tomorrow</code>- List all todos due tomorrow</p>
 
           <b>Filtering by a day of the week</b>
-          <p><code>todo l due mon</code> - List all todos due
-          <p><code>todo l due this week</code> - List all todos due this week.</p>
+          <p><code>todolist l due mon</code> - List all todos due
+          <p><code>todolist l due this week</code> - List all todos due this week.</p>
 
           <b>Showing all todos</b>
-          <p><code>todo l due tomorrow</code> or <code>todo l due tomorrow</code>- List all todos due tomorrow</p>
+          <p><code>todolist l due tomorrow</code> or <code>todolist l due tomorrow</code>- List all todos due tomorrow</p>
 
           <p>Todos can be grouped by project or context.</p>
           <b>Grouping</b>
           <p>Todos can be grouped by project or context.</p>
 
-          <h2>Editing todos</h2>
+          <a class="bk" name="editing"><h2>Editing todos</h2></a>
           <p>Todolist currently supports editing a due date only.  If you need to fully edit a todo, it is recommended to delete and re-add the todo.</p>
-          <p><code>todo e [id] due [due]</code> - edit a todo's due date. </p>
+          <p><code>todolist e [id] due [due]</code> - edit a todo's due date. </p>
           <p>Examples:</p>
           <ul>
-            <li><code>todo e 133 due tod</code> - edit todo with id 133 and set its due date to today.</li>
-            <li><code>todo e 56 due jun 20</code> - edit todo with id 56 and set its due date to June 20..</li>
+            <li><code>todolist e 133 due tod</code> - edit todo with id 133 and set its due date to today.</li>
+            <li><code>todolist e 56 due jun 20</code> - edit todo with id 56 and set its due date to June 20..</li>
           </ul>
 
-          <h2>Deleting todos</h2>
+          <a class="bk" name="deleting"><h2>Deleting todos</h2></a>
+          <p><code>todolist delete [id]</code> or <code>todolist d [id]</code> will do the job.</p>
 
-          <h2>Rationale and Limitations</h2>
-          <p>Todolist will have a hard time adding a todo that has a keyword in it.</p>
+          <a class="bk" name="rationale"><h2>Rationale</h2></a>
+          <p>I appreciate simple tools that adhere to the <a href="https://en.wikipedia.org/wiki/Unix_philosophy">Unix philosophy.</a>  Being an avid <a href="https://www.wunderlist.com">Wunderlist</a> user, I was hoping to rewrite the 30% of Wunderlist that I actually use as a simple command-line tool.</p>
 
+          <a class="bk" name="limitations"><h2>Limitations</h2></a>
+          <p>Todolist will have a hard time adding a todo that has a keyword in it.  For instance:
+          <p><code>todolist a when is the +bigProject due?</code></p><p>will strip the word <code>due</code> off the end.</p>
+
+          <a class="bk" name="author"><h2>Author</h2></a>
+          <p>Todolist was created with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="http://grantammons.me">Grant Ammons</a>.</p>
         </div>
       </div>
     </div>

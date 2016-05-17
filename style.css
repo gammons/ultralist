@@ -7,12 +7,17 @@ pre.todo {
   white-space: pre;
 }
 
-span.group {
-  margin-left: 40px;
+table td {
+  padding-right: 40px;
 }
 
-table td {
-  padding-left: 40px;
+a.bk {
+  color: #373a3c;
+}
+
+a.bk:hover {
+  text-decoration: none;
+  color: #373a3c;
 }
 
 .group {
@@ -33,6 +38,12 @@ table td {
 
 .cont {
   color: #ac4142;
+}
+
+.jumbotron {
+  background-image: url(bg.jpg);
+  background-size: 100%;
+  background-repeat: no-repeat;
 }
 
 
