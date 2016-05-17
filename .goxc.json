@@ -1,0 +1,13 @@
+{
+	"Tasks": [
+		"default",
+		"publish-github"
+	],
+	"TaskSettings": {
+		"publish-github": {
+			"owner": "gammons",
+			"repository": "todolist"
+		}
+	},
+	"ConfigVersion": "0.9"
+}
