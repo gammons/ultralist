@@ -81,14 +81,18 @@ func TestFilterDay(t *testing.T) {
 	assert := assert.New(t)
 
 	var todos []*Todo
-	mondayTodo := &Todo{Id: 1, Subject: "one", Due: now.Sunday().AddDate(0, 0, 1).Format("2006-01-02")}
-	tuesdayTodo := &Todo{Id: 2, Subject: "two", Due: now.Sunday().AddDate(0, 0, 2).Format("2006-01-02")}
+	df := &DateFilter{}
+	sunday := df.FindSunday(time.Now())
+
+	mondayTodo := &Todo{Id: 1, Subject: "one", Due: sunday.AddDate(0, 0, 1).Format("2006-01-02")}
+	tuesdayTodo := &Todo{Id: 2, Subject: "two", Due: sunday.AddDate(0, 0, 2).Format("2006-01-02")}
 
 	todos = append(todos, mondayTodo)
 	todos = append(todos, tuesdayTodo)
 
 	filter := NewDateFilter(todos)
-	filtered := filter.filterDay(now.BeginningOfDay(), time.Monday)
+
+	filtered := filter.filterDay(sunday, time.Monday)
 
 	assert.Equal(1, len(filtered))
 	assert.Equal(1, filtered[0].Id)

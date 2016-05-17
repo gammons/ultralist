@@ -102,7 +102,7 @@ func (f *DateFilter) filterTomorrow(pivot time.Time) []*Todo {
 func (f *DateFilter) filterThisWeek(pivot time.Time) []*Todo {
 	var ret []*Todo
 
-	begin := now.New(f.findSunday(pivot)).BeginningOfDay()
+	begin := now.New(f.FindSunday(pivot)).BeginningOfDay()
 	end := begin.AddDate(0, 0, 7)
 
 	for _, todo := range f.Todos {
@@ -117,7 +117,7 @@ func (f *DateFilter) filterThisWeek(pivot time.Time) []*Todo {
 func (f *DateFilter) filterNextWeek(pivot time.Time) []*Todo {
 	var ret []*Todo
 
-	begin := f.findSunday(pivot).AddDate(0, 0, 7)
+	begin := f.FindSunday(pivot).AddDate(0, 0, 7)
 	end := begin.AddDate(0, 0, 7)
 
 	for _, todo := range f.Todos {
@@ -143,7 +143,7 @@ func (f *DateFilter) filterOverdue(pivot time.Time) []*Todo {
 	return ret
 }
 
-func (f *DateFilter) findSunday(pivot time.Time) time.Time {
+func (f *DateFilter) FindSunday(pivot time.Time) time.Time {
 	switch now.New(pivot).Weekday() {
 	case time.Sunday:
 		return pivot
