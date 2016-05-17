@@ -11,7 +11,7 @@ Todolist is a simple and very fast task manager for the command line.  It is bas
 
 See [The main Todolist website][tdl] for the current documentation.
 
-[tdl]: https://grantammons.me/todolist
+[tdl]: http://grantammons.me/todolist
 
 ## Is it good?
 
