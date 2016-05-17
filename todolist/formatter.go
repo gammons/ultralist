@@ -35,7 +35,7 @@ func (f *Formatter) Print() {
 	sort.Strings(keys)
 
 	for _, key := range keys {
-		fmt.Fprintf(f.Writer, "\n   \t%s\n", cyan(key))
+		fmt.Fprintf(f.Writer, "\n %s\n", cyan(key))
 		for _, todo := range f.GroupedTodos.Groups[key] {
 			f.printTodo(todo)
 		}
@@ -45,7 +45,7 @@ func (f *Formatter) Print() {
 
 func (f *Formatter) printTodo(todo *Todo) {
 	yellow := color.New(color.FgYellow).SprintFunc()
-	fmt.Fprintf(f.Writer, "     \t%s\t%s\t%s\t%s\t\n",
+	fmt.Fprintf(f.Writer, " %s\t%s\t%s\t%s\t\n",
 		yellow(strconv.Itoa(todo.Id)),
 		f.formatCompleted(todo.Completed),
 		f.formatDue(todo.Due),
