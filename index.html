@@ -35,14 +35,16 @@
             <li><a href="#installation">Installation</a></li>
             <li><a href="#quickstart">Quick start</a></li>
             <li><a href="#workflow">Todo workflow</a></li>
+            <li><a href="#rationale">Rationale</a></li>
           </ul>
           <h4>Reference</h4>
           <ul>
             <li><a href="#adding">Adding todos </a></li>
             <li><a href="#completing">Completing / Uncompleting todos </a></li>
             <li><a href="#archiving">Archiving / Unarchiving todos</a></li>
+            <li><a href="#listing">Listing, filtering and grouping todos</a></li>
             <li><a href="#editing">Editing todos</a></li>
-            <li><a href="#editing">Listing, filtering and grouping todos</a></li>
+            <li><a href="#fileformat">.todos.json file format</a></li>
           </ul>
         </div>
 
@@ -295,8 +297,29 @@ Todo added.
           <a class="bk" name="deleting"><h2>Deleting todos</h2></a>
           <p><code>todolist delete [id]</code> or <code>todolist d [id]</code> will do the job.</p>
 
+          <a class="bk" name="fileformat"><h2>.todos.json file format</h2></a>
+          <p>.todos.json stores todos in a very simple format, and is simple enough to be self-explanitory. See below for an example todo stored in .todos.json.
+          <pre class='todo base01-background base06'>
+  [{
+    "id": 110,
+    "subject": "+toVerify did @scott put zuora alerting in place?",
+    "projects": [
+      "toVerify"
+    ],
+    "contexts": [
+      "scott"
+    ],
+    "due": "2016-05-23",
+    "completed": false,
+    "archived": false
+  }]
+          </pre>
+
+
           <a class="bk" name="rationale"><h2>Rationale</h2></a>
           <p>I appreciate simple tools that adhere to the <a href="https://en.wikipedia.org/wiki/Unix_philosophy">Unix philosophy.</a>  Being an avid <a href="https://www.wunderlist.com">Wunderlist</a> user, I was hoping to rewrite the 30% of Wunderlist that I actually use as a simple command-line tool.</p>
+          <b>How does this differ from todo.txt?</b>
+          <p>While todo.txt is an excellent project with a great ecosystem, it just didn't serve my needs.  I really needed dates on my todos, and by default, todo.txt does not provide this.  I believe that Todolist is much closer conceptually to how the "big" todo companies do it, e.g. Wunderlist, Todoist, etc.</p>
 
           <a class="bk" name="limitations"><h2>Limitations</h2></a>
           <p>Todolist will have a hard time adding a todo that has a keyword in it.  For instance:
