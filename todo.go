@@ -126,5 +126,9 @@ func routeInput(command string, input string) {
 		app.EditTodoDue(input)
 	case "init":
 		app.InitializeRepo()
+	case "web":
+		web := todolist.NewWebapp()
+		fmt.Println("Now serving todolist web.\nHead to http://localhost:7890 to see your todo list!")
+		web.Run()
 	}
 }
