@@ -22,21 +22,21 @@ func (a *App) InitializeRepo() {
 }
 
 func (a *App) AddTodo(input string) {
-	a.load()
+	a.Load()
 	parser := &Parser{}
 	todo := parser.ParseNewTodo(input)
 
 	a.TodoList.Add(todo)
-	a.save()
+	a.Save()
 	fmt.Println("Todo added.")
 }
 
 func (a *App) DeleteTodo(input string) {
-	a.load()
+	a.Load()
 	id := a.getId(input)
 	if id != -1 {
 		a.TodoList.Delete(id)
-		a.save()
+		a.Save()
 		fmt.Println("Todo deleted.")
 	} else {
 		fmt.Println("Could not find id.")
@@ -44,11 +44,11 @@ func (a *App) DeleteTodo(input string) {
 }
 
 func (a *App) CompleteTodo(input string) {
-	a.load()
+	a.Load()
 	id := a.getId(input)
 	if id != -1 {
 		a.TodoList.Complete(id)
-		a.save()
+		a.Save()
 		fmt.Println("Todo completed.")
 	} else {
 		fmt.Println("Could not find id.")
@@ -56,11 +56,11 @@ func (a *App) CompleteTodo(input string) {
 }
 
 func (a *App) UncompleteTodo(input string) {
-	a.load()
+	a.Load()
 	id := a.getId(input)
 	if id != -1 {
 		a.TodoList.Uncomplete(id)
-		a.save()
+		a.Save()
 		fmt.Println("Todo uncompleted.")
 	} else {
 		fmt.Println("Could not find id.")
@@ -68,11 +68,11 @@ func (a *App) UncompleteTodo(input string) {
 }
 
 func (a *App) ArchiveTodo(input string) {
-	a.load()
+	a.Load()
 	id := a.getId(input)
 	if id != -1 {
 		a.TodoList.Archive(id)
-		a.save()
+		a.Save()
 		fmt.Println("Todo archived.")
 	} else {
 		fmt.Println("Could not find id.")
@@ -80,11 +80,11 @@ func (a *App) ArchiveTodo(input string) {
 }
 
 func (a *App) UnarchiveTodo(input string) {
-	a.load()
+	a.Load()
 	id := a.getId(input)
 	if id != -1 {
 		a.TodoList.Unarchive(id)
-		a.save()
+		a.Save()
 		fmt.Println("Todo unarchived.")
 	} else {
 		fmt.Println("Could not find id.")
@@ -92,13 +92,13 @@ func (a *App) UnarchiveTodo(input string) {
 }
 
 func (a *App) EditTodoDue(input string) {
-	a.load()
+	a.Load()
 	id := a.getId(input)
 	if id != -1 {
 		todo := a.TodoList.FindById(id)
 		parser := &Parser{}
 		todo.Due = parser.Due(input, time.Now())
-		a.save()
+		a.Save()
 		fmt.Println("Todo due date updated.")
 	} else {
 		fmt.Println("Could not find id.")
@@ -106,18 +106,18 @@ func (a *App) EditTodoDue(input string) {
 }
 
 func (a *App) ArchiveCompleted() {
-	a.load()
+	a.Load()
 	for _, todo := range a.TodoList.Todos() {
 		if todo.Completed {
 			todo.Archived = true
 		}
 	}
-	a.save()
+	a.Save()
 	fmt.Println("All archived todos completed.")
 }
 
 func (a *App) ListTodos(input string) {
-	a.load()
+	a.Load()
 	filtered := NewFilter(a.TodoList.Todos()).Filter(input)
 	grouped := a.getGroups(input, filtered)
 
@@ -153,9 +153,10 @@ func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 	return grouped
 }
 
-func (a *App) save() {
-	a.TodoStore.Save(a.TodoList.Data)
-}
-func (a *App) load() {
+func (a *App) Load() {
 	a.TodoList.Load(a.TodoStore.Load())
+}
+
+func (a *App) Save() {
+	a.TodoStore.Save(a.TodoList.Data)
 }
