@@ -44,15 +44,10 @@ func Scaffold(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		font-family: 'Roboto', sans-serif;
 		margin: 0px;
 	      }
-	      .red {
-		color: #D50000 !important;
-	      }
-	      .blue {
-		color: #2196F3 !important;
-	      }
 	    </style>
 		<meta charset="utf-8">
 		<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,500" rel="stylesheet">
+		<link rel="stylesheet" href="` + urlFor("main.css") + `">
 		<meta name="viewport" content="width=device-width,initial-scale=1">
 		<meta name="mobile-web-app-capable" content="yes">
 		<title>Todolist</title>
@@ -69,7 +64,7 @@ func Scaffold(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 }
 
 func urlFor(file string) string {
-	return "http://d26ykxqbemi1kc.cloudfront.net/" + VERSION + "/" + file
+	return "https://s3.amazonaws.com/todolist-local/" + VERSION + "/" + file
 }
 
 func GetTodos(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
