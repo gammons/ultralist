@@ -44,6 +44,8 @@
             <li><a href="#archiving">Archiving / Unarchiving todos</a></li>
             <li><a href="#listing">Listing, filtering and grouping todos</a></li>
             <li><a href="#editing">Editing todos</a></li>
+            <li><a href="#deleting">Deleting todos</a></li>
+            <li><a href="#webview">Running the web view</a></li>
             <li><a href="#fileformat">.todos.json file format</a></li>
           </ul>
         </div>
@@ -51,10 +53,10 @@
         <div class="col-md-9">
 					<div class="card card-block">
 						<h3 class="card-title">Download todolist</h3>
-            <p class="card-text">Major changes: None!  This is the initial release!</p>
+            <p class="card-text">Major changes: Added a sweet, sweet web view (<a href="demo.html" target="_blank">demo here</a>) by running <code>todolist web.</code></p>
 						<p class="card-text">
             The latest version of Todolist (including building the source on your own) is on the Github project page.</p>
-						<a href="https://github.com/gammons/todolist/releases" class="btn btn-primary">Download v0.1.0</a>
+						<a href="https://github.com/gammons/todolist/releases" class="btn btn-primary">Download v0.2.0</a>
 					</div>
 
           <a class="bk" name="what"><h2>What is this?</h2></a>
@@ -295,6 +297,11 @@ Todo added.
 
           <a class="bk" name="deleting"><h2>Deleting todos</h2></a>
           <p><code>todolist delete [id]</code> or <code>todolist d [id]</code> will do the job.</p>
+
+          <a class="bk" name="webview"><h2>The web view</h2></a>
+          <p><code>todolist web</code></p>
+          <p>This runs a simple web servier on http://localhost:7890 with a nice web view to manage your todos.</p>
+          <p>A simple demo <a href="demo.html">is available here</a>.</p>
 
           <a class="bk" name="fileformat"><h2>.todos.json file format</h2></a>
           <p>.todos.json stores todos in a very simple format, and is simple enough to be self-explanitory. See below for an example todo stored in .todos.json.
