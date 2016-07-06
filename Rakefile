@@ -20,8 +20,8 @@ task :build do
     ENV["GOARCH"] = env[:arch]
     puts "Building #{env[:goos]} #{env[:arch]}"
     `GOOS=#{env[:goos]} GOARCH=#{env[:arch]} go build -v -o dist/#{Version}/todolist`
-    puts "Zipping #{env[:goos]} #{env[:arch]}"
-    `zip dist/#{Version}/todolist_#{env[:goos]}_#{env[:arch]}.zip dist/#{Version}/todolist`
+    puts "Tarring #{env[:goos]} #{env[:arch]}"
+    `tar -czvf dist/#{Version}/todolist_#{env[:goos]}_#{env[:arch]}.tar.gz dist/#{Version}/todolist`
     puts "Removing dist/#{Version}/todolist"
     `rm -rf dist/#{Version}/todolist`
   end
