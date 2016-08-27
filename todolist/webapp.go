@@ -10,7 +10,8 @@ import (
 )
 
 const (
-	VERSION = "0.2.0"
+	VERSION = "0.3.0"
+	S3URL   = "https://s3.amazonaws.com/todolist-local/" + VERSION
 )
 
 type Webapp struct {
@@ -27,44 +28,62 @@ func (w *Webapp) Run() {
 
 func setupRoutes() *httprouter.Router {
 	router := httprouter.New()
-	router.GET("/", Scaffold)
+	router.GET("/", IndexScaffold)
 	router.OPTIONS("/todos", TodoOptions)
 	router.GET("/todos", GetTodos)
 	router.POST("/todos", SaveTodos)
+	router.NotFound = http.HandlerFunc(RedirectScaffold)
 	return router
 }
 
-func Scaffold(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func IndexScaffold(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	template := `
-	<!DOCTYPE html>
-	<html lang="en">
-	<head>
-	    <style>
-	      body {
-		font-family: 'Roboto', sans-serif;
-		margin: 0px;
-	      }
-	    </style>
-		<meta charset="utf-8">
-		<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,500" rel="stylesheet">
-		<link rel="stylesheet" href="` + urlFor("main.css") + `">
-		<meta name="viewport" content="width=device-width,initial-scale=1">
-		<meta name="mobile-web-app-capable" content="yes">
-		<title>Todolist</title>
-		<style>body{font-family:Roboto,sans-serif;margin:0}</style>
-	</head>
-	<body>
-	<div id="app"></div>
-	<script type="text/javascript" src="` + urlFor("common.js") + `"></script>
-	<script type="text/javascript" src="` + urlFor("main.js") + `"></script>
-	</body>
-	</html>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css">
+    <title>Todolist</title>
+    <link href="` + urlFor("main.css") + `" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="text/javascript" src="` + urlFor("common.js") + `"></script>
+    <script type="text/javascript" src="` + urlFor("main.js") + `"></script>
+  </body>
+</html>
+	`
+	fmt.Fprintf(w, template)
+}
+
+func RedirectScaffold(w http.ResponseWriter, r *http.Request) {
+	template := `
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css">
+    <title>Todolist</title>
+    <link href="` + urlFor("main.css") + `" rel="stylesheet">
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="text/javascript" src="` + urlFor("common.js") + `"></script>
+    <script type="text/javascript" src="` + urlFor("main.js") + `"></script>
+  </body>
+</html>
 	`
 	fmt.Fprintf(w, template)
 }
 
 func urlFor(file string) string {
-	return "https://s3.amazonaws.com/todolist-local/" + VERSION + "/" + file
+	return S3URL + "/" + file
+}
+
+func RedirectToIndex(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, S3URL+r.URL.Path, 301)
 }
 
 func GetTodos(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
