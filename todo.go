@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/skratchdot/open-golang/open"
 	"github.com/gammons/todolist/todolist"
 )
 
@@ -129,6 +130,7 @@ func routeInput(command string, input string) {
 	case "web":
 		web := todolist.NewWebapp()
 		fmt.Println("Now serving todolist web.\nHead to http://localhost:7890 to see your todo list!")
+		open.Start("http://localhost:7890")
 		web.Run()
 	}
 }
