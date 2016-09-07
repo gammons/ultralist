@@ -6,12 +6,12 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/skratchdot/open-golang/open"
 	"github.com/gammons/todolist/todolist"
+	"github.com/skratchdot/open-golang/open"
 )
 
 const (
-	VERSION = "0.3.0"
+	VERSION = "0.3.1"
 )
 
 func main() {
