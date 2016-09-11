@@ -128,9 +128,21 @@ func routeInput(command string, input string) {
 	case "init":
 		app.InitializeRepo()
 	case "web":
-		web := todolist.NewWebapp()
-		fmt.Println("Now serving todolist web.\nHead to http://localhost:7890 to see your todo list!")
-		open.Start("http://localhost:7890")
-		web.Run()
+		// Only open default browser if .todos.json exists
+		pwd, err := os.Getwd()
+    if err != nil {
+      fmt.Println(err)
+      os.Exit(1)
+    }
+		if _, err := os.Stat(pwd + "/.todos.json"); err == nil {
+			web := todolist.NewWebapp()
+			fmt.Println("Now serving todolist web.\nHead to http://localhost:7890 to see your todo list!")
+			open.Start("http://localhost:7890")
+			web.Run()
+		} else {
+			fmt.Println("No todo file found!")
+			fmt.Println("Initialize a new todo repo by running 'todo init'")
+			os.Exit(1)
+		}
 	}
 }
