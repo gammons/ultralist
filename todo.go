@@ -134,6 +134,7 @@ func routeInput(command string, input string) {
       fmt.Println(err)
       os.Exit(1)
     }
+		
 		if _, err := os.Stat(pwd + "/.todos.json"); err == nil {
 			web := todolist.NewWebapp()
 			fmt.Println("Now serving todolist web.\nHead to http://localhost:7890 to see your todo list!")
