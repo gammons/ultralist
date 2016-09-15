@@ -61,7 +61,7 @@ func (p *Parser) Due(input string, day time.Time) string {
 	switch res {
 	case "none":
 		return ""
-	case "today":
+	case "today", "tod":
 		return now.BeginningOfDay().Format("2006-01-02")
 	case "tomorrow", "tom":
 		return now.BeginningOfDay().AddDate(0, 0, 1).Format("2006-01-02")

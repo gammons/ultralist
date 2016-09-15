@@ -59,11 +59,19 @@ func TestDueToday(t *testing.T) {
 	if todo.Due != now.BeginningOfDay().Format("2006-01-02") {
 		fmt.Println("Date is different", todo.Due, time.Now())
 	}
+	todo = parser.ParseNewTodo("do this thing with @bob and @mary due tod")
+	if todo.Due != now.BeginningOfDay().Format("2006-01-02") {
+		fmt.Println("Date is different", todo.Due, time.Now())
+	}
 }
 
 func TestDueTomorrow(t *testing.T) {
 	parser := &Parser{}
 	todo := parser.ParseNewTodo("do this thing with @bob and @mary due tomorrow")
+	if todo.Due != now.BeginningOfDay().AddDate(0, 0, 1).Format("2006-01-02") {
+		fmt.Println("Date is different", todo.Due, time.Now())
+	}
+	todo = parser.ParseNewTodo("do this thing with @bob and @mary due tom")
 	if todo.Due != now.BeginningOfDay().AddDate(0, 0, 1).Format("2006-01-02") {
 		fmt.Println("Date is different", todo.Due, time.Now())
 	}
