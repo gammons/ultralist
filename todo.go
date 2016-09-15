@@ -128,9 +128,13 @@ func routeInput(command string, input string) {
 	case "init":
 		app.InitializeRepo()
 	case "web":
-		web := todolist.NewWebapp()
-		fmt.Println("Now serving todolist web.\nHead to http://localhost:7890 to see your todo list!")
-		open.Start("http://localhost:7890")
-		web.Run()
+		if err := app.Load(); err != nil {
+			os.Exit(1)
+		} else {
+			web := todolist.NewWebapp()
+			fmt.Println("Now serving todolist web.\nHead to http://localhost:7890 to see your todo list!")
+			open.Start("http://localhost:7890")
+			web.Run()
+		}
 	}
 }

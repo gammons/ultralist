@@ -153,8 +153,13 @@ func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 	return grouped
 }
 
-func (a *App) Load() {
-	a.TodoList.Load(a.TodoStore.Load())
+func (a *App) Load() error {
+	todos, err := a.TodoStore.Load()
+	if err != nil {
+		return err
+	}
+	a.TodoList.Load(todos)
+	return nil
 }
 
 func (a *App) Save() {
