@@ -1,2 +1,5 @@
 .goxc.local.json
 dist
+
+# OSX metadata
+.DS_Store

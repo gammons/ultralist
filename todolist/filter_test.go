@@ -10,7 +10,8 @@ func TestFilterArchived(t *testing.T) {
 	assert := assert.New(t)
 	store := &FileStore{FileLocation: "todos.json"}
 	list := &TodoList{}
-	list.Load(store.Load())
+	todos, _ := store.Load()
+	list.Load(todos)
 	filter := NewFilter(list.Todos())
 	archived := filter.filterArchived("l archived")
 	assert.Equal(1, len(archived))
@@ -21,7 +22,8 @@ func TestFilterUnarchivedByDefault(t *testing.T) {
 	assert := assert.New(t)
 	store := &FileStore{FileLocation: "todos.json"}
 	list := &TodoList{}
-	list.Load(store.Load())
+	todos, _ := store.Load()
+	list.Load(todos)
 	filter := NewFilter(list.Todos())
 	unarchived := filter.filterArchived("l")
 	assert.Equal(1, len(unarchived))
@@ -32,7 +34,8 @@ func TestGetArchived(t *testing.T) {
 	assert := assert.New(t)
 	store := &FileStore{FileLocation: "todos.json"}
 	list := &TodoList{}
-	list.Load(store.Load())
+	todos, _ := store.Load()
+	list.Load(todos)
 	filter := NewFilter(list.Todos())
 	archived := filter.getArchived()
 	assert.Equal(1, len(archived))
@@ -43,7 +46,8 @@ func TestGetUnarchived(t *testing.T) {
 	assert := assert.New(t)
 	store := &FileStore{FileLocation: "todos.json"}
 	list := &TodoList{}
-	list.Load(store.Load())
+	todos, _ := store.Load()
+	list.Load(todos)
 	filter := NewFilter(list.Todos())
 	unarchived := filter.getUnarchived()
 	assert.Equal(1, len(unarchived))
