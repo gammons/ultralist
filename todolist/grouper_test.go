@@ -11,7 +11,8 @@ func TestGroupByContext(t *testing.T) {
 
 	store := &FileStore{FileLocation: "todos.json"}
 	list := &TodoList{}
-	list.Load(store.Load())
+	todos, _ := store.Load()
+	list.Load(todos)
 
 	grouper := &Grouper{}
 	grouped := grouper.GroupByContext(list.Todos())
@@ -25,7 +26,8 @@ func TestGroupByProject(t *testing.T) {
 
 	store := &FileStore{FileLocation: "todos.json"}
 	list := &TodoList{}
-	list.Load(store.Load())
+	todos, _ := store.Load()
+	list.Load(todos)
 
 	grouper := &Grouper{}
 	grouped := grouper.GroupByProject(list.Todos())

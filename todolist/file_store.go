@@ -16,11 +16,12 @@ func NewFileStore() *FileStore {
 	return &FileStore{FileLocation: ".todos.json", Loaded: false}
 }
 
-func (f *FileStore) Load() []*Todo {
+func (f *FileStore) Load() ([]*Todo, error) {
 	data, err := ioutil.ReadFile(f.FileLocation)
 	if err != nil {
 		fmt.Println("No todo file found!")
 		fmt.Println("Initialize a new todo repo by running 'todo init'")
+		return nil, err
 		os.Exit(0)
 	}
 
@@ -28,11 +29,12 @@ func (f *FileStore) Load() []*Todo {
 	jerr := json.Unmarshal(data, &todos)
 	if jerr != nil {
 		fmt.Println("Error reading json data", jerr)
+		return nil, jerr
 		os.Exit(1)
 	}
 	f.Loaded = true
 
-	return todos
+	return todos, nil
 }
 
 func (f *FileStore) Initialize() {
