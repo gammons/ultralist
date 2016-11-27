@@ -15,13 +15,13 @@ type FileStore struct {
 
 func NewFileStore() *FileStore {
 	usr, err := user.Current()
-	if err = nil {
+	if err != nil {
 		fmt.Println("No user found from os")
 		return nil
 	}
 	return &FileStore{
-		FileLocation: fmt.Sprintf("%s/.todos.json", user.HomeDir),
-		Loaded: false,
+		FileLocation: fmt.Sprintf("%s/.todos.json", usr.HomeDir),
+		Loaded:       false,
 	}
 }
 
