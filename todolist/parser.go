@@ -13,6 +13,12 @@ import (
 type Parser struct{}
 
 func (p *Parser) ParseNewTodo(input string) *Todo {
+	r, _ := regexp.Compile(`^(add|a)(\\ |)`)
+	input = r.ReplaceAllString(input, "")
+	if input == "" {
+		return nil
+	}
+
 	todo := NewTodo()
 	todo.Subject = p.Subject(input)
 	todo.Projects = p.Projects(input)
@@ -24,8 +30,6 @@ func (p *Parser) ParseNewTodo(input string) *Todo {
 }
 
 func (p *Parser) Subject(input string) string {
-	r, _ := regexp.Compile(`^(add|a) `)
-	input = r.ReplaceAllString(input, "")
 	if strings.Contains(input, " due") {
 		index := strings.LastIndex(input, " due")
 		return input[0:index]
