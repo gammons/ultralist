@@ -29,7 +29,7 @@ func (f *Formatter) Print() {
 	cyan := color.New(color.FgCyan).SprintFunc()
 
 	var keys []string
-	for key, _ := range f.GroupedTodos.Groups {
+	for key := range f.GroupedTodos.Groups {
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)
