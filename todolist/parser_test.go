@@ -81,7 +81,7 @@ func TestDueSpecific(t *testing.T) {
 	assert := assert.New(t)
 	parser := &Parser{}
 	todo := parser.ParseNewTodo("do this thing with @bob and @mary due jun 1")
-	assert.Equal("2016-06-01", todo.Due)
+	assert.Equal(now.BeginningOfYear().AddDate(0, 5, 0).Format("2006-01-02"), todo.Due)
 }
 
 func TestMondayOnSunday(t *testing.T) {
@@ -122,14 +122,14 @@ func TestTuesdayOnWednesday(t *testing.T) {
 func TestDueOnSpecificDate(t *testing.T) {
 	assert := assert.New(t)
 	parser := &Parser{}
-	assert.Equal("2016-05-02", parser.Due("due may 2", time.Now()))
-	assert.Equal("2016-06-01", parser.Due("due jun 1", time.Now()))
+	assert.Equal(now.BeginningOfYear().AddDate(0, 4, 1).Format("2006-01-02"), parser.Due("due may 2", time.Now()))
+	assert.Equal(now.BeginningOfYear().AddDate(0, 5, 0).Format("2006-01-02"), parser.Due("due jun 1", time.Now()))
 }
 
 func TestDueOnSpecificDateEuropean(t *testing.T) {
 	assert := assert.New(t)
 	parser := &Parser{}
-	assert.Equal("2016-05-02", parser.Due("due 2 may", time.Now()))
+	assert.Equal(now.BeginningOfYear().AddDate(0, 4, 1).Format("2006-01-02"), parser.Due("due 2 may", time.Now()))
 }
 
 func TestDueIntelligentlyChoosesCorrectYear(t *testing.T) {
