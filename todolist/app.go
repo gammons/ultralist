@@ -37,75 +37,62 @@ func (a *App) AddTodo(input string) {
 
 func (a *App) DeleteTodo(input string) {
 	a.Load()
-	id := a.getId(input)
+	id, _ := a.getId(input)
 	if id != -1 {
 		a.TodoList.Delete(id)
 		a.Save()
 		fmt.Println("Todo deleted.")
-	} else {
-		fmt.Println("Could not find id.")
 	}
 }
 
 func (a *App) CompleteTodo(input string) {
 	a.Load()
-	id := a.getId(input)
+	id, _ := a.getId(input)
 	if id != -1 {
 		a.TodoList.Complete(id)
 		a.Save()
 		fmt.Println("Todo completed.")
-	} else {
-		fmt.Println("Could not find id.")
 	}
 }
 
 func (a *App) UncompleteTodo(input string) {
 	a.Load()
-	id := a.getId(input)
+	id, _ := a.getId(input)
 	if id != -1 {
 		a.TodoList.Uncomplete(id)
 		a.Save()
 		fmt.Println("Todo uncompleted.")
-	} else {
-		fmt.Println("Could not find id.")
 	}
 }
 
 func (a *App) ArchiveTodo(input string) {
 	a.Load()
-	id := a.getId(input)
+	id, _ := a.getId(input)
 	if id != -1 {
 		a.TodoList.Archive(id)
 		a.Save()
 		fmt.Println("Todo archived.")
-	} else {
-		fmt.Println("Could not find id.")
 	}
 }
 
 func (a *App) UnarchiveTodo(input string) {
 	a.Load()
-	id := a.getId(input)
+	id, _ := a.getId(input)
 	if id != -1 {
 		a.TodoList.Unarchive(id)
 		a.Save()
 		fmt.Println("Todo unarchived.")
-	} else {
-		fmt.Println("Could not find id.")
 	}
 }
 
 func (a *App) EditTodoDue(input string) {
 	a.Load()
-	id := a.getId(input)
+	id, todo := a.getId(input)
 	if id != -1 {
-		todo := a.TodoList.FindById(id)
 		parser := &Parser{}
 		todo.Due = parser.Due(input, time.Now())
 		a.Save()
 		fmt.Println("Todo due date updated.")
-	} else {
-		fmt.Println("Could not find id.")
 	}
 }
 
@@ -129,14 +116,19 @@ func (a *App) ListTodos(input string) {
 	formatter.Print()
 }
 
-func (a *App) getId(input string) int {
-
+func (a *App) getId(input string) (int, *Todo) {
 	re, _ := regexp.Compile("\\d+")
 	if re.MatchString(input) {
 		id, _ := strconv.Atoi(re.FindString(input))
-		return id
+		todo := a.TodoList.FindById(id)
+		if todo == nil {
+			fmt.Println("No such id.")
+			return -1, nil
+		}
+		return id, todo
 	} else {
-		return -1
+		fmt.Println("Invalid id.")
+		return -1, nil
 	}
 }
 
