@@ -26,7 +26,7 @@ func (a *App) AddTodo(input string) {
 	parser := &Parser{}
 	todo := parser.ParseNewTodo(input)
 	if todo == nil {
-		fmt.Println("What to do?")
+		fmt.Println("I need more information. Try something like 'todo a chat with @bob due tom'")
 		return
 	}
 
