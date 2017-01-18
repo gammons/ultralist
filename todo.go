@@ -111,7 +111,7 @@ func routeInput(command string, input string) {
 		app.ListTodos(input)
 	case "a", "add":
 		app.AddTodo(input)
-	case "d", "del":
+	case "d", "delete":
 		app.DeleteTodo(input)
 	case "c", "complete":
 		app.CompleteTodo(input)
