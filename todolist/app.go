@@ -25,6 +25,10 @@ func (a *App) AddTodo(input string) {
 	a.Load()
 	parser := &Parser{}
 	todo := parser.ParseNewTodo(input)
+	if todo == nil {
+		fmt.Println("I need more information. Try something like 'todo a chat with @bob due tom'")
+		return
+	}
 
 	a.TodoList.Add(todo)
 	a.Save()
