@@ -62,7 +62,9 @@ func (f *Formatter) formatDue(due string) string {
 	dueTime, err := time.Parse("2006-01-02", due)
 
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		fmt.Println("This may due to the corruption of .todos.json file.")
+		os.Exit(-1)
 	}
 
 	if isToday(dueTime) {
