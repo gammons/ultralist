@@ -61,7 +61,7 @@ func (p *Parser) Due(input string, day time.Time) string {
 	r, _ := regexp.Compile(`due .*$`)
 
 	res := r.FindString(input)
-	res = res[4:len(res)]
+	res = res[4:]
 	switch res {
 	case "none":
 		return ""
@@ -167,7 +167,7 @@ func (p *Parser) matchWords(input string, r *regexp.Regexp) []string {
 	ret := []string{}
 
 	for _, val := range results {
-		ret = append(ret, val[1:len(val)])
+		ret = append(ret, val[1:])
 	}
 	return ret
 }
