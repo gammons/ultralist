@@ -2,6 +2,7 @@ package todolist
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -116,7 +117,11 @@ func (p *Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {
 	if date, err := time.Parse("2 Jan 2006", res); err == nil {
 		return date
 	}
-	panic(fmt.Errorf("Could not parse the date you gave me: '%s'", _date))
+	fmt.Printf("Could not parse the date you gave me: %s\n", _date)
+	fmt.Println("I'm expecting a date like \"Dec 22\" or \"22 Dec\".")
+	fmt.Println("See http://todolist.site/#adding for more info.")
+	os.Exit(-1)
+	return time.Now()
 }
 
 func (p *Parser) monday(day time.Time) string {
