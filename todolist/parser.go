@@ -110,19 +110,16 @@ func (p *Parser) parseArbitraryDate(_date string, pivot time.Time) string {
 
 func (p *Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {
 	res := strings.Join([]string{_date, strconv.Itoa(year)}, " ")
-	var date time.Time
-	var err1 error
-	var err2 error
-	if date, err1 = time.Parse("Jan 2 2006", res); err1 == nil {
+	if date, err := time.Parse("Jan 2 2006", res); err == nil {
 		return date
 	}
 
-	if date, err2 = time.Parse("2 Jan 2006", res); err2 == nil {
+	if date, err := time.Parse("2 Jan 2006", res); err == nil {
 		return date
 	}
 	fmt.Printf("Could not parse the date you gave me: %s\n", _date)
-	fmt.Println(err1)
-	fmt.Println(err2)
+	fmt.Println("I'm expecting a date like \"Dec 22\" or \"22 Dec\".")
+	fmt.Println("See http://todolist.site/#adding for more info.")
 	os.Exit(-1)
 	return time.Now()
 }
