@@ -38,62 +38,68 @@ func (a *App) AddTodo(input string) {
 func (a *App) DeleteTodo(input string) {
 	a.Load()
 	id, _ := a.getId(input)
-	if id != -1 {
-		a.TodoList.Delete(id)
-		a.Save()
-		fmt.Println("Todo deleted.")
+	if id == -1 {
+		return
 	}
+	a.TodoList.Delete(id)
+	a.Save()
+	fmt.Println("Todo deleted.")
 }
 
 func (a *App) CompleteTodo(input string) {
 	a.Load()
 	id, _ := a.getId(input)
-	if id != -1 {
-		a.TodoList.Complete(id)
-		a.Save()
-		fmt.Println("Todo completed.")
+	if id == -1 {
+		return
 	}
+	a.TodoList.Complete(id)
+	a.Save()
+	fmt.Println("Todo completed.")
 }
 
 func (a *App) UncompleteTodo(input string) {
 	a.Load()
 	id, _ := a.getId(input)
-	if id != -1 {
-		a.TodoList.Uncomplete(id)
-		a.Save()
-		fmt.Println("Todo uncompleted.")
+	if id == -1 {
+		return
 	}
+	a.TodoList.Uncomplete(id)
+	a.Save()
+	fmt.Println("Todo uncompleted.")
 }
 
 func (a *App) ArchiveTodo(input string) {
 	a.Load()
 	id, _ := a.getId(input)
-	if id != -1 {
-		a.TodoList.Archive(id)
-		a.Save()
-		fmt.Println("Todo archived.")
+	if id == -1 {
+		return
 	}
+	a.TodoList.Archive(id)
+	a.Save()
+	fmt.Println("Todo archived.")
 }
 
 func (a *App) UnarchiveTodo(input string) {
 	a.Load()
 	id, _ := a.getId(input)
-	if id != -1 {
-		a.TodoList.Unarchive(id)
-		a.Save()
-		fmt.Println("Todo unarchived.")
+	if id == -1 {
+		return
 	}
+	a.TodoList.Unarchive(id)
+	a.Save()
+	fmt.Println("Todo unarchived.")
 }
 
 func (a *App) EditTodoDue(input string) {
 	a.Load()
 	id, todo := a.getId(input)
-	if id != -1 {
-		parser := &Parser{}
-		todo.Due = parser.Due(input, time.Now())
-		a.Save()
-		fmt.Println("Todo due date updated.")
+	if id == -1 {
+		return
 	}
+	parser := &Parser{}
+	todo.Due = parser.Due(input, time.Now())
+	a.Save()
+	fmt.Println("Todo due date updated.")
 }
 
 func (a *App) ArchiveCompleted() {
