@@ -17,6 +17,29 @@ See [The main Todolist website][tdl] for the current documentation.
 
 Yes.  Yes it is.
 
+## Quick Start using [Docker](https://github.com/docker/docker.git)
+
+Building the docker image:
+```
+$ git clone https://github.com/gammons/todolist.git
+$ cd todolist
+$ docker build -t todolist .
+```
+
+If you have an existing todo-list file, then run the container with
+```
+$ docker run -d -v your/todos/json/file:/.todos.json -p 7890:7890 todolist
+```
+
+Otherwise, you have to provide an empty todo file:
+```
+$ echo [] > /tmp/.todos.json
+$ docker run -d -v /tmp/.todos.json:/.todos.json -p 7890:7890 todolist
+```
+
+Finally, open your browser and enter `localhost:7890` at the URL, and \
+happy GTD!
+
 ## Author
 
 Please send complaints, complements, rants, etc to [Grant Ammons][ga]
