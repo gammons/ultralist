@@ -97,6 +97,10 @@ func usage() {
 	yellow.Println("\ttodo e 33 due none")
 	fmt.Println("\tEdits the todo with 33 and removes the due date\n")
 
+	blueBold.Println("\nExpanding existing todos")
+	yellow.Println("\ttodo ex 39 +final: read physics due mon, do literature report due fri")
+	fmt.Println("\tRemoves the todo with id 39, and adds following two todos\n")
+
 	blueBold.Println("\nDeleting")
 	yellow.Println("\ttodo d 33")
 	fmt.Println("\tDeletes a todo with id 33\n")
@@ -125,6 +129,8 @@ func routeInput(command string, input string) {
 		app.ArchiveCompleted()
 	case "e", "edit":
 		app.EditTodoDue(input)
+	case "ex", "expand":
+		app.ExpandTodo(input)
 	case "init":
 		app.InitializeRepo()
 	case "web":
