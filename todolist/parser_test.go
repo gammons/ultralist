@@ -26,6 +26,19 @@ func TestParseSubjectWithDue(t *testing.T) {
 	}
 }
 
+func TestParseExpandProjects(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	correctFormat := parser.ExpandProject("ex 113 +meeting: figures, slides, coffee, suger")
+	assert.Equal("+meeting", correctFormat)
+	wrongFormat1 := parser.ExpandProject("ex 114 +meeting figures, slides, coffee, suger")
+	assert.Equal("", wrongFormat1)
+	wrongFormat2 := parser.ExpandProject("ex 115 meeting: figures, slides, coffee, suger")
+	assert.Equal("", wrongFormat2)
+	wrongFormat3 := parser.ExpandProject("ex 116 meeting figures, slides, coffee, suger")
+	assert.Equal("", wrongFormat3)
+}
+
 func TestParseProjects(t *testing.T) {
 	parser := &Parser{}
 	todo := parser.ParseNewTodo("do this thing +proj1 +proj2 due tomorrow")
