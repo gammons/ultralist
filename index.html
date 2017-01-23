@@ -44,6 +44,7 @@
             <li><a href="#archiving">Archiving / Unarchiving todos</a></li>
             <li><a href="#listing">Listing, filtering and grouping todos</a></li>
             <li><a href="#editing">Editing todos</a></li>
+            <li><a href="#expanding">Expanding existing todos</a></li>
             <li><a href="#deleting">Deleting todos</a></li>
             <li><a href="#webview">Running the web view</a></li>
             <li><a href="#fileformat">.todos.json file format</a></li>
@@ -289,9 +290,10 @@ Todo added.
           <b>Showing all todos</b>
           <p><code>todolist l due tomorrow</code> or <code>todolist l due tomorrow</code>- List all todos due tomorrow</p>
 
-          <p>Todos can be grouped by project or context.</p>
           <b>Grouping</b>
           <p>Todos can be grouped by project or context.</p>
+          <p><code>todolist l by p</code>- List all todos by project</p>
+          <p><code>todolist l by c</code>- List all todos by context</p>
 
           <a class="bk" name="editing"><h2>Editing todos</h2></a>
           <p>Todolist currently supports editing a due date only.  If you need to fully edit a todo, it is recommended to delete and re-add the todo.</p>
@@ -301,6 +303,57 @@ Todo added.
             <li><code>todolist e 133 due tod</code> - edit todo with id 133 and set its due date to today.</li>
             <li><code>todolist e 56 due jun 20</code> - edit todo with id 56 and set its due date to June 20..</li>
           </ul>
+
+          <a class="bk" name="expanding"><h2>Expanding existing todos</h2></a>
+          <p>Todolist supports expanding existing todos.  This feature helps you add more details to replace vague todos.  The syntax is</p>
+          <p><code>todolist ex [id] +[project]: todo1[,todo2...]</code></p>
+	  <p>If there is a todo like this:</p>
+
+          <pre class='todo base01-background base06'>
+	  <table>
+	  <tr>
+	  <td class='num'>13</td>
+	  <td>[ ]</td>
+	  <td class='date'>Sat Jan 28</td>
+	  <td>Write the thesis</td>
+	  </tr>
+	  </table>
+	  </pre>
+
+          <p>which is obviously not clear enough. One may then apply this feature:</p>
+          <ul>
+            <li><code>todolist ex 13 +thesis: get latex template due Jan 22, meet prof. due Jan 23, organize data due Jan 24, Introduction and Abstract due Jan 27</code></li>
+          </ul>
+          <p>The list would become:</p>
+
+          <pre class='todo base01-background base06'>
+	  <table>
+	  <tr>
+	  <td class='num'>14</td>
+	  <td>[ ]</td>
+	  <td class='date'>Sun Jan 22</td>
+	  <td>get latex template</td>
+	  </tr>
+	  <tr>
+	  <td class='num'>15</td>
+	  <td>[ ]</td>
+	  <td class='date'>Mon Jan 23</td>
+	  <td>meet prof.</td>
+	  </tr>
+	  <tr>
+	  <td class='num'>16</td>
+	  <td>[ ]</td>
+	  <td class='date'>Tue Jan 24</td>
+	  <td>organize data</td>
+	  </tr>
+	  <tr>
+	  <td class='num'>17</td>
+	  <td>[ ]</td>
+	  <td class='date'>Wed Jan 25</td>
+	  <td>Introduction and Abstract</td>
+	  </tr>
+	  </table>
+	  </pre>
 
           <a class="bk" name="deleting"><h2>Deleting todos</h2></a>
           <p><code>todolist delete [id]</code> or <code>todolist d [id]</code> will do the job.</p>
