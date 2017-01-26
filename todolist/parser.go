@@ -40,23 +40,24 @@ func (p *Parser) Subject(input string) string {
 }
 
 func (p *Parser) ExpandProject(input string) string {
-	r, _ := regexp.Compile(`(ex|expand) +\d+ +\+\w+[^:]`)
-	newProject := r.FindString(input)
-	if len(newProject) == 0 {
+	r, _ := regexp.Compile(`(ex|expand) +\d+ +\+[\p{L}\d_]+:`)
+	pattern := r.FindString(input)
+	if len(pattern) == 0 {
 		return ""
 	}
 
+	newProject := pattern[0 : len(pattern)-1]
 	project := strings.Split(newProject, " ")
 	return project[len(project)-1]
 }
 
 func (p *Parser) Projects(input string) []string {
-	r, _ := regexp.Compile(`\+\w+`)
+	r, _ := regexp.Compile(`\+[\p{L}\d_]+`)
 	return p.matchWords(input, r)
 }
 
 func (p *Parser) Contexts(input string) []string {
-	r, err := regexp.Compile(`\@\w+`)
+	r, err := regexp.Compile(`\@[\p{L}\d_]+`)
 	if err != nil {
 		fmt.Println("regex error", err)
 	}

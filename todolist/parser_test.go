@@ -37,19 +37,24 @@ func TestParseExpandProjects(t *testing.T) {
 	assert.Equal("", wrongFormat2)
 	wrongFormat3 := parser.ExpandProject("ex 116 meeting figures, slides, coffee, suger")
 	assert.Equal("", wrongFormat3)
+	wrongFormat4 := parser.ExpandProject("ex 117 +重要な會議: 図, コーヒー, 砂糖")
+	assert.Equal("+重要な會議", wrongFormat4)
 }
 
 func TestParseProjects(t *testing.T) {
 	parser := &Parser{}
-	todo := parser.ParseNewTodo("do this thing +proj1 +proj2 due tomorrow")
-	if len(todo.Projects) != 2 {
-		t.Error("Expected Projects length to be 2")
+	todo := parser.ParseNewTodo("do this thing +proj1 +proj2 +專案3 due tomorrow")
+	if len(todo.Projects) != 3 {
+		t.Error("Expected Projects length to be 3")
 	}
 	if todo.Projects[0] != "proj1" {
 		t.Error("todo.Projects[0] should equal 'proj1' but got", todo.Projects[0])
 	}
 	if todo.Projects[1] != "proj2" {
 		t.Error("todo.Projects[1] should equal 'proj2' but got", todo.Projects[1])
+	}
+	if todo.Projects[2] != "專案3" {
+		t.Error("todo.Projects[2] should equal '專案3' but got", todo.Projects[2])
 	}
 }
 
