@@ -39,6 +39,17 @@ func (p *Parser) Subject(input string) string {
 	}
 }
 
+func (p *Parser) ExpandProject(input string) string {
+	r, _ := regexp.Compile(`(ex|expand) +\d+ +\+\w+[^:]`)
+	newProject := r.FindString(input)
+	if len(newProject) == 0 {
+		return ""
+	}
+
+	project := strings.Split(newProject, " ")
+	return project[len(project)-1]
+}
+
 func (p *Parser) Projects(input string) []string {
 	r, _ := regexp.Compile(`\+\w+`)
 	return p.matchWords(input, r)
