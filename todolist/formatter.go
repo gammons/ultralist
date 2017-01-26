@@ -103,8 +103,8 @@ func (f *Formatter) formatSubject(subject string) string {
 	magenta := color.New(color.FgMagenta).SprintFunc()
 
 	splitted := strings.Split(subject, " ")
-	projectRegex, _ := regexp.Compile(`\+\w+`)
-	contextRegex, _ := regexp.Compile(`\@\w+`)
+	projectRegex, _ := regexp.Compile(`\+[\p{L}\d_]+`)
+	contextRegex, _ := regexp.Compile(`\@[\p{L}\d_]+`)
 
 	coloredWords := []string{}
 
