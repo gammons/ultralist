@@ -110,7 +110,7 @@ func (a *App) ArchiveCompleted() {
 		}
 	}
 	a.Save()
-	fmt.Println("All completed todos archived.")
+	fmt.Println("All completed todos have been archived.")
 }
 
 func (a *App) ListTodos(input string) {
