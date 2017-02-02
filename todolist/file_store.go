@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/user"
 )
 
 type FileStore struct {
@@ -13,7 +14,15 @@ type FileStore struct {
 }
 
 func NewFileStore() *FileStore {
-	return &FileStore{FileLocation: ".todos.json", Loaded: false}
+	usr, err := user.Current()
+	if err != nil {
+		fmt.Println("No user found from os")
+		return nil
+	}
+	return &FileStore{
+		FileLocation: fmt.Sprintf("%s/.todos.json", usr.HomeDir),
+		Loaded:       false,
+	}
 }
 
 func (f *FileStore) Load() ([]*Todo, error) {
