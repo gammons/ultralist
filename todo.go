@@ -110,6 +110,10 @@ func usage() {
 
 func routeInput(command string, input string) {
 	app := todolist.NewApp()
+	if app == nil {
+		return
+	}
+
 	switch command {
 	case "l", "list", "agenda":
 		app.ListTodos(input)
