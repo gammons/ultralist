@@ -15,11 +15,6 @@ type App struct {
 
 func NewApp() *App {
 	app := &App{TodoList: &TodoList{}, TodoStore: NewFileStore()}
-	if app.TodoStore.FileLocation == "" {
-		fmt.Println("No todo file found!")
-		fmt.Println("You may run 'todo init' to initialize an empty repo in current directory.")
-		return nil
-	}
 	return app
 }
 

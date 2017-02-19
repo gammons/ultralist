@@ -25,7 +25,10 @@ func NewFileStore() *FileStore {
 	} else if err2 == nil {
 		return &FileStore{FileLocation: homerepo, Loaded: false}
 	} else {
-		return &FileStore{FileLocation: "", Loaded: false}
+		fmt.Println("No todo file found!")
+		fmt.Println("You may run 'todo init' to initialize an empty repo in working directory.")
+		os.Exit(1)
+		return nil
 	}
 }
 
