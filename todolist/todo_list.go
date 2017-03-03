@@ -78,14 +78,32 @@ func (t *TodoList) Todos() []*Todo {
 	return t.Data
 }
 
-func (t *TodoList) NextId() int {
+func (t *TodoList) MaxId() int {
 	maxId := 0
 	for _, todo := range t.Data {
 		if todo.Id > maxId {
 			maxId = todo.Id
 		}
 	}
-	return maxId + 1
+	return maxId
+}
+
+func (t *TodoList) NextId() int {
+	var found bool
+	maxID := t.MaxId()
+	for i := 1; i <= maxID; i++ {
+		found = false
+		for _, todo := range t.Data {
+			if todo.Id == i {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return i
+		}
+	}
+	return maxID + 1
 }
 
 func (t *TodoList) FindById(id int) *Todo {
@@ -95,4 +113,16 @@ func (t *TodoList) FindById(id int) *Todo {
 		}
 	}
 	return nil
+}
+
+func (t *TodoList) GarbageCollect() {
+	var toDelete []*Todo
+	for _, todo := range t.Data {
+		if todo.Archived {
+			toDelete = append(toDelete, todo)
+		}
+	}
+	for _, todo := range toDelete {
+		t.Delete(todo.Id)
+	}
 }

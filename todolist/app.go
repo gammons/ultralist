@@ -183,6 +183,13 @@ func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 	return grouped
 }
 
+func (a *App) GarbageCollect() {
+	a.Load()
+	a.TodoList.GarbageCollect()
+	a.Save()
+	fmt.Println("Garbage collection complete.")
+}
+
 func (a *App) Load() error {
 	todos, err := a.TodoStore.Load()
 	if err != nil {
