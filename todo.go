@@ -81,6 +81,15 @@ func usage() {
 	yellow.Println("\ttodo uc 33")
 	fmt.Println("\tUncompletes a todo with id 33\n")
 
+	blueBold.Println("\nPrioritizing")
+	fmt.Println("Todos have a priority flag, which will make them bold when listed.\n")
+	yellow.Println("\ttodo p 33")
+	fmt.Println("\tPrioritizes a todo with id 33\n")
+	yellow.Println("\ttodo up 33")
+	fmt.Println("\tUn-prioritizes a todo with id 33\n")
+	yellow.Println("\ttodo l p")
+	fmt.Println("\tlist all priority todos\n")
+
 	blueBold.Println("\nArchiving")
 	fmt.Println("You can archive todos once they are done, or if you might come back to them.")
 	fmt.Println("By default, todo will only show unarchived todos.\n")
@@ -131,6 +140,10 @@ func routeInput(command string, input string) {
 		app.EditTodoDue(input)
 	case "ex", "expand":
 		app.ExpandTodo(input)
+	case "p", "prioritize":
+		app.PrioritizeTodo(input)
+	case "up", "unprioritize":
+		app.UnprioritizeTodo(input)
 	case "init":
 		app.InitializeRepo()
 	case "web":

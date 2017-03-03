@@ -150,6 +150,28 @@ func (a *App) ListTodos(input string) {
 	formatter.Print()
 }
 
+func (a *App) PrioritizeTodo(input string) {
+	a.Load()
+	id, _ := a.getId(input)
+	if id == -1 {
+		return
+	}
+	a.TodoList.Prioritize(id)
+	a.Save()
+	fmt.Println("Todo prioritized.")
+}
+
+func (a *App) UnprioritizeTodo(input string) {
+	a.Load()
+	id, _ := a.getId(input)
+	if id == -1 {
+		return
+	}
+	a.TodoList.Unprioritize(id)
+	a.Save()
+	fmt.Println("Todo un-prioritized.")
+}
+
 func (a *App) getId(input string) (int, *Todo) {
 	re, _ := regexp.Compile("\\d+")
 	if re.MatchString(input) {
