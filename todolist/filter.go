@@ -81,7 +81,7 @@ func (f *TodoFilter) filterContexts(input string) []*Todo {
 func (f *TodoFilter) getArchived() []*Todo {
 	var ret []*Todo
 	for _, todo := range f.Todos {
-		if todo.Archived == true {
+		if todo.Archived {
 			ret = append(ret, todo)
 		}
 	}
@@ -91,7 +91,7 @@ func (f *TodoFilter) getArchived() []*Todo {
 func (f *TodoFilter) getUnarchived() []*Todo {
 	var ret []*Todo
 	for _, todo := range f.Todos {
-		if todo.Archived == false {
+		if !todo.Archived {
 			ret = append(ret, todo)
 		}
 	}
