@@ -17,7 +17,7 @@ func NewDateFilter(todos []*Todo) *DateFilter {
 }
 
 func (f *DateFilter) FilterDate(input string) []*Todo {
-	agendaRegex, _ := regexp.Compile(`agenda .*$`)
+	agendaRegex, _ := regexp.Compile(`agenda.*$`)
 	if agendaRegex.MatchString(input) {
 		return f.filterAgenda(now.BeginningOfDay())
 	}
@@ -57,6 +57,9 @@ func (f *DateFilter) filterAgenda(pivot time.Time) []*Todo {
 	var ret []*Todo
 
 	for _, todo := range f.Todos {
+		if todo.Due == "" {
+			continue
+		}
 		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
 		if dueTime.Before(pivot) || todo.Due == pivot.Format("2006-01-02") {
 			ret = append(ret, todo)
