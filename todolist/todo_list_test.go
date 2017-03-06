@@ -77,3 +77,23 @@ func TestUncomplete(t *testing.T) {
 	list.Uncomplete(2)
 	assert.Equal(false, list.FindById(2).Completed)
 }
+
+func TestPrioritizeNotInTodosJson(t *testing.T) {
+	assert := assert.New(t)
+	store := &FileStore{FileLocation: "todos.json"}
+	list := &TodoList{}
+	todos, _ := store.Load()
+	list.Load(todos)
+	assert.Equal(false, list.FindById(2).IsPriority)
+}
+
+func TestPrioritizeTodo(t *testing.T) {
+	assert := assert.New(t)
+	list := &TodoList{}
+	todo := &Todo{Archived: false, Completed: false, Subject: "testing", IsPriority: false}
+	list.Add(todo)
+	list.Prioritize(1)
+	assert.Equal(true, list.FindById(1).IsPriority)
+	list.Unprioritize(1)
+	assert.Equal(false, list.FindById(1).IsPriority)
+}
