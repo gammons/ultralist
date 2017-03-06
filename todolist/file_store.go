@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/user"
 )
 
 type FileStore struct {
@@ -13,22 +14,36 @@ type FileStore struct {
 }
 
 func NewFileStore() *FileStore {
-	return &FileStore{FileLocation: ".todos.json", Loaded: false}
+	localrepo := ".todos.json"
+	usr, _ := user.Current()
+	homerepo := fmt.Sprintf("%s/.todos.json", usr.HomeDir)
+	_, err1 := os.Stat(localrepo)
+	_, err2 := os.Stat(homerepo)
+
+	if err1 == nil {
+		return &FileStore{FileLocation: localrepo, Loaded: false}
+	} else if err2 == nil {
+		return &FileStore{FileLocation: homerepo, Loaded: false}
+	} else {
+		fmt.Println("No todo file found!")
+		fmt.Println("You may run 'todo init' to initialize an empty repo in working directory.")
+		os.Exit(1)
+		return nil
+	}
 }
 
 func (f *FileStore) Load() ([]*Todo, error) {
 	data, err := ioutil.ReadFile(f.FileLocation)
 	if err != nil {
-		fmt.Println("No todo file found!")
-		fmt.Println("Initialize a new todo repo by running 'todo init'")
+		fmt.Println("Error reading", f.FileLocation, "by", err)
 		return nil, err
-		os.Exit(0)
+		os.Exit(1)
 	}
 
 	var todos []*Todo
 	jerr := json.Unmarshal(data, &todos)
 	if jerr != nil {
-		fmt.Println("Error reading json data", jerr)
+		fmt.Println("Error reading", f.FileLocation, "by", jerr)
 		return nil, jerr
 		os.Exit(1)
 	}
