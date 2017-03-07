@@ -111,7 +111,7 @@ func (f *TodoFilter) getPrioritized() []*Todo {
 func (f *TodoFilter) getUnarchived() []*Todo {
 	var ret []*Todo
 	for _, todo := range f.Todos {
-		if todo.Archived == false {
+		if !todo.Archived {
 			ret = append(ret, todo)
 		}
 	}

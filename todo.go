@@ -115,6 +115,10 @@ func usage() {
 	fmt.Println("\tDeletes a todo with id 33\n")
 	fmt.Println("Todolist was lovingly crafted by Grant Ammons (https://twitter.com/gammons).")
 	fmt.Println("For full documentation, please visit http://todolist.site")
+
+	blueBold.Println("\nGarbage Collection")
+	yellow.Println("\ttodo gc")
+	fmt.Println("\tDeletes all archived todos.\n")
 }
 
 func routeInput(command string, input string) {
@@ -140,6 +144,8 @@ func routeInput(command string, input string) {
 		app.EditTodoDue(input)
 	case "ex", "expand":
 		app.ExpandTodo(input)
+	case "gc":
+		app.GarbageCollect()
 	case "p", "prioritize":
 		app.PrioritizeTodo(input)
 	case "up", "unprioritize":
