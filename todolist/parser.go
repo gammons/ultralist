@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/jinzhu/now"
 )
 
 type Parser struct{}
@@ -79,9 +77,9 @@ func (p *Parser) Due(input string, day time.Time) string {
 	case "none":
 		return ""
 	case "today", "tod":
-		return now.BeginningOfDay().Format("2006-01-02")
+		return bod(time.Now()).Format("2006-01-02")
 	case "tomorrow", "tom":
-		return now.BeginningOfDay().AddDate(0, 0, 1).Format("2006-01-02")
+		return bod(time.Now()).AddDate(0, 0, 1).Format("2006-01-02")
 	case "monday", "mon":
 		return p.monday(day)
 	case "tuesday", "tue":
@@ -97,8 +95,8 @@ func (p *Parser) Due(input string, day time.Time) string {
 	case "sunday", "sun":
 		return p.sunday(day)
 	case "next week":
-		n := now.BeginningOfDay()
-		return now.New(n).Monday().AddDate(0, 0, 7).Format("2006-01-02")
+		n := bod(time.Now())
+		return getNearestMonday(n).AddDate(0, 0, 7).Format("2006-01-02")
 	}
 	return p.parseArbitraryDate(res, time.Now())
 }
@@ -137,37 +135,37 @@ func (p *Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {
 }
 
 func (p *Parser) monday(day time.Time) string {
-	mon := now.New(day).Monday()
+	mon := getNearestMonday(day)
 	return p.thisOrNextWeek(mon, day)
 }
 
 func (p *Parser) tuesday(day time.Time) string {
-	tue := now.New(day).Monday().AddDate(0, 0, 1)
+	tue := getNearestMonday(day).AddDate(0, 0, 1)
 	return p.thisOrNextWeek(tue, day)
 }
 
 func (p *Parser) wednesday(day time.Time) string {
-	tue := now.New(day).Monday().AddDate(0, 0, 2)
+	tue := getNearestMonday(day).AddDate(0, 0, 2)
 	return p.thisOrNextWeek(tue, day)
 }
 
 func (p *Parser) thursday(day time.Time) string {
-	tue := now.New(day).Monday().AddDate(0, 0, 3)
+	tue := getNearestMonday(day).AddDate(0, 0, 3)
 	return p.thisOrNextWeek(tue, day)
 }
 
 func (p *Parser) friday(day time.Time) string {
-	tue := now.New(day).Monday().AddDate(0, 0, 4)
+	tue := getNearestMonday(day).AddDate(0, 0, 4)
 	return p.thisOrNextWeek(tue, day)
 }
 
 func (p *Parser) saturday(day time.Time) string {
-	tue := now.New(day).Monday().AddDate(0, 0, 5)
+	tue := getNearestMonday(day).AddDate(0, 0, 5)
 	return p.thisOrNextWeek(tue, day)
 }
 
 func (p *Parser) sunday(day time.Time) string {
-	tue := now.New(day).Monday().AddDate(0, 0, 6)
+	tue := getNearestMonday(day).AddDate(0, 0, 6)
 	return p.thisOrNextWeek(tue, day)
 }
 
