@@ -44,6 +44,7 @@
             <li><a href="#archiving">Archiving / Unarchiving todos</a></li>
             <li><a href="#listing">Listing, filtering and grouping todos</a></li>
             <li><a href="#editing">Editing todos</a></li>
+            <li><a href="#prioritizing">Prioritizing todos</a></li>
             <li><a href="#expanding">Expanding existing todos</a></li>
             <li><a href="#deleting">Deleting todos</a></li>
             <li><a href="#webview">Running the web view</a></li>
@@ -53,11 +54,20 @@
 
         <div class="col-md-9">
 					<div class="card card-block">
-						<h3 class="card-title">Download todolist</h3>
-            <p class="card-text">Major changes: Web view now updated, with a better, cleaner look. (<a href="http://demo.todolist.site" target="_blank">demo here</a>) You can use it by running <code>todolist web.</code></p>
+						<h3 class="card-title">Download todolist v0.5</h3>
+            <p class="card-text">
+              <b>Major Changes:</b>
+              <ul>
+                <li>Prioritize feature.  You can now prioritize todos using `todo p`</li>
+                <li>Garbage collection.  You can delete archived todos using `todo gc`</li>
+                <li>Removed dependency from jinzhu/now</li>
+                <li>Various other small bugfixes.</li>
+              </ul>
+            </p>
 						<p class="card-text">
-            The latest version of Todolist (including building the source on your own) is on the Github project page.</p>
-						<a href="https://github.com/gammons/todolist/releases" class="btn btn-primary">Download v0.3.0</a>
+              The latest version of Todolist (including building the source on your own) is on the Github project page.
+            </p>
+						<a href="https://github.com/gammons/todolist/releases" class="btn btn-primary">Download v0.5.0</a>
 					</div>
 
           <h2 class="card-title">News</h2>
@@ -303,6 +313,13 @@ Todo added.
             <li><code>todolist e 133 due tod</code> - edit todo with id 133 and set its due date to today.</li>
             <li><code>todolist e 56 due jun 20</code> - edit todo with id 56 and set its due date to June 20..</li>
           </ul>
+
+          <a class="bk" name="prioritizing"><h2>Prioritizing todos</h2></a>
+          <p>You can add priority to a todo.  Priority is either on or off.  When prioritized, a todo is printed in bold.</p>
+          <p><code>todolist p [id]</code> - prioritize a todo. </p>
+          <p><code>todolist prioritize [id]</code> - prioritize a todo. </p>
+          <p><code>todolist up [id]</code> - un-prioritize a todo. </p>
+          <p><code>todolist unprioritize [id]</code> - prioritize a todo. </p>
 
           <a class="bk" name="expanding"><h2>Expanding existing todos</h2></a>
           <p>Todolist supports expanding existing todos.  This feature helps you add more details to replace vague todos.  The syntax is</p>
