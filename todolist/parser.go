@@ -12,7 +12,7 @@ import (
 type Parser struct{}
 
 func (p *Parser) ParseNewTodo(input string) *Todo {
-	r, _ := regexp.Compile(`^(add|a)(\\ |)`)
+	r, _ := regexp.Compile(`^(add|a)(\\ |) `)
 	input = r.ReplaceAllString(input, "")
 	if input == "" {
 		return nil
