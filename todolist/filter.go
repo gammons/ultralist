@@ -12,6 +12,7 @@ func NewFilter(todos []*Todo) *TodoFilter {
 
 func (f *TodoFilter) Filter(input string) []*Todo {
 	f.Todos = f.filterArchived(input)
+	f.Todos = f.filterPrioritized(input)
 	f.Todos = f.filterProjects(input)
 	f.Todos = f.filterContexts(input)
 	f.Todos = NewDateFilter(f.Todos).FilterDate(input)
@@ -35,6 +36,15 @@ func (f *TodoFilter) filterArchived(input string) []*Todo {
 		return f.getArchived()
 	} else {
 		return f.getUnarchived()
+	}
+}
+
+func (f *TodoFilter) filterPrioritized(input string) []*Todo {
+	r, _ := regexp.Compile(`l p`)
+	if r.MatchString(input) {
+		return f.getPrioritized()
+	} else {
+		return f.Todos
 	}
 }
 
@@ -82,6 +92,16 @@ func (f *TodoFilter) getArchived() []*Todo {
 	var ret []*Todo
 	for _, todo := range f.Todos {
 		if todo.Archived {
+			ret = append(ret, todo)
+		}
+	}
+	return ret
+}
+
+func (f *TodoFilter) getPrioritized() []*Todo {
+	var ret []*Todo
+	for _, todo := range f.Todos {
+		if todo.IsPriority {
 			ret = append(ret, todo)
 		}
 	}

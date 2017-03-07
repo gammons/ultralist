@@ -63,6 +63,20 @@ func (t *TodoList) IndexOf(todoToFind *Todo) int {
 	return -1
 }
 
+func (t *TodoList) Prioritize(id int) {
+	todo := t.FindById(id)
+	todo.IsPriority = true
+	t.Delete(id)
+	t.Data = append(t.Data, todo)
+}
+
+func (t *TodoList) Unprioritize(id int) {
+	todo := t.FindById(id)
+	todo.IsPriority = false
+	t.Delete(id)
+	t.Data = append(t.Data, todo)
+}
+
 type ByDate []*Todo
 
 func (a ByDate) Len() int      { return len(a) }

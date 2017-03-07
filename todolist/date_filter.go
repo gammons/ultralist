@@ -3,8 +3,6 @@ package todolist
 import (
 	"regexp"
 	"time"
-
-	"github.com/jinzhu/now"
 )
 
 type DateFilter struct {
@@ -17,38 +15,38 @@ func NewDateFilter(todos []*Todo) *DateFilter {
 }
 
 func (f *DateFilter) FilterDate(input string) []*Todo {
-	agendaRegex, _ := regexp.Compile(`agenda .*$`)
+	agendaRegex, _ := regexp.Compile(`agenda.*$`)
 	if agendaRegex.MatchString(input) {
-		return f.filterAgenda(now.BeginningOfDay())
+		return f.filterAgenda(bod(time.Now()))
 	}
 
 	r, _ := regexp.Compile(`due .*$`)
 	match := r.FindString(input)
 	switch {
 	case match == "due tod" || match == "due today":
-		return f.filterToday(now.BeginningOfDay())
+		return f.filterToday(bod(time.Now()))
 	case match == "due tom" || match == "due tomorrow":
-		return f.filterTomorrow(now.BeginningOfDay())
+		return f.filterTomorrow(bod(time.Now()))
 	case match == "due sun" || match == "due sunday":
-		return f.filterDay(now.BeginningOfDay(), time.Sunday)
+		return f.filterDay(bod(time.Now()), time.Sunday)
 	case match == "due mon" || match == "due monday":
-		return f.filterDay(now.BeginningOfDay(), time.Monday)
+		return f.filterDay(bod(time.Now()), time.Monday)
 	case match == "due tue" || match == "due tuesday":
-		return f.filterDay(now.BeginningOfDay(), time.Tuesday)
+		return f.filterDay(bod(time.Now()), time.Tuesday)
 	case match == "due wed" || match == "due wednesday":
-		return f.filterDay(now.BeginningOfDay(), time.Wednesday)
+		return f.filterDay(bod(time.Now()), time.Wednesday)
 	case match == "due thu" || match == "due thursday":
-		return f.filterDay(now.BeginningOfDay(), time.Thursday)
+		return f.filterDay(bod(time.Now()), time.Thursday)
 	case match == "due fri" || match == "due friday":
-		return f.filterDay(now.BeginningOfDay(), time.Friday)
+		return f.filterDay(bod(time.Now()), time.Friday)
 	case match == "due sat" || match == "due saturday":
-		return f.filterDay(now.BeginningOfDay(), time.Saturday)
+		return f.filterDay(bod(time.Now()), time.Saturday)
 	case match == "due this week":
-		return f.filterThisWeek(now.BeginningOfDay())
+		return f.filterThisWeek(bod(time.Now()))
 	case match == "due next week":
-		return f.filterNextWeek(now.BeginningOfDay())
+		return f.filterNextWeek(bod(time.Now()))
 	case match == "overdue":
-		return f.filterOverdue(now.BeginningOfDay())
+		return f.filterOverdue(bod(time.Now()))
 	}
 	return f.Todos
 }
@@ -57,6 +55,9 @@ func (f *DateFilter) filterAgenda(pivot time.Time) []*Todo {
 	var ret []*Todo
 
 	for _, todo := range f.Todos {
+		if todo.Due == "" {
+			continue
+		}
 		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
 		if dueTime.Before(pivot) || todo.Due == pivot.Format("2006-01-02") {
 			ret = append(ret, todo)
@@ -102,7 +103,7 @@ func (f *DateFilter) filterTomorrow(pivot time.Time) []*Todo {
 func (f *DateFilter) filterThisWeek(pivot time.Time) []*Todo {
 	var ret []*Todo
 
-	begin := now.New(f.FindSunday(pivot)).BeginningOfDay()
+	begin := bod(f.FindSunday(pivot))
 	end := begin.AddDate(0, 0, 7)
 
 	for _, todo := range f.Todos {
@@ -144,7 +145,7 @@ func (f *DateFilter) filterOverdue(pivot time.Time) []*Todo {
 }
 
 func (f *DateFilter) FindSunday(pivot time.Time) time.Time {
-	switch now.New(pivot).Weekday() {
+	switch pivot.Weekday() {
 	case time.Sunday:
 		return pivot
 	case time.Monday:

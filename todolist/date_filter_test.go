@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jinzhu/now"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -63,7 +62,7 @@ func TestFilterOverdue(t *testing.T) {
 
 	var todos []*Todo
 	lastWeekTodo := &Todo{Id: 1, Subject: "one", Due: time.Now().AddDate(0, 0, -7).Format("2006-01-02")}
-	todayTodo := &Todo{Id: 2, Subject: "two", Due: now.BeginningOfDay().Format("2006-01-02")}
+	todayTodo := &Todo{Id: 2, Subject: "two", Due: bod(time.Now()).Format("2006-01-02")}
 	tomorrowTodo := &Todo{Id: 3, Subject: "three", Due: time.Now().AddDate(0, 0, 1).Format("2006-01-02")}
 
 	todos = append(todos, lastWeekTodo)
@@ -71,7 +70,7 @@ func TestFilterOverdue(t *testing.T) {
 	todos = append(todos, tomorrowTodo)
 
 	filter := NewDateFilter(todos)
-	filtered := filter.filterOverdue(now.BeginningOfDay())
+	filtered := filter.filterOverdue(bod(time.Now()))
 
 	assert.Equal(1, len(filtered))
 	assert.Equal(1, filtered[0].Id)

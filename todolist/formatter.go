@@ -44,20 +44,28 @@ func (f *Formatter) Print() {
 }
 
 func (f *Formatter) printTodo(todo *Todo) {
-	yellow := color.New(color.FgYellow).SprintFunc()
+	yellow := color.New(color.FgYellow)
+	if todo.IsPriority {
+		yellow.Add(color.Bold, color.Italic)
+	}
 	fmt.Fprintf(f.Writer, " %s\t%s\t%s\t%s\t\n",
-		yellow(strconv.Itoa(todo.Id)),
+		yellow.SprintFunc()(strconv.Itoa(todo.Id)),
 		f.formatCompleted(todo.Completed),
-		f.formatDue(todo.Due),
-		f.formatSubject(todo.Subject))
+		f.formatDue(todo.Due, todo.IsPriority),
+		f.formatSubject(todo.Subject, todo.IsPriority))
 }
 
-func (f *Formatter) formatDue(due string) string {
-	blue := color.New(color.FgBlue).SprintFunc()
-	red := color.New(color.FgRed).SprintFunc()
+func (f *Formatter) formatDue(due string, isPriority bool) string {
+	blue := color.New(color.FgBlue)
+	red := color.New(color.FgRed)
+
+	if isPriority {
+		blue.Add(color.Bold, color.Italic)
+		red.Add(color.Bold, color.Italic)
+	}
 
 	if due == "" {
-		return blue(" ")
+		return blue.SprintFunc()(" ")
 	}
 	dueTime, err := time.Parse("2006-01-02", due)
 
@@ -68,13 +76,13 @@ func (f *Formatter) formatDue(due string) string {
 	}
 
 	if isToday(dueTime) {
-		return blue("today")
+		return blue.SprintFunc()("today")
 	} else if isTomorrow(dueTime) {
-		return blue("tomorrow")
+		return blue.SprintFunc()("tomorrow")
 	} else if isPastDue(dueTime) {
-		return red(dueTime.Format("Mon Jan 2"))
+		return red.SprintFunc()(dueTime.Format("Mon Jan 2"))
 	} else {
-		return blue(dueTime.Format("Mon Jan 2"))
+		return blue.SprintFunc()(dueTime.Format("Mon Jan 2"))
 	}
 }
 
@@ -98,9 +106,17 @@ func isPastDue(t time.Time) bool {
 	return time.Now().After(t)
 }
 
-func (f *Formatter) formatSubject(subject string) string {
-	red := color.New(color.FgRed).SprintFunc()
-	magenta := color.New(color.FgMagenta).SprintFunc()
+func (f *Formatter) formatSubject(subject string, isPriority bool) string {
+
+	red := color.New(color.FgRed)
+	magenta := color.New(color.FgMagenta)
+	white := color.New(color.FgWhite)
+
+	if isPriority {
+		red.Add(color.Bold, color.Italic)
+		magenta.Add(color.Bold, color.Italic)
+		white.Add(color.Bold, color.Italic)
+	}
 
 	splitted := strings.Split(subject, " ")
 	projectRegex, _ := regexp.Compile(`\+[\p{L}\d_]+`)
@@ -110,11 +126,11 @@ func (f *Formatter) formatSubject(subject string) string {
 
 	for _, word := range splitted {
 		if projectRegex.MatchString(word) {
-			coloredWords = append(coloredWords, magenta(word))
+			coloredWords = append(coloredWords, magenta.SprintFunc()(word))
 		} else if contextRegex.MatchString(word) {
-			coloredWords = append(coloredWords, red(word))
+			coloredWords = append(coloredWords, red.SprintFunc()(word))
 		} else {
-			coloredWords = append(coloredWords, word)
+			coloredWords = append(coloredWords, white.SprintFunc()(word))
 		}
 	}
 	return strings.Join(coloredWords, " ")
