@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/user"
 )
 
 type FileStore struct {
@@ -13,10 +14,27 @@ type FileStore struct {
 }
 
 func NewFileStore() *FileStore {
-	return &FileStore{FileLocation: ".todos.json", Loaded: false}
+	return &FileStore{FileLocation: "", Loaded: false}
+}
+
+func getLocation() string {
+	localrepo := ".todos.json"
+	usr, _ := user.Current()
+	homerepo := fmt.Sprintf("%s/.todos.json", usr.HomeDir)
+	_, ferr := os.Stat(localrepo)
+
+	if ferr == nil {
+		return localrepo
+	} else {
+		return homerepo
+	}
 }
 
 func (f *FileStore) Load() ([]*Todo, error) {
+	if f.FileLocation == "" {
+		f.FileLocation = getLocation()
+	}
+
 	data, err := ioutil.ReadFile(f.FileLocation)
 	if err != nil {
 		fmt.Println("No todo file found!")
@@ -38,6 +56,10 @@ func (f *FileStore) Load() ([]*Todo, error) {
 }
 
 func (f *FileStore) Initialize() {
+	if f.FileLocation == "" {
+		f.FileLocation = ".todos.json"
+	}
+
 	_, err := ioutil.ReadFile(f.FileLocation)
 	if err == nil {
 		fmt.Println("It looks like a .todos.json file already exists!  Doing nothing.")
