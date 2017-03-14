@@ -39,6 +39,7 @@
           </ul>
           <h4>Reference</h4>
           <ul>
+            <li><a href="#initializing">Creating a todolist</a></li>
             <li><a href="#adding">Adding todos </a></li>
             <li><a href="#completing">Completing / Uncompleting todos </a></li>
             <li><a href="#archiving">Archiving / Unarchiving todos</a></li>
@@ -54,24 +55,22 @@
 
         <div class="col-md-9">
 					<div class="card card-block">
-						<h3 class="card-title">Download todolist v0.5.1</h3>
+						<h3 class="card-title">Download todolist v0.5.2</h3>
             <p class="card-text">
               <b>Major Changes:</b>
               <ul>
-                <li>Prioritize feature.  You can now prioritize todos using `todo p`</li>
-                <li>Garbage collection.  You can delete archived todos using `todo gc`</li>
-                <li>Removed dependency from jinzhu/now</li>
-                <li>Various other small bugfixes.</li>
+                <li>Will use .todos.json in home directory if .todos.json does not exist in your current directory.</li>
               </ul>
             </p>
 						<p class="card-text">
               The latest version of Todolist (including building the source on your own) is on the Github project page.
             </p>
-						<a href="https://github.com/gammons/todolist/releases" class="btn btn-primary">Download v0.5.1</a>
+						<a href="https://github.com/gammons/todolist/releases" class="btn btn-primary">Download v0.5.2</a>
 					</div>
 
           <h2 class="card-title">News</h2>
-          <p><strong>Mar 7 2017</strong>: Todolist v0.5 released!</p>
+          <p><strong>Mar 14 2017</strong>: Todolist v0.5.2 released!</p>
+          <p><strong>Mar 7 2017</strong>: Todolist v0.5.1 released!</p>
           <p><strong>Aug 28th 2016</strong>: Todolist web has been updated to look + perform much nicer.</p>
 
           <p><strong>Jul 6th 2016</strong>: Todolist is now part of homebrew core! Installing todolist is as easy as running <code>brew install todolist</code>.</p>
@@ -227,8 +226,12 @@ All completed todos archived.
           </ul>
           <p>Typically you'll create the todo, complete it, then archive it at the end of the day.</p>
 
+          <a class="bk" name="initializing"><h2>Creating a todolist</h2></a>
+          <p>You can initialize a todolist by running <code>todolist init</code>.  This will create a <code>.todos.json</code> in the directory you are in.</p>
+          <p>The todolist in your home directory is special.  <code>todolist</code> will use the list in your home dir if it does not see a <code>.todos.json</code> in the directory you are in. This allows you to manage your main todolist file even if you are in another directory.</p>
+
           <a class="bk" name="adding"><h2>Adding todos</h2></a>
-          <p>Add a todolist by running <code>todolist add</code> or <code>todolist a</code>, and then filling out the details of the todo.</p>
+          <p>Add a todo by running <code>todolist add</code> or <code>todolist a</code>, and then filling out the details of the todo.</p>
           <ul>
             <li><code>+projects</code> and <code>@contexts</code> can be inserted into the todolist body. Currently they can only be one word long.</li>
             <li>Todolist is expecting the due date at the <i>end</i>.</li>
