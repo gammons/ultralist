@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	VERSION = "0.5.1"
+	VERSION = "0.5.2"
 	S3URL   = "https://s3.amazonaws.com/todolist-local/" + VERSION
 )
 
