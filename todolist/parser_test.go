@@ -42,8 +42,8 @@ func TestParseExpandProjects(t *testing.T) {
 
 func TestParseProjects(t *testing.T) {
 	parser := &Parser{}
-	todo := parser.ParseNewTodo("do this thing +proj1 +proj2 +專案3 due tomorrow")
-	if len(todo.Projects) != 3 {
+	todo := parser.ParseNewTodo("do this thing +proj1 +proj2 +專案3 +proj-name due tomorrow")
+	if len(todo.Projects) != 4 {
 		t.Error("Expected Projects length to be 3")
 	}
 	if todo.Projects[0] != "proj1" {
@@ -54,6 +54,9 @@ func TestParseProjects(t *testing.T) {
 	}
 	if todo.Projects[2] != "專案3" {
 		t.Error("todo.Projects[2] should equal '專案3' but got", todo.Projects[2])
+	}
+	if todo.Projects[3] != "proj-name" {
+		t.Error("todo.Projects[3] should equal 'proj-name' but got", todo.Projects[3])
 	}
 }
 
