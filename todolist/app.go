@@ -31,9 +31,10 @@ func (a *App) AddTodo(input string) {
 		return
 	}
 
+	id := a.TodoList.NextId()
 	a.TodoList.Add(todo)
 	a.Save()
-	fmt.Println("Todo added.")
+	fmt.Printf("Todo %d added.\n", id)
 }
 
 func (a *App) DeleteTodo(input string) {
