@@ -10,7 +10,7 @@ Envs = [
   {goos: "windows", arch: "amd64"}
 ]
 
-Version = "0.5.2"
+Version = "0.5.3"
 
 task :build do
   `rm -rf dist/#{Version}`
