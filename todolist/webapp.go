@@ -109,5 +109,6 @@ func SaveTodos(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		log.Fatal("encountered an error parsing json, ", err)
 	}
 	app := NewApp()
+	app.TodoStore.Load()
 	app.TodoStore.Save(todos)
 }
