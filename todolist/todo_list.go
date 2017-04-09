@@ -28,14 +28,14 @@ func (t *TodoList) Delete(id int) {
 
 func (t *TodoList) Complete(id int) {
 	todo := t.FindById(id)
-	todo.Completed = true
+	todo.Complete()
 	t.Delete(id)
 	t.Data = append(t.Data, todo)
 }
 
 func (t *TodoList) Uncomplete(id int) {
 	todo := t.FindById(id)
-	todo.Completed = false
+	todo.Uncomplete()
 	t.Delete(id)
 	t.Data = append(t.Data, todo)
 }
