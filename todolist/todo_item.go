@@ -37,7 +37,7 @@ func (t Todo) CalculateDueTime() time.Time {
 
 func (t *Todo) Complete() {
 	t.Completed = true
-	t.CompletedDate = bod(time.Now()).Format(ISO8601_TIMESTAMP_FORMAT)
+	t.CompletedDate = timestamp(time.Now()).Format(ISO8601_TIMESTAMP_FORMAT)
 }
 
 func (t *Todo) Uncomplete() {
