@@ -5,7 +5,7 @@ import "testing"
 func TestNewTodo(t *testing.T) {
 	todo := NewTodo()
 
-	if todo.Completed || todo.Archived {
+	if todo.Completed || todo.Archived || todo.CompletedDate != "" {
 		t.Error("Completed should be false for new todos")
 	}
 }
