@@ -94,6 +94,9 @@ func (p *Parser) Due(input string, day time.Time) string {
 		return p.saturday(day)
 	case "sunday", "sun":
 		return p.sunday(day)
+	case "last week":
+		n := bod(time.Now())
+		return getNearestMonday(n).AddDate(0, 0, -7).Format("2006-01-02")
 	case "next week":
 		n := bod(time.Now())
 		return getNearestMonday(n).AddDate(0, 0, 7).Format("2006-01-02")

@@ -45,6 +45,8 @@ func (f *DateFilter) FilterDate(input string) []*Todo {
 		return f.filterThisWeek(bod(time.Now()))
 	case match == "due next week":
 		return f.filterNextWeek(bod(time.Now()))
+	case match == "due last week":
+		return f.filterLastWeek(bod(time.Now()))
 	case match == "overdue":
 		return f.filterOverdue(bod(time.Now()))
 	}
@@ -119,6 +121,21 @@ func (f *DateFilter) filterNextWeek(pivot time.Time) []*Todo {
 	var ret []*Todo
 
 	begin := f.FindSunday(pivot).AddDate(0, 0, 7)
+	end := begin.AddDate(0, 0, 7)
+
+	for _, todo := range f.Todos {
+		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
+		if begin.Before(dueTime) && end.After(dueTime) {
+			ret = append(ret, todo)
+		}
+	}
+	return ret
+}
+
+func (f *DateFilter) filterLastWeek(pivot time.Time) []*Todo {
+	var ret []*Todo
+
+	begin := f.FindSunday(pivot).AddDate(0, 0, -7)
 	end := begin.AddDate(0, 0, 7)
 
 	for _, todo := range f.Todos {
