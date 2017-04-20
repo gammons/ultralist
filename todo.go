@@ -43,7 +43,7 @@ func usage() {
 	blueBold.Println("\nListing todos")
 	fmt.Println("  When listing todos, you can filter and group the output.\n")
 
-	fmt.Println("  todo l due (tod|today|tom|tomorrow|overdue|this week|next week|mon|tue|wed|thu|fri|sat|sun|none)")
+	fmt.Println("  todo l due (tod|today|tom|tomorrow|overdue|this week|next week|last week|mon|tue|wed|thu|fri|sat|sun|none)")
 	fmt.Println("  todo l overdue")
 
 	cyan.Println("  Filtering by date:\n")
