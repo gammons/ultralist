@@ -2,6 +2,7 @@ package todolist
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"sort"
@@ -17,19 +18,48 @@ type Formatter interface {
 	Print()
 }
 
-type TabFormatter struct {
+type ColorFormatter struct {
 	GroupedTodos *GroupedTodos
-	Writer       *tabwriter.Writer
+	Writer       io.Writer
+}
+
+type WriterFormatter struct {
+	ColorFormatter
+}
+
+func NewWriterFormatter(w io.Writer, todos *GroupedTodos) Formatter {
+	colorFormatter := ColorFormatter{GroupedTodos: todos, Writer: w}
+	formatter := WriterFormatter{colorFormatter}
+	return Formatter(formatter)
+}
+
+func (f WriterFormatter) Print() {
+	f.print()
+}
+
+type TabFormatter struct {
+	ColorFormatter
+	Writer *tabwriter.Writer
 }
 
 func NewFormatter(todos *GroupedTodos) Formatter {
+	return NewTabFormatter(todos)
+}
+
+func NewTabFormatter(todos *GroupedTodos) Formatter {
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
-	formatter := TabFormatter{GroupedTodos: todos, Writer: w}
+	colorFormatter := ColorFormatter{GroupedTodos: todos, Writer: w}
+	formatter := TabFormatter{colorFormatter, w}
 	return Formatter(formatter)
 }
 
 func (f TabFormatter) Print() {
+	f.print()
+	f.Writer.Flush()
+}
+
+func (f ColorFormatter) print() {
 	cyan := color.New(color.FgCyan).SprintFunc()
 
 	var keys []string
@@ -44,10 +74,9 @@ func (f TabFormatter) Print() {
 			f.printTodo(todo)
 		}
 	}
-	f.Writer.Flush()
 }
 
-func (f TabFormatter) printTodo(todo *Todo) {
+func (f ColorFormatter) printTodo(todo *Todo) {
 	yellow := color.New(color.FgYellow)
 	if todo.IsPriority {
 		yellow.Add(color.Bold, color.Italic)
@@ -59,7 +88,7 @@ func (f TabFormatter) printTodo(todo *Todo) {
 		f.formatSubject(todo.Subject, todo.IsPriority))
 }
 
-func (f TabFormatter) formatDue(due string, isPriority bool) string {
+func (f ColorFormatter) formatDue(due string, isPriority bool) string {
 	blue := color.New(color.FgBlue)
 	red := color.New(color.FgRed)
 
@@ -110,7 +139,7 @@ func isPastDue(t time.Time) bool {
 	return time.Now().After(t)
 }
 
-func (f TabFormatter) formatSubject(subject string, isPriority bool) string {
+func (f ColorFormatter) formatSubject(subject string, isPriority bool) string {
 
 	red := color.New(color.FgRed)
 	magenta := color.New(color.FgMagenta)
@@ -141,7 +170,7 @@ func (f TabFormatter) formatSubject(subject string, isPriority bool) string {
 
 }
 
-func (f TabFormatter) formatCompleted(completed bool) string {
+func (f ColorFormatter) formatCompleted(completed bool) string {
 	if completed {
 		return "[x]"
 	} else {
