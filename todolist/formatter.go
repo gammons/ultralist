@@ -13,19 +13,23 @@ import (
 	"github.com/fatih/color"
 )
 
-type Formatter struct {
+type Formatter interface {
+	Print()
+}
+
+type TabFormatter struct {
 	GroupedTodos *GroupedTodos
 	Writer       *tabwriter.Writer
 }
 
-func NewFormatter(todos *GroupedTodos) *Formatter {
+func NewFormatter(todos *GroupedTodos) Formatter {
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
-	formatter := &Formatter{GroupedTodos: todos, Writer: w}
-	return formatter
+	formatter := TabFormatter{GroupedTodos: todos, Writer: w}
+	return Formatter(formatter)
 }
 
-func (f *Formatter) Print() {
+func (f TabFormatter) Print() {
 	cyan := color.New(color.FgCyan).SprintFunc()
 
 	var keys []string
@@ -43,7 +47,7 @@ func (f *Formatter) Print() {
 	f.Writer.Flush()
 }
 
-func (f *Formatter) printTodo(todo *Todo) {
+func (f TabFormatter) printTodo(todo *Todo) {
 	yellow := color.New(color.FgYellow)
 	if todo.IsPriority {
 		yellow.Add(color.Bold, color.Italic)
@@ -55,7 +59,7 @@ func (f *Formatter) printTodo(todo *Todo) {
 		f.formatSubject(todo.Subject, todo.IsPriority))
 }
 
-func (f *Formatter) formatDue(due string, isPriority bool) string {
+func (f TabFormatter) formatDue(due string, isPriority bool) string {
 	blue := color.New(color.FgBlue)
 	red := color.New(color.FgRed)
 
@@ -106,7 +110,7 @@ func isPastDue(t time.Time) bool {
 	return time.Now().After(t)
 }
 
-func (f *Formatter) formatSubject(subject string, isPriority bool) string {
+func (f TabFormatter) formatSubject(subject string, isPriority bool) string {
 
 	red := color.New(color.FgRed)
 	magenta := color.New(color.FgMagenta)
@@ -137,7 +141,7 @@ func (f *Formatter) formatSubject(subject string, isPriority bool) string {
 
 }
 
-func (f *Formatter) formatCompleted(completed bool) string {
+func (f TabFormatter) formatCompleted(completed bool) string {
 	if completed {
 		return "[x]"
 	} else {
