@@ -3,7 +3,6 @@ package todolist
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -174,19 +173,13 @@ func (a *App) UnprioritizeTodo(input string) {
 }
 
 func (a *App) getId(input string) (int, *Todo) {
-	re, _ := regexp.Compile("\\d+")
-	if re.MatchString(input) {
-		id, _ := strconv.Atoi(re.FindString(input))
-		todo := a.TodoList.FindById(id)
-		if todo == nil {
-			fmt.Println("No such id.")
-			return -1, nil
-		}
-		return id, todo
-	} else {
-		fmt.Println("Invalid id.")
+	_, id, _ := Parser{input}.Parse()
+	todo := a.TodoList.FindById(id)
+	if todo == nil {
+		fmt.Println("No such id.")
 		return -1, nil
 	}
+	return id, todo
 }
 
 func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
