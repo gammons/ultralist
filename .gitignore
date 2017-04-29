@@ -3,3 +3,7 @@ dist
 
 # OSX metadata
 .DS_Store
+
+# test/build artifacts
+t
+.todos.json
