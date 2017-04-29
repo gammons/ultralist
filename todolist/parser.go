@@ -9,7 +9,9 @@ import (
 	"time"
 )
 
-type Parser struct{}
+type Parser struct {
+	input string
+}
 
 func (p *Parser) ParseNewTodo(input string) *Todo {
 	r, _ := regexp.Compile(`^(add|a)(\\ |) `)
@@ -26,6 +28,19 @@ func (p *Parser) ParseNewTodo(input string) *Todo {
 		todo.Due = p.Due(input, time.Now())
 	}
 	return todo
+}
+
+func (p Parser) Parse() (string, int, string) {
+	input := p.input
+	r := regexp.MustCompile(`(\w+) (\d+) (.*)`)
+	matches := r.FindStringSubmatch(input)
+	id, err := strconv.Atoi(matches[2])
+	if err != nil {
+		fmt.Println("Invalid id.")
+		id = -1
+	}
+
+	return matches[1], id, matches[3]
 }
 
 func (p *Parser) Subject(input string) string {
