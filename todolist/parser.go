@@ -34,10 +34,14 @@ func (p Parser) Parse() (string, int, string) {
 	input := p.input
 	r := regexp.MustCompile(`(\w+) (\d+) (.*)`)
 	matches := r.FindStringSubmatch(input)
+	if len(matches) < 4 {
+		fmt.Println("Could match command, id or subject")
+		return "", -1, input
+	}
 	id, err := strconv.Atoi(matches[2])
 	if err != nil {
 		fmt.Println("Invalid id.")
-		id = -1
+		return "", -1, input
 	}
 
 	return matches[1], id, matches[3]

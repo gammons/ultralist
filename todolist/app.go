@@ -91,6 +91,18 @@ func (a *App) UnarchiveTodo(input string) {
 	fmt.Println("Todo unarchived.")
 }
 
+func (a *App) EditTodoSubject(input string) {
+	a.Load()
+	_, id, subject := Parser{input}.Parse()
+	id, todo := a.getId(input)
+	if id == -1 {
+		return
+	}
+	todo.Subject = subject
+	a.Save()
+	fmt.Println("Todo subject updated.")
+}
+
 func (a *App) EditTodoDue(input string) {
 	a.Load()
 	id, todo := a.getId(input)
