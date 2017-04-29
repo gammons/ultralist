@@ -20,15 +20,15 @@ func main() {
 		os.Exit(0)
 	}
 	input := strings.Join(os.Args[1:], " ")
-	err := routeInput(os.Args[1], input)
+	app := todolist.NewApp()
+	err := routeInput(app, os.Args[1], input)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
-func routeInput(command string, input string) error {
-	app := todolist.NewApp()
+func routeInput(app *todolist.App, command string, input string) error {
 	switch command {
 	case "l", "list", "agenda":
 		app.ListTodos(input)
