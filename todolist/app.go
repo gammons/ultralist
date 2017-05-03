@@ -100,6 +100,10 @@ func (a *App) EditTodoSubject(input string) {
 	}
 
 	_, todo := a.getId(input)
+	if todo == nil {
+		fmt.Println("Todo not found.")
+		return
+	}
 	todo.Subject = subject
 
 	a.Save()
