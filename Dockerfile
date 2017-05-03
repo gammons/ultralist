@@ -1,6 +1,4 @@
 FROM golang:alpine
-MAINTAINER Quey-Liang Kao <s101062801@m101.nthu.edu.tw>
-# Last Modified: 2017/01/21
 
 RUN apk update && apk add git
 
