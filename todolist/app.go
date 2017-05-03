@@ -93,12 +93,15 @@ func (a *App) UnarchiveTodo(input string) {
 
 func (a *App) EditTodoSubject(input string) {
 	a.Load()
+
 	_, id, subject := Parser{input}.Parse()
-	id, todo := a.getId(input)
 	if id == -1 {
 		return
 	}
+
+	_, todo := a.getId(input)
 	todo.Subject = subject
+
 	a.Save()
 	fmt.Println("Todo subject updated.")
 }
