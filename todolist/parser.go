@@ -30,18 +30,20 @@ func (p *Parser) ParseNewTodo(input string) *Todo {
 	return todo
 }
 
-func (p Parser) Parse() (string, int, string) {
-	input := p.input
-	r := regexp.MustCompile(`(\w+) (\d+) (.*)`)
-	matches := r.FindStringSubmatch(input)
+// Parse accepts user input and splits it into subcommand, the todo id to
+// work on and the input to the subcommand function.
+func (p Parser) Parse() (subcommand string, id int, input string) {
+	r := regexp.MustCompile(`(\w+)\s+(\d+)\s+(.*)`)
+	matches := r.FindStringSubmatch(p.input)
 	if len(matches) < 4 {
 		fmt.Println("Could match command, id or subject")
-		return "", -1, input
+		return "", -1, ""
 	}
+
+	// because of the regexp match, this can never fail
 	id, err := strconv.Atoi(matches[2])
 	if err != nil {
-		fmt.Println("Invalid id.")
-		return "", -1, input
+		panic(err)
 	}
 
 	return matches[1], id, matches[3]
