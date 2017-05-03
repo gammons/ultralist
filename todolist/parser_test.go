@@ -170,6 +170,16 @@ func TestDueIntelligentlyChoosesCorrectYear(t *testing.T) {
 	assert.Equal("2017-01-10", parser.parseArbitraryDate("jan 10", decemberTime))
 }
 
+func TestParseCommandIdSubjectWhitespace(t *testing.T) {
+	assert := assert.New(t)
+	parser := Parser{"es 24\t     a new subject"}
+	command, id, subject := parser.Parse()
+
+	assert.Equal("es", command)
+	assert.Equal(24, id)
+	assert.Equal("a new subject", subject)
+}
+
 func TestParseCommandIdSubject(t *testing.T) {
 	assert := assert.New(t)
 	parser := Parser{"es 24 a new subject"}
@@ -188,5 +198,5 @@ func TestParseInvalidCommandIdSubject(t *testing.T) {
 
 	assert.Equal("", command)
 	assert.Equal(-1, id)
-	assert.Equal(input, subject)
+	assert.Equal("", subject)
 }
