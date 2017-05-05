@@ -140,10 +140,8 @@ func routeInput(command string, input string) {
 		app.UnarchiveTodo(input)
 	case "ac":
 		app.ArchiveCompleted()
-	case "e", "edit", "ed", "edit-date":
-		app.EditTodoDue(input)
-	case "es", "edit-subject":
-		app.EditTodoSubject(input)
+	case "e", "edit":
+		app.EditTodo(input)
 	case "ex", "expand":
 		app.ExpandTodo(input)
 	case "gc":

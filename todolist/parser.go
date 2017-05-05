@@ -9,9 +9,7 @@ import (
 	"time"
 )
 
-type Parser struct {
-	input string
-}
+type Parser struct {}
 
 func (p *Parser) ParseNewTodo(input string) *Todo {
 	r, _ := regexp.Compile(`^(add|a)(\\ |) `)
@@ -30,29 +28,25 @@ func (p *Parser) ParseNewTodo(input string) *Todo {
 	return todo
 }
 
-// Parse accepts user input and splits it into subcommand, the todo id to
-// work on and the subject for the subcommand function.
-func (p Parser) Parse() (subcommand string, id int, subject string) {
+func (p *Parser) ParseEditTodo(todo *Todo, input string) bool {
 	r := regexp.MustCompile(`(\w+)\s+(\d+)(\s+(.*))?`)
-	matches := r.FindStringSubmatch(p.input)
+	matches := r.FindStringSubmatch(input)
 	if len(matches) < 3 {
 		fmt.Println("Could match command or id")
-		return "", -1, ""
+		return false
 	}
 
-	subcommand = matches[1]
+	subjectOnly := matches[3]
 
-	// because of the regexp match, this can never fail
-	id, err := strconv.Atoi(matches[2])
-	if err != nil {
-		panic(err)
+	if p.Subject(subjectOnly) != "" {
+		todo.Subject = p.Subject(subjectOnly)
+		todo.Projects = p.Projects(subjectOnly)
+		todo.Contexts = p.Contexts(subjectOnly)
 	}
-
-	if len(matches) == 5 {
-		subject = matches[4]
+	if p.hasDue(subjectOnly) {
+		todo.Due = p.Due(subjectOnly, time.Now())
 	}
-
-	return
+	return true
 }
 
 func (p *Parser) Subject(input string) string {
