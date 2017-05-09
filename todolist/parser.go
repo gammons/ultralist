@@ -52,9 +52,9 @@ func (p *Parser) ParseEditTodo(todo *Todo, input string) bool {
 func (p *Parser) Subject(input string) string {
 	if strings.Contains(input, " due") {
 		index := strings.LastIndex(input, " due")
-		return input[0:index]
+		return strings.TrimSpace(input[0:index])
 	} else {
-		return input
+		return strings.TrimSpace(input)
 	}
 }
 
