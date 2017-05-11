@@ -32,7 +32,7 @@ func (p *Parser) ParseEditTodo(todo *Todo, input string) bool {
 	r := regexp.MustCompile(`(\w+)\s+(\d+)(\s+(.*))?`)
 	matches := r.FindStringSubmatch(input)
 	if len(matches) < 3 {
-		fmt.Println("Could match command or id")
+		fmt.Println("Could not match command or id")
 		return false
 	}
 
