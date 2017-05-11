@@ -174,7 +174,7 @@ func TestParseEditTodoJustDate(t *testing.T) {
 	assert := assert.New(t)
 	parser := &Parser{}
 	todo := NewTodo()
-	tomorrow := time.Now().AddDate(0,0,1).Format("2006-01-02")
+	tomorrow := time.Now().AddDate(0, 0, 1).Format("2006-01-02")
 
 	parser.ParseEditTodo(todo, "e 24 due tom")
 
@@ -186,7 +186,7 @@ func TestParseEditTodoJustDateDoesNotEditExistingSubject(t *testing.T) {
 	parser := &Parser{}
 	todo := NewTodo()
 	todo.Subject = "pick up the trash"
-	tomorrow := time.Now().AddDate(0,0,1).Format("2006-01-02")
+	tomorrow := time.Now().AddDate(0, 0, 1).Format("2006-01-02")
 
 	parser.ParseEditTodo(todo, "e 24 due tom")
 
@@ -209,8 +209,8 @@ func TestParseEditTodoSubjectUpdatesProjectsAndContexts(t *testing.T) {
 	assert := assert.New(t)
 	parser := &Parser{}
 	todo := &Todo{
-		Subject: "pick up the +trash with @dad",
-		Due: "2016-11-25",
+		Subject:  "pick up the +trash with @dad",
+		Due:      "2016-11-25",
 		Projects: []string{"trash"},
 		Contexts: []string{"dad"},
 	}
@@ -227,12 +227,12 @@ func TestParseEditTodoWithSubjectAndDue(t *testing.T) {
 	assert := assert.New(t)
 	parser := &Parser{}
 	todo := &Todo{
-		Subject: "pick up the +trash with @dad",
-		Due: "2016-11-25",
+		Subject:  "pick up the +trash with @dad",
+		Due:      "2016-11-25",
 		Projects: []string{"trash"},
 		Contexts: []string{"dad"},
 	}
-	tomorrow := time.Now().AddDate(0,0,1).Format("2006-01-02")
+	tomorrow := time.Now().AddDate(0, 0, 1).Format("2006-01-02")
 
 	parser.ParseEditTodo(todo, "e 24 get the +garbage with @mom due tom")
 
