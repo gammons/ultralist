@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-type Parser struct {}
+type Parser struct{}
 
 func (p *Parser) ParseNewTodo(input string) *Todo {
 	r, _ := regexp.Compile(`^(add|a)(\\ |) `)
