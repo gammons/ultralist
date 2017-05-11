@@ -3,7 +3,6 @@ package todolist
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -92,6 +91,28 @@ func (a *App) UnarchiveTodo(input string) {
 	fmt.Println("Todo unarchived.")
 }
 
+func (a *App) EditTodoSubject(input string) {
+	a.Load()
+
+	p := Parser{input}
+	_, id, subject := p.Parse()
+	if id == -1 {
+		return
+	}
+
+	_, todo := a.getId(input)
+	if todo == nil {
+		return
+	}
+
+	todo.Subject = subject
+	todo.Projects = p.Projects(subject)
+	todo.Contexts = p.Contexts(subject)
+
+	a.Save()
+	fmt.Println("Todo subject updated.")
+}
+
 func (a *App) EditTodoDue(input string) {
 	a.Load()
 	id, todo := a.getId(input)
@@ -174,19 +195,13 @@ func (a *App) UnprioritizeTodo(input string) {
 }
 
 func (a *App) getId(input string) (int, *Todo) {
-	re, _ := regexp.Compile("\\d+")
-	if re.MatchString(input) {
-		id, _ := strconv.Atoi(re.FindString(input))
-		todo := a.TodoList.FindById(id)
-		if todo == nil {
-			fmt.Println("No such id.")
-			return -1, nil
-		}
-		return id, todo
-	} else {
-		fmt.Println("Invalid id.")
+	_, id, _ := Parser{input}.Parse()
+	todo := a.TodoList.FindById(id)
+	if todo == nil {
+		fmt.Println("No such id.")
 		return -1, nil
 	}
+	return id, todo
 }
 
 func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
