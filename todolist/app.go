@@ -99,7 +99,7 @@ func (a *App) EditTodo(input string) {
 	}
 	parser := &Parser{}
 
-	if (parser.ParseEditTodo(todo, input)) {
+	if parser.ParseEditTodo(todo, input) {
 		a.Save()
 		fmt.Println("Todo updated.")
 	}
