@@ -169,3 +169,73 @@ func TestDueIntelligentlyChoosesCorrectYear(t *testing.T) {
 	assert.Equal("2017-01-10", parser.parseArbitraryDate("jan 10", septemberTime))
 	assert.Equal("2017-01-10", parser.parseArbitraryDate("jan 10", decemberTime))
 }
+
+func TestParseEditTodoJustDate(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	todo := NewTodo()
+	tomorrow := time.Now().AddDate(0, 0, 1).Format("2006-01-02")
+
+	parser.ParseEditTodo(todo, "e 24 due tom")
+
+	assert.Equal(todo.Due, tomorrow)
+}
+
+func TestParseEditTodoJustDateDoesNotEditExistingSubject(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	todo := NewTodo()
+	todo.Subject = "pick up the trash"
+	tomorrow := time.Now().AddDate(0, 0, 1).Format("2006-01-02")
+
+	parser.ParseEditTodo(todo, "e 24 due tom")
+
+	assert.Equal(todo.Due, tomorrow)
+	assert.Equal(todo.Subject, "pick up the trash")
+}
+
+func TestParseEditTodoJustSubject(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	todo := &Todo{Subject: "pick up the trash", Due: "2016-11-25"}
+
+	parser.ParseEditTodo(todo, "e 24 changed the todo")
+
+	assert.Equal(todo.Due, "2016-11-25")
+	assert.Equal(todo.Subject, "changed the todo")
+}
+
+func TestParseEditTodoSubjectUpdatesProjectsAndContexts(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	todo := &Todo{
+		Subject:  "pick up the +trash with @dad",
+		Due:      "2016-11-25",
+		Projects: []string{"trash"},
+		Contexts: []string{"dad"},
+	}
+
+	parser.ParseEditTodo(todo, "e 24 get the +garbage with @mom")
+
+	assert.Equal(todo.Due, "2016-11-25")
+	assert.Equal(todo.Subject, "get the +garbage with @mom")
+	assert.Equal(todo.Projects, []string{"garbage"})
+	assert.Equal(todo.Contexts, []string{"mom"})
+}
+
+func TestParseEditTodoWithSubjectAndDue(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	todo := &Todo{
+		Subject:  "pick up the +trash with @dad",
+		Due:      "2016-11-25",
+		Projects: []string{"trash"},
+		Contexts: []string{"dad"},
+	}
+	tomorrow := time.Now().AddDate(0, 0, 1).Format("2006-01-02")
+
+	parser.ParseEditTodo(todo, "e 24 get the +garbage with @mom due tom")
+
+	assert.Equal(todo.Due, tomorrow)
+	assert.Equal(todo.Subject, "get the +garbage with @mom")
+}

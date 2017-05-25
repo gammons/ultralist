@@ -28,12 +28,33 @@ func (p *Parser) ParseNewTodo(input string) *Todo {
 	return todo
 }
 
+func (p *Parser) ParseEditTodo(todo *Todo, input string) bool {
+	r := regexp.MustCompile(`(\w+)\s+(\d+)(\s+(.*))?`)
+	matches := r.FindStringSubmatch(input)
+	if len(matches) < 3 {
+		fmt.Println("Could not match command or id")
+		return false
+	}
+
+	subjectOnly := matches[3]
+
+	if p.Subject(subjectOnly) != "" {
+		todo.Subject = p.Subject(subjectOnly)
+		todo.Projects = p.Projects(subjectOnly)
+		todo.Contexts = p.Contexts(subjectOnly)
+	}
+	if p.hasDue(subjectOnly) {
+		todo.Due = p.Due(subjectOnly, time.Now())
+	}
+	return true
+}
+
 func (p *Parser) Subject(input string) string {
 	if strings.Contains(input, " due") {
 		index := strings.LastIndex(input, " due")
-		return input[0:index]
+		return strings.TrimSpace(input[0:index])
 	} else {
-		return input
+		return strings.TrimSpace(input)
 	}
 }
 

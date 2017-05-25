@@ -141,7 +141,7 @@ func routeInput(command string, input string) {
 	case "ac":
 		app.ArchiveCompleted()
 	case "e", "edit":
-		app.EditTodoDue(input)
+		app.EditTodo(input)
 	case "ex", "expand":
 		app.ExpandTodo(input)
 	case "gc":

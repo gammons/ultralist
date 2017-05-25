@@ -5,7 +5,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type App struct {
@@ -92,16 +91,18 @@ func (a *App) UnarchiveTodo(input string) {
 	fmt.Println("Todo unarchived.")
 }
 
-func (a *App) EditTodoDue(input string) {
+func (a *App) EditTodo(input string) {
 	a.Load()
 	id, todo := a.getId(input)
 	if id == -1 {
 		return
 	}
 	parser := &Parser{}
-	todo.Due = parser.Due(input, time.Now())
-	a.Save()
-	fmt.Println("Todo due date updated.")
+
+	if parser.ParseEditTodo(todo, input) {
+		a.Save()
+		fmt.Println("Todo updated.")
+	}
 }
 
 func (a *App) ExpandTodo(input string) {
@@ -181,11 +182,14 @@ func (a *App) getId(input string) (int, *Todo) {
 		if todo == nil {
 			fmt.Println("No such id.")
 			return -1, nil
+
 		}
 		return id, todo
+
 	} else {
 		fmt.Println("Invalid id.")
 		return -1, nil
+
 	}
 }
 
