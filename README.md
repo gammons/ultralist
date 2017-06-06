@@ -15,7 +15,7 @@ Todolist is a simple and very fast task manager for the command line.  It is bas
 
 ## The frontend webapp
 
-The frontend is an open source React/Redux based app that is hosted at github.com/gammons/todolist_frontend.
+The frontend is an open source React/Redux based app that is hosted at https://github.com/gammons/todolist_frontend.
 
 ## Is it good?
 
