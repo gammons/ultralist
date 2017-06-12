@@ -17,17 +17,21 @@ func NewFileStore() *FileStore {
 	return &FileStore{FileLocation: "", Loaded: false}
 }
 
-func getLocation() string {
-	localrepo := ".todos.json"
-	usr, _ := user.Current()
-	homerepo := fmt.Sprintf("%s/.todos.json", usr.HomeDir)
-	_, ferr := os.Stat(localrepo)
-
-	if ferr == nil {
-		return localrepo
-	} else {
-		return homerepo
+func (f *FileStore) Initialize() {
+	if f.FileLocation == "" {
+		f.FileLocation = ".todos.json"
 	}
+
+	_, err := ioutil.ReadFile(f.FileLocation)
+	if err == nil {
+		fmt.Println("It looks like a .todos.json file already exists!  Doing nothing.")
+		os.Exit(0)
+	}
+	if err := ioutil.WriteFile(f.FileLocation, []byte("[]"), 0644); err != nil {
+		fmt.Println("Error writing json file", err)
+		os.Exit(1)
+	}
+	fmt.Println("Todo repo initialized.")
 }
 
 func (f *FileStore) Load() ([]*Todo, error) {
@@ -55,26 +59,23 @@ func (f *FileStore) Load() ([]*Todo, error) {
 	return todos, nil
 }
 
-func (f *FileStore) Initialize() {
-	if f.FileLocation == "" {
-		f.FileLocation = ".todos.json"
-	}
-
-	_, err := ioutil.ReadFile(f.FileLocation)
-	if err == nil {
-		fmt.Println("It looks like a .todos.json file already exists!  Doing nothing.")
-		os.Exit(0)
-	}
-	if err := ioutil.WriteFile(f.FileLocation, []byte("[]"), 0644); err != nil {
-		fmt.Println("Error writing json file", err)
-		os.Exit(1)
-	}
-	fmt.Println("Todo repo initialized.")
-}
-
 func (f *FileStore) Save(todos []*Todo) {
 	data, _ := json.Marshal(todos)
 	if err := ioutil.WriteFile(f.FileLocation, []byte(data), 0644); err != nil {
 		fmt.Println("Error writing json file", err)
 	}
 }
+
+func getLocation() string {
+	localrepo := ".todos.json"
+	usr, _ := user.Current()
+	homerepo := fmt.Sprintf("%s/.todos.json", usr.HomeDir)
+	_, ferr := os.Stat(localrepo)
+
+	if ferr == nil {
+		return localrepo
+	} else {
+		return homerepo
+	}
+}
+
