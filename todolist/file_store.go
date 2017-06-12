@@ -44,6 +44,7 @@ func (f *FileStore) Load() ([]*Todo, error) {
 		fmt.Println("No todo file found!")
 		fmt.Println("Initialize a new todo repo by running 'todo init'")
 		os.Exit(0)
+		return nil, err
 	}
 
 	var todos []*Todo
@@ -51,6 +52,7 @@ func (f *FileStore) Load() ([]*Todo, error) {
 	if jerr != nil {
 		fmt.Println("Error reading json data", jerr)
 		os.Exit(1)
+		return nil, jerr
 	}
 	f.Loaded = true
 
