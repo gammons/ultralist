@@ -86,7 +86,8 @@ func (p *Parser) Contexts(input string) []string {
 func (p *Parser) hasDue(input string) bool {
 	r1, _ := regexp.Compile(`due \w+$`)
 	r2, _ := regexp.Compile(`due \w+ \d+$`)
-	return (r1.MatchString(input) || r2.MatchString(input))
+	r3, _ := regexp.Compile(`due \d+ \w+$`)
+	return (r1.MatchString(input) || r2.MatchString(input) || r3.MatchString(input))
 }
 
 func (p *Parser) Due(input string, day time.Time) string {
@@ -137,9 +138,8 @@ func (p *Parser) parseArbitraryDate(_date string, pivot time.Time) string {
 	d2 := p.parseArbitraryDateWithYear(_date, pivot.Year()+1)
 	if d2.Sub(pivot) > diff1 {
 		return d1.Format("2006-01-02")
-	} else {
-		return d2.Format("2006-01-02")
 	}
+	return d2.Format("2006-01-02")
 }
 
 func (p *Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {

@@ -8,7 +8,7 @@ import (
 )
 
 type App struct {
-	TodoStore *FileStore
+	TodoStore Store
 	TodoList  *TodoList
 }
 

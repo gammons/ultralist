@@ -75,33 +75,41 @@ func TestParseContexts(t *testing.T) {
 }
 
 func TestDueToday(t *testing.T) {
+	assert := assert.New(t)
 	parser := &Parser{}
+	expectedDate := bod(time.Now()).Format("2006-01-02")
+
 	todo := parser.ParseNewTodo("do this thing with @bob and @mary due today")
-	if todo.Due != bod(time.Now()).Format("2006-01-02") {
-		fmt.Println("Date is different", todo.Due, time.Now())
-	}
+	assert.Equal(expectedDate, todo.Due)
+
 	todo = parser.ParseNewTodo("do this thing with @bob and @mary due tod")
-	if todo.Due != bod(time.Now()).Format("2006-01-02") {
-		fmt.Println("Date is different", todo.Due, time.Now())
-	}
+	assert.Equal(expectedDate, todo.Due)
 }
 
 func TestDueTomorrow(t *testing.T) {
+	assert := assert.New(t)
 	parser := &Parser{}
+	expectedDate := bod(time.Now()).AddDate(0, 0, 1).Format("2006-01-02")
+
 	todo := parser.ParseNewTodo("do this thing with @bob and @mary due tomorrow")
-	if todo.Due != bod(time.Now()).AddDate(0, 0, 1).Format("2006-01-02") {
-		fmt.Println("Date is different", todo.Due, time.Now())
-	}
+	assert.Equal(expectedDate, todo.Due)
+
 	todo = parser.ParseNewTodo("do this thing with @bob and @mary due tom")
-	if todo.Due != bod(time.Now()).AddDate(0, 0, 1).Format("2006-01-02") {
-		fmt.Println("Date is different", todo.Due, time.Now())
-	}
+	assert.Equal(expectedDate, todo.Due)
 }
 
 func TestDueSpecific(t *testing.T) {
 	assert := assert.New(t)
 	parser := &Parser{}
 	todo := parser.ParseNewTodo("do this thing with @bob and @mary due jun 1")
+	year := strconv.Itoa(time.Now().Year())
+	assert.Equal(fmt.Sprintf("%s-06-01", year), todo.Due)
+}
+
+func TestDueSpecificEuropeanDate(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	todo := parser.ParseNewTodo("do this thing with @bob and @mary due 1 jun")
 	year := strconv.Itoa(time.Now().Year())
 	assert.Equal(fmt.Sprintf("%s-06-01", year), todo.Due)
 }
@@ -147,6 +155,14 @@ func TestDueOnSpecificDate(t *testing.T) {
 	year := strconv.Itoa(time.Now().Year())
 	assert.Equal(fmt.Sprintf("%s-05-02", year), parser.Due("due may 2", time.Now()))
 	assert.Equal(fmt.Sprintf("%s-06-01", year), parser.Due("due jun 1", time.Now()))
+}
+
+func TestDueOnSpecificDateEuropeFormat(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	year := strconv.Itoa(time.Now().Year())
+	assert.Equal(fmt.Sprintf("%s-05-02", year), parser.Due("due 2 may", time.Now()))
+	assert.Equal(fmt.Sprintf("%s-06-01", year), parser.Due("due 1 jun", time.Now()))
 }
 
 func TestDueOnSpecificDateEuropean(t *testing.T) {
