@@ -96,3 +96,22 @@ func TestFilterDay(t *testing.T) {
 	assert.Equal(1, len(filtered))
 	assert.Equal(1, filtered[0].Id)
 }
+
+func TestFilterAgenda(t *testing.T) {
+	assert := assert.New(t)
+
+	var todos []*Todo
+
+	completedTodo := &Todo{Id: 1, Subject: "completed", Completed: true, Due: time.Now().Format("2006-01-02")}
+	uncompletedTodo := &Todo{Id: 2, Subject: "uncompleted", Due: time.Now().Format("2006-01-02")}
+
+	todos = append(todos, completedTodo)
+	todos = append(todos, uncompletedTodo)
+
+	filter := NewDateFilter(todos)
+
+	filtered := filter.filterAgenda(time.Now())
+
+	assert.Equal(1, len(filtered))
+	assert.Equal(2, filtered[0].Id)
+}
