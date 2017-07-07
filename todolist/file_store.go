@@ -22,6 +22,12 @@ func NewFileStore() *FileStore {
 }
 
 func (f *FileStore) Initialize() {
+	// TODO This argument checking is a little clunky
+	if len(os.Args) > 2 && os.Args[2] == "-g" {
+		base := stddirs.DataDir(APP_ID)
+		f.FileLocation = filepath.Join(base, "todos.json")
+	}
+
 	if f.FileLocation == "" {
 		f.FileLocation = ".todos.json"
 	}
@@ -31,6 +37,7 @@ func (f *FileStore) Initialize() {
 		fmt.Println("It looks like a .todos.json file already exists!  Doing nothing.")
 		os.Exit(0)
 	}
+	os.MkdirAll(filepath.Dir(f.FileLocation), 0700)
 	if err := ioutil.WriteFile(f.FileLocation, []byte("[]"), 0644); err != nil {
 		fmt.Println("Error writing json file", err)
 		os.Exit(1)
