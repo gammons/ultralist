@@ -60,6 +60,9 @@ func (f *DateFilter) filterAgenda(pivot time.Time) []*Todo {
 		if todo.Due == "" {
 			continue
 		}
+		if todo.Completed {
+			continue
+		}
 		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
 		if dueTime.Before(pivot) || todo.Due == pivot.Format("2006-01-02") {
 			ret = append(ret, todo)
