@@ -57,7 +57,7 @@ func (f *DateFilter) filterAgenda(pivot time.Time) []*Todo {
 	var ret []*Todo
 
 	for _, todo := range f.Todos {
-		if todo.Due == "" {
+		if todo.Due == "" || todo.Completed {
 			continue
 		}
 		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
