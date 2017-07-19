@@ -68,7 +68,7 @@ func (f *DateFilter) filterAgenda(pivot time.Time) []*Todo {
 	return ret
 }
 
-func (f *DateFilter) filterToday(pivot time.Time) []*Todo {
+func (f *DateFilter) filterToExactDate(pivot time.Time) []*Todo {
 	var ret []*Todo
 	for _, todo := range f.Todos {
 		if todo.Due == pivot.Format("2006-01-02") {
@@ -76,6 +76,11 @@ func (f *DateFilter) filterToday(pivot time.Time) []*Todo {
 		}
 	}
 	return ret
+}
+
+
+func (f *DateFilter) filterToday(pivot time.Time) []*Todo {
+	return f.filterToExactDate(pivot)
 }
 
 func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []*Todo {
@@ -92,14 +97,8 @@ func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []*Todo {
 }
 
 func (f *DateFilter) filterTomorrow(pivot time.Time) []*Todo {
-	var ret []*Todo
 	pivot = pivot.AddDate(0, 0, 1)
-	for _, todo := range f.Todos {
-		if todo.Due == pivot.Format("2006-01-02") {
-			ret = append(ret, todo)
-		}
-	}
-	return ret
+	return f.filterToExactDate(pivot)
 }
 
 func (f *DateFilter) filterThisWeek(pivot time.Time) []*Todo {
