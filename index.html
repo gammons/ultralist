@@ -310,12 +310,41 @@ Todo added.
           <p><code>todolist l by c</code>- List all todos by context</p>
 
           <a class="bk" name="editing"><h2>Editing todos</h2></a>
-          <p>Todolist currently supports editing a due date only.  If you need to fully edit a todo, it is recommended to delete and re-add the todo.</p>
-          <p><code>todolist e [id] due [due]</code> - edit a todo's due date. </p>
-          <p>Examples:</p>
+          <p>You can edit a todo's subject or due date The syntax is as follows:</p>
+          <p><code>todolist e [id] <subject> due [due]</code></p>
+
+          <b>Editing a todo's subject</b>
+          <p>When if you do not include <code>due [date]</code>, then just the subject will be edited.</p>
+          <code>todolist e 56 chat with +bob</code> - rewrite the subject, leaving due date alone
+
+          <b>Editing a todo's due date</b>
+          <p>if you only pass <code>due [date]</code>, the todo's due date will be updated, and the subject will remain the same.</p>
           <ul>
-            <li><code>todolist e 133 due tod</code> - edit todo with id 133 and set its due date to today.</li>
-            <li><code>todolist e 56 due jun 20</code> - edit todo with id 56 and set its due date to June 20..</li>
+            <li>
+              <code>todolist e 56 due tom</code> - re-set a todo's due date
+            </li>
+            <li>
+              <code>todolist e 56 jun 20</code> - re-set a todo's due date
+            </li>
+            <li>
+              <code>todolist e 56 jun 20</code> - re-set a todo's due date
+            </li>
+          </ul>
+
+          <b>Removing a due date</b>
+          <p>Remove a due date altogether by using <code>due none</code>.</p>
+          <ul>
+            <li>
+              <code>todolist e 56 due none</code> - remove a due date
+            </li>
+          </ul>
+
+          <b>Editing a todo's subject and due date</b>
+          <p>you can also edit a todo's subject and due date all at once.</p>
+          <ul>
+            <li>
+              <code>todolist e 56 take hang-gliding lessons due tom</code>
+            </li>
           </ul>
 
           <a class="bk" name="prioritizing"><h2>Prioritizing todos</h2></a>
