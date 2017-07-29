@@ -82,6 +82,11 @@ func (f *DateFilter) filterToday(pivot time.Time) []*Todo {
 	return f.filterToExactDate(pivot)
 }
 
+func (f *DateFilter) filterTomorrow(pivot time.Time) []*Todo {
+	pivot = pivot.AddDate(0, 0, 1)
+	return f.filterToExactDate(pivot)
+}
+
 func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []*Todo {
 	var ret []*Todo
 	filtered := f.filterThisWeek(pivot)
@@ -93,11 +98,6 @@ func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []*Todo {
 
 	}
 	return ret
-}
-
-func (f *DateFilter) filterTomorrow(pivot time.Time) []*Todo {
-	pivot = pivot.AddDate(0, 0, 1)
-	return f.filterToExactDate(pivot)
 }
 
 func (f *DateFilter) filterBetweenDatesInclusive(begin, end time.Time) []*Todo {
