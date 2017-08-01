@@ -17,7 +17,7 @@ func TestFilterToday(t *testing.T) {
 	todos = append(todos, tomorrowTodo)
 
 	filter := NewDateFilter(todos)
-	filtered := filter.filterToday(time.Now())
+	filtered := filter.filterDueToday(time.Now())
 
 	assert.Equal(1, len(filtered))
 	assert.Equal(1, filtered[0].Id)
@@ -33,7 +33,7 @@ func TestFilterTomorrow(t *testing.T) {
 	todos = append(todos, tomorrowTodo)
 
 	filter := NewDateFilter(todos)
-	filtered := filter.filterTomorrow(time.Now())
+	filtered := filter.filterDueTomorrow(time.Now())
 
 	assert.Equal(1, len(filtered))
 	assert.Equal(2, filtered[0].Id)
