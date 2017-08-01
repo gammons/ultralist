@@ -18,12 +18,17 @@ func filterOnDue(todo *Todo) string {
 	return todo.Due
 }
 
+func filterOnCompletedDate(todo *Todo) string {
+	return todo.CompletedDateToDate()
+}
+
 func (f *DateFilter) FilterDate(input string) []*Todo {
 	agendaRegex, _ := regexp.Compile(`agenda.*$`)
 	if agendaRegex.MatchString(input) {
 		return f.filterAgenda(bod(time.Now()))
 	}
 
+	// filter due items
 	r, _ := regexp.Compile(`due .*$`)
 	match := r.FindString(input)
 	switch {
@@ -54,6 +59,17 @@ func (f *DateFilter) FilterDate(input string) []*Todo {
 	case match == "overdue":
 		return f.filterOverdue(bod(time.Now()))
 	}
+
+	// filter completed items
+	r, _ = regexp.Compile(`completed .*$`)
+	match = r.FindString(input)
+	switch {
+	case match == "completed tod" || match == "completed today":
+		return f.filterCompletedToday(bod(time.Now()))
+	case match == "completed this week":
+		return f.filterCompletedThisWeek(bod(time.Now()))
+	}
+
 	return f.Todos
 }
 
@@ -91,6 +107,10 @@ func (f *DateFilter) filterDueTomorrow(pivot time.Time) []*Todo {
 	return f.filterToExactDate(pivot, filterOnDue)
 }
 
+func (f *DateFilter) filterCompletedToday(pivot time.Time) []*Todo {
+	return f.filterToExactDate(pivot, filterOnCompletedDate)
+}
+
 func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []*Todo {
 	var ret []*Todo
 	filtered := f.filterThisWeek(pivot)
@@ -104,11 +124,11 @@ func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []*Todo {
 	return ret
 }
 
-func (f *DateFilter) filterBetweenDatesInclusive(begin, end time.Time) []*Todo {
+func (f *DateFilter) filterBetweenDatesInclusive(begin, end time.Time, filterOn func(*Todo) string) []*Todo {
 	var ret []*Todo
 
 	for _, todo := range f.Todos {
-		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
+		dueTime, _ := time.ParseInLocation("2006-01-02", filterOn(todo), f.Location)
 		if (begin.Before(dueTime) || begin.Equal(dueTime)) && end.After(dueTime) {
 			ret = append(ret, todo)
 		}
@@ -121,7 +141,15 @@ func (f *DateFilter) filterThisWeek(pivot time.Time) []*Todo {
 	begin := bod(f.FindSunday(pivot))
 	end := begin.AddDate(0, 0, 7)
 
-	return f.filterBetweenDatesInclusive(begin, end)
+	return f.filterBetweenDatesInclusive(begin, end, filterOnDue)
+}
+
+func (f *DateFilter) filterCompletedThisWeek(pivot time.Time) []*Todo {
+
+	begin := bod(f.FindSunday(pivot))
+	end := begin.AddDate(0, 0, 7)
+
+	return f.filterBetweenDatesInclusive(begin, end, filterOnCompletedDate)
 }
 
 func (f *DateFilter) filterBetweenDatesExclusive(begin, end time.Time) []*Todo {
