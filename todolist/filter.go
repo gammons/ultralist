@@ -31,6 +31,13 @@ func (t *TodoFilter) isFilteringByContexts(input string) bool {
 }
 
 func (f *TodoFilter) filterArchived(input string) []*Todo {
+
+	// do not filter archived if want completed items
+	completedRegex, _ := regexp.Compile(`completed`)
+	if completedRegex.MatchString(input) {
+		return f.Todos
+	}
+
 	r, _ := regexp.Compile(`l archived$`)
 	if r.MatchString(input) {
 		return f.getArchived()
