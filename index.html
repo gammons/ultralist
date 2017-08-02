@@ -55,20 +55,30 @@
 
         <div class="col-md-9">
 					<div class="card card-block">
-						<h3 class="card-title">Download todolist v0.5.2</h3>
+						<h3 class="card-title">Download todolist v0.6</h3>
             <p class="card-text">
               <b>Major Changes:</b>
+              <p>The biggest change is that you can now edit todos straight from the command line. It maintains backwards compatibility with how it previously functioned as well:</p>
               <ul>
-                <li>Will use .todos.json in home directory if .todos.json does not exist in your current directory.</li>
+                <li><code>todolist e 25 due tom</code> - Updates due date, but leaves subject alone</li>
+                <li><code>todolist e 25 visit my Dad due tom</code> - Updates due date and subject</li>
+                <li><code>todolist e 25 visit my Dad</code> - Updates subject, but leaves due date alone</li>
+              </ul>
+
+              <b>Other changes:</b>
+              <ul>
+                <li>CompletedDate is now stored for completed todos, in .todos.json.</li>
+                <li>support for <code>due last week</code></li>
               </ul>
             </p>
 						<p class="card-text">
               The latest version of Todolist (including building the source on your own) is on the Github project page.
             </p>
-						<a href="https://github.com/gammons/todolist/releases" class="btn btn-primary">Download v0.5.2</a>
+						<a href="https://github.com/gammons/todolist/releases" class="btn btn-primary">Download v0.6</a>
 					</div>
 
           <h2 class="card-title">News</h2>
+          <p><strong>May 25 2017</strong>: Todolist v0.6 released!</p>
           <p><strong>Mar 14 2017</strong>: Todolist v0.5.2 released!</p>
           <p><strong>Mar 7 2017</strong>: Todolist v0.5.1 released!</p>
           <p><strong>Aug 28th 2016</strong>: Todolist web has been updated to look + perform much nicer.</p>
