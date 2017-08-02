@@ -14,19 +14,28 @@ func NewDateFilter(todos []*Todo) *DateFilter {
 	return &DateFilter{Todos: todos, Location: time.Now().Location()}
 }
 
+func filterOnDue(todo *Todo) string {
+	return todo.Due
+}
+
+func filterOnCompletedDate(todo *Todo) string {
+	return todo.CompletedDateToDate()
+}
+
 func (f *DateFilter) FilterDate(input string) []*Todo {
 	agendaRegex, _ := regexp.Compile(`agenda.*$`)
 	if agendaRegex.MatchString(input) {
 		return f.filterAgenda(bod(time.Now()))
 	}
 
+	// filter due items
 	r, _ := regexp.Compile(`due .*$`)
 	match := r.FindString(input)
 	switch {
 	case match == "due tod" || match == "due today":
-		return f.filterToday(bod(time.Now()))
+		return f.filterDueToday(bod(time.Now()))
 	case match == "due tom" || match == "due tomorrow":
-		return f.filterTomorrow(bod(time.Now()))
+		return f.filterDueTomorrow(bod(time.Now()))
 	case match == "due sun" || match == "due sunday":
 		return f.filterDay(bod(time.Now()), time.Sunday)
 	case match == "due mon" || match == "due monday":
@@ -50,6 +59,17 @@ func (f *DateFilter) FilterDate(input string) []*Todo {
 	case match == "overdue":
 		return f.filterOverdue(bod(time.Now()))
 	}
+
+	// filter completed items
+	r, _ = regexp.Compile(`completed .*$`)
+	match = r.FindString(input)
+	switch {
+	case match == "completed tod" || match == "completed today":
+		return f.filterCompletedToday(bod(time.Now()))
+	case match == "completed this week":
+		return f.filterCompletedThisWeek(bod(time.Now()))
+	}
+
 	return f.Todos
 }
 
@@ -68,23 +88,27 @@ func (f *DateFilter) filterAgenda(pivot time.Time) []*Todo {
 	return ret
 }
 
-func (f *DateFilter) filterToExactDate(pivot time.Time) []*Todo {
+func (f *DateFilter) filterToExactDate(pivot time.Time, filterOn func(*Todo) string) []*Todo {
 	var ret []*Todo
 	for _, todo := range f.Todos {
-		if todo.Due == pivot.Format("2006-01-02") {
+		if filterOn(todo) == pivot.Format("2006-01-02") {
 			ret = append(ret, todo)
 		}
 	}
 	return ret
 }
 
-func (f *DateFilter) filterToday(pivot time.Time) []*Todo {
-	return f.filterToExactDate(pivot)
+func (f *DateFilter) filterDueToday(pivot time.Time) []*Todo {
+	return f.filterToExactDate(pivot, filterOnDue)
 }
 
-func (f *DateFilter) filterTomorrow(pivot time.Time) []*Todo {
+func (f *DateFilter) filterDueTomorrow(pivot time.Time) []*Todo {
 	pivot = pivot.AddDate(0, 0, 1)
-	return f.filterToExactDate(pivot)
+	return f.filterToExactDate(pivot, filterOnDue)
+}
+
+func (f *DateFilter) filterCompletedToday(pivot time.Time) []*Todo {
+	return f.filterToExactDate(pivot, filterOnCompletedDate)
 }
 
 func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []*Todo {
@@ -100,11 +124,11 @@ func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []*Todo {
 	return ret
 }
 
-func (f *DateFilter) filterBetweenDatesInclusive(begin, end time.Time) []*Todo {
+func (f *DateFilter) filterBetweenDatesInclusive(begin, end time.Time, filterOn func(*Todo) string) []*Todo {
 	var ret []*Todo
 
 	for _, todo := range f.Todos {
-		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
+		dueTime, _ := time.ParseInLocation("2006-01-02", filterOn(todo), f.Location)
 		if (begin.Before(dueTime) || begin.Equal(dueTime)) && end.After(dueTime) {
 			ret = append(ret, todo)
 		}
@@ -117,7 +141,15 @@ func (f *DateFilter) filterThisWeek(pivot time.Time) []*Todo {
 	begin := bod(f.FindSunday(pivot))
 	end := begin.AddDate(0, 0, 7)
 
-	return f.filterBetweenDatesInclusive(begin, end)
+	return f.filterBetweenDatesInclusive(begin, end, filterOnDue)
+}
+
+func (f *DateFilter) filterCompletedThisWeek(pivot time.Time) []*Todo {
+
+	begin := bod(f.FindSunday(pivot))
+	end := begin.AddDate(0, 0, 7)
+
+	return f.filterBetweenDatesInclusive(begin, end, filterOnCompletedDate)
 }
 
 func (f *DateFilter) filterBetweenDatesExclusive(begin, end time.Time) []*Todo {

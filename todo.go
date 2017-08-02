@@ -58,6 +58,14 @@ func usage() {
 	yellow.Println("\ttodo agenda")
 	fmt.Println("\tlists all todos where the due date is today or in the past\n")
 
+	fmt.Println("  todo l completed (tod|today|this week)")
+	cyan.Println("  Filtering by date:\n")
+
+	yellow.Println("\ttodo l completed (tod|today)")
+	fmt.Println("\tlists all todos that were completed today\n")
+	yellow.Println("\ttodo l completed this week")
+	fmt.Println("\tlists all todos that were completed this week\n")
+
 	cyan.Println("  Grouping:")
 	fmt.Println("  You can group todos by context or project.")
 	yellow.Println("\ttodo l by c")

@@ -17,7 +17,7 @@ func TestFilterToday(t *testing.T) {
 	todos = append(todos, tomorrowTodo)
 
 	filter := NewDateFilter(todos)
-	filtered := filter.filterToday(time.Now())
+	filtered := filter.filterDueToday(time.Now())
 
 	assert.Equal(1, len(filtered))
 	assert.Equal(1, filtered[0].Id)
@@ -33,10 +33,40 @@ func TestFilterTomorrow(t *testing.T) {
 	todos = append(todos, tomorrowTodo)
 
 	filter := NewDateFilter(todos)
-	filtered := filter.filterTomorrow(time.Now())
+	filtered := filter.filterDueTomorrow(time.Now())
 
 	assert.Equal(1, len(filtered))
 	assert.Equal(2, filtered[0].Id)
+}
+
+func TestFilterCompletedToday(t *testing.T) {
+	assert := assert.New(t)
+
+	var todos []*Todo
+	todoNo1 := &Todo{Id: 1, Subject: "one", Due: time.Now().Format("2006-01-02")}
+	todoNo2 := &Todo{Id: 2, Subject: "two", Due: time.Now().Format("2006-01-02")}
+
+	todos = append(todos, todoNo1)
+	todos = append(todos, todoNo2)
+
+	filter := NewDateFilter(todos)
+	filtered := filter.filterCompletedToday(time.Now())
+
+	assert.Equal(0, len(filtered))
+
+	todoNo1.Complete()
+	filtered = filter.filterCompletedToday(time.Now())
+
+	assert.Equal(1, len(filtered))
+	assert.Equal(1, filtered[0].Id)
+
+	todoNo1.Uncomplete()
+	todoNo2.Complete()
+	filtered = filter.filterCompletedToday(time.Now())
+
+	assert.Equal(1, len(filtered))
+	assert.Equal(2, filtered[0].Id)
+
 }
 
 func TestFilterThisWeek(t *testing.T) {
@@ -55,6 +85,30 @@ func TestFilterThisWeek(t *testing.T) {
 
 	assert.Equal(1, len(filtered))
 	assert.Equal(2, filtered[0].Id)
+}
+
+func TestFilterCompletedThisWeek(t *testing.T) {
+	assert := assert.New(t)
+
+	var todos []*Todo
+	lastWeekTodo := &Todo{Id: 1, Subject: "two", Due: time.Now().AddDate(0, 0, -7).Format("2006-01-02")}
+	todayTodo := &Todo{Id: 2, Subject: "one", Due: time.Now().Format("2006-01-02")}
+	nextWeekTodo := &Todo{Id: 3, Subject: "two", Due: time.Now().AddDate(0, 0, 8).Format("2006-01-02")}
+	todos = append(todos, lastWeekTodo)
+	todos = append(todos, todayTodo)
+	todos = append(todos, nextWeekTodo)
+
+	filter := NewDateFilter(todos)
+	filtered := filter.filterCompletedThisWeek(time.Now())
+
+	assert.Equal(0, len(filtered))
+
+	todayTodo.Complete()
+	filtered = filter.filterCompletedThisWeek(time.Now())
+
+	assert.Equal(1, len(filtered))
+	assert.Equal(2, filtered[0].Id)
+
 }
 
 func TestFilterOverdue(t *testing.T) {
