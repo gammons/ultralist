@@ -54,14 +54,12 @@ func TestFilterCompletedToday(t *testing.T) {
 
 	assert.Equal(0, len(filtered))
 
-	// now to complted one and see see what happens
 	todoNo1.Complete()
 	filtered = filter.filterCompletedToday(time.Now())
 
 	assert.Equal(1, len(filtered))
 	assert.Equal(1, filtered[0].Id)
 
-	// now to complted one and see see what happens
 	todoNo1.Uncomplete()
 	todoNo2.Complete()
 	filtered = filter.filterCompletedToday(time.Now())
