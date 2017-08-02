@@ -415,7 +415,9 @@ Todo added.
 
           <a class="bk" name="webview"><h2>The web view</h2></a>
           <p><code>todolist web</code></p>
-          <p>This runs a simple web servier on http://localhost:7890 with a nice web view to manage your todos.</p>
+          <p>This runs a simple web server on http://localhost:7890 with a nice web view to manage your todos.</p>
+          <p>The web view is a static site that is hosted on S3, and is built with React / Redux.  It is <a href="https://github.com/gammons/todolist_frontend">open source.</a></p>
+
           <p>A simple demo <a href="http://demo.todolist.site">is available here</a>.</p>
 
           <a class="bk" name="fileformat"><h2>.todos.json file format</h2></a>
@@ -439,8 +441,10 @@ Todo added.
 
           <a class="bk" name="rationale"><h2>Rationale</h2></a>
           <p>I appreciate simple tools that adhere to the <a href="https://en.wikipedia.org/wiki/Unix_philosophy">Unix philosophy.</a>  Being an avid <a href="https://www.wunderlist.com">Wunderlist</a> user, I was hoping to rewrite the 30% of Wunderlist that I actually use as a simple command-line tool.</p>
+          <p>I also wanted a todolist that is super fast and easy to grep.  Such a tool did no exist, so I built todolist</p>
+
           <b>How does this differ from todo.txt?</b>
-          <p>While todo.txt is an excellent project with a great ecosystem, it just didn't serve my needs.  I really needed dates on my todos, and by default, todo.txt does not provide this.  I believe that Todolist is much closer conceptually to how the "big" todo companies do it, e.g. Wunderlist, Todoist, etc.</p>
+          <p>While todo.txt is an excellent project with a great ecosystem, it just didn't serve my needs.   Due dates are a critical part of my workflow, and todo.txt does not provide dude dates by default.  Due dates are a core part of Todolist, and are treated as such within the featureset.  I believe that Todolist is much closer conceptually to how the "big" todo companies do it, e.g. Wunderlist, Todoist, etc.</p>
 
           <a class="bk" name="limitations"><h2>Limitations</h2></a>
           <p>Todolist will have a hard time adding a todo that has a keyword in it.  For instance:
