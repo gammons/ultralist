@@ -54,14 +54,6 @@ func (t *TodoList) Unarchive(id int) {
 	t.Data = append(t.Data, todo)
 }
 
-func (t *TodoList) IndexOf(todoToFind *Todo) int {
-	for i, todo := range t.Data {
-		if todo.Id == todoToFind.Id {
-			return i
-		}
-	}
-	return -1
-}
 func (t *TodoList) Prioritize(id int) {
 	todo := t.FindById(id)
 	todo.Prioritize()
@@ -74,6 +66,15 @@ func (t *TodoList) Unprioritize(id int) {
 	todo.Unprioritize()
 	t.Delete(id)
 	t.Data = append(t.Data, todo)
+}
+
+func (t *TodoList) IndexOf(todoToFind *Todo) int {
+	for i, todo := range t.Data {
+		if todo.Id == todoToFind.Id {
+			return i
+		}
+	}
+	return -1
 }
 
 type ByDate []*Todo
