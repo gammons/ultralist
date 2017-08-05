@@ -45,6 +45,22 @@ func (t *Todo) Uncomplete() {
 	t.CompletedDate = ""
 }
 
+func (t *Todo) Archive() {
+	t.Archived = true
+}
+
+func (t *Todo) Unarchive() {
+	t.Archived = false
+}
+
+func (t *Todo) Prioritize() {
+	t.IsPriority = true
+}
+
+func (t *Todo) Unprioritize() {
+	t.IsPriority = false
+}
+
 func (t Todo) CompletedDateToDate() string {
 	parsedTime, _ := time.Parse(ISO8601_TIMESTAMP_FORMAT, t.CompletedDate)
 	return parsedTime.Format("2006-01-02")

@@ -42,14 +42,28 @@ func (t *TodoList) Uncomplete(id int) {
 
 func (t *TodoList) Archive(id int) {
 	todo := t.FindById(id)
-	todo.Archived = true
+	todo.Archive()
 	t.Delete(id)
 	t.Data = append(t.Data, todo)
 }
 
 func (t *TodoList) Unarchive(id int) {
 	todo := t.FindById(id)
-	todo.Archived = false
+	todo.Unarchive()
+	t.Delete(id)
+	t.Data = append(t.Data, todo)
+}
+
+func (t *TodoList) Prioritize(id int) {
+	todo := t.FindById(id)
+	todo.Prioritize()
+	t.Delete(id)
+	t.Data = append(t.Data, todo)
+}
+
+func (t *TodoList) Unprioritize(id int) {
+	todo := t.FindById(id)
+	todo.Unprioritize()
 	t.Delete(id)
 	t.Data = append(t.Data, todo)
 }
@@ -61,20 +75,6 @@ func (t *TodoList) IndexOf(todoToFind *Todo) int {
 		}
 	}
 	return -1
-}
-
-func (t *TodoList) Prioritize(id int) {
-	todo := t.FindById(id)
-	todo.IsPriority = true
-	t.Delete(id)
-	t.Data = append(t.Data, todo)
-}
-
-func (t *TodoList) Unprioritize(id int) {
-	todo := t.FindById(id)
-	todo.IsPriority = false
-	t.Delete(id)
-	t.Data = append(t.Data, todo)
 }
 
 type ByDate []*Todo
