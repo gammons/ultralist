@@ -55,7 +55,7 @@
 
         <div class="col-md-9">
 					<div class="card card-block">
-						<h3 class="card-title">Download todolist v0.6</h3>
+						<h3 class="card-title">Download todolist v0.7</h3>
             <p class="card-text">
               <b>Major Changes:</b>
               <p>The biggest change is that you can now edit todos straight from the command line. It maintains backwards compatibility with how it previously functioned as well:</p>
@@ -67,6 +67,7 @@
 
               <b>Other changes:</b>
               <ul>
+                <li>Added <code>todo list completed</code> command.</li>
                 <li>CompletedDate is now stored for completed todos, in .todos.json.</li>
                 <li>support for <code>due last week</code></li>
               </ul>
@@ -78,6 +79,7 @@
 					</div>
 
           <h2 class="card-title">News</h2>
+          <p><strong>Aug 5 2017</strong>: Todolist v0.7 released!</p>
           <p><strong>May 25 2017</strong>: Todolist v0.6 released!</p>
           <p><strong>Mar 14 2017</strong>: Todolist v0.5.2 released!</p>
           <p><strong>Mar 7 2017</strong>: Todolist v0.5.1 released!</p>
@@ -290,13 +292,13 @@ Todo added.
 
           <a class="bk" name="completing"><h2>Completing and un-completing todos</h2></a>
 
-          <p><code>todolist complete [id]</code> or <code>todolist c [id]</code> - complete a todo by its id.</p>
-          <p><code>todolist uncomplete [id]</code> or <code>todolist uc [id]</code> - un-complete a todo by its id.</p>
+          <p><code>todolist complete [id]</code> or <code>todolist c [id]</code> - complete a todo by its id</p>
+          <p><code>todolist uncomplete [id]</code> or <code>todolist uc [id]</code> - un-complete a todo by its id</p>
 
           <a class="bk" name="archiving"><h2>Archiving and unarchiving todos</h2></a>
 
-          <p><code>todolist archive [id]</code> or <code>todolist ar [id]</code> - archive a todo by its id.</p>
-          <p><code>todolist unarchive [id]</code> - unarchive a todo by its id.</p>
+          <p><code>todolist archive [id]</code> or <code>todolist ar [id]</code> - archive a todo by its id</p>
+          <p><code>todolist unarchive [id]</code> - unarchive a todo by its id</p>
 
           <a class="bk" name="listing"><h2>Listing, filtering, and grouping todos</h2></a>
           <p><code>todolist list</code> or <code>todolist l</code> - list all unarchived todos</p>
@@ -309,6 +311,10 @@ Todo added.
           <p><code>todolist l overdue</code> - List all todos that are overdue</p>
           <p><code>todolist l due today</code> or <code>todo l due tod</code>- List all todos due today</p>
           <p><code>todolist l due tomorrow</code> or <code>todo l due tomorrow</code>- List all todos due tomorrow</p>
+
+          <b>Listing completed todos</b>
+          <p><code>todolist l completed tod</code> - List all todos completed today</p>
+          <p><code>todolist l completed this week</code> - List all todos completed this week</p>
 
           <b>Filtering by a day of the week</b>
           <p><code>todolist l due mon</code> - List all todos due
