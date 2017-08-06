@@ -108,3 +108,21 @@ func TestListbyContext(t *testing.T) {
 	}
 	assert.Equal(true, hasACompletedTodo)
 }
+
+func TestGetIds(t *testing.T) {
+	assert := assert.New(t)
+	app := &App{TodoList: &TodoList{}, TodoStore: &MemoryStore{}}
+	// no valid id here
+	assert.Equal(0, len(app.getIds("p")))
+	// one valid value here
+	assert.Equal([]int{6}, app.getIds("6"))
+	// lots of single post numbers
+	assert.Equal([]int{6, 10, 8, 4}, app.getIds("6,10,8,4"))
+	// a correct range
+	assert.Equal([]int{6, 7, 8}, app.getIds("6-8"))
+	// some incorrect ranges
+	assert.Equal(0, len(app.getIds("6-6")))
+	assert.Equal(0, len(app.getIds("8-6")))
+	// some compsite ranges
+	assert.Equal([]int{5, 6, 7, 8, 10, 11, 9}, app.getIds("5,6-8,10-11,9"))
+}

@@ -38,55 +38,55 @@ func (a *App) AddTodo(input string) {
 
 func (a *App) DeleteTodo(input string) {
 	a.Load()
-	id, _ := a.getId(input)
-	if id == -1 {
+	ids := a.getIds(input)
+	if len(ids) == 0 {
 		return
 	}
-	a.TodoList.Delete(id)
+	a.TodoList.Delete(ids...)
 	a.Save()
 	fmt.Println("Todo deleted.")
 }
 
 func (a *App) CompleteTodo(input string) {
 	a.Load()
-	id, _ := a.getId(input)
-	if id == -1 {
+	ids := a.getIds(input)
+	if len(ids) == 0 {
 		return
 	}
-	a.TodoList.Complete(id)
+	a.TodoList.Complete(ids...)
 	a.Save()
 	fmt.Println("Todo completed.")
 }
 
 func (a *App) UncompleteTodo(input string) {
 	a.Load()
-	id, _ := a.getId(input)
-	if id == -1 {
+	ids := a.getIds(input)
+	if len(ids) == 0 {
 		return
 	}
-	a.TodoList.Uncomplete(id)
+	a.TodoList.Uncomplete(ids...)
 	a.Save()
 	fmt.Println("Todo uncompleted.")
 }
 
 func (a *App) ArchiveTodo(input string) {
 	a.Load()
-	id, _ := a.getId(input)
-	if id == -1 {
+	ids := a.getIds(input)
+	if len(ids) == 0 {
 		return
 	}
-	a.TodoList.Archive(id)
+	a.TodoList.Archive(ids...)
 	a.Save()
 	fmt.Println("Todo archived.")
 }
 
 func (a *App) UnarchiveTodo(input string) {
 	a.Load()
-	id, _ := a.getId(input)
-	if id == -1 {
+	ids := a.getIds(input)
+	if len(ids) == 0 {
 		return
 	}
-	a.TodoList.Unarchive(id)
+	a.TodoList.Unarchive(ids...)
 	a.Save()
 	fmt.Println("Todo unarchived.")
 }
@@ -154,22 +154,22 @@ func (a *App) ListTodos(input string) {
 
 func (a *App) PrioritizeTodo(input string) {
 	a.Load()
-	id, _ := a.getId(input)
-	if id == -1 {
+	ids := a.getIds(input)
+	if len(ids) == 0 {
 		return
 	}
-	a.TodoList.Prioritize(id)
+	a.TodoList.Prioritize(ids...)
 	a.Save()
 	fmt.Println("Todo prioritized.")
 }
 
 func (a *App) UnprioritizeTodo(input string) {
 	a.Load()
-	id, _ := a.getId(input)
-	if id == -1 {
+	ids := a.getIds(input)
+	if len(ids) == 0 {
 		return
 	}
-	a.TodoList.Unprioritize(id)
+	a.TodoList.Unprioritize(ids...)
 	a.Save()
 	fmt.Println("Todo un-prioritized.")
 }
@@ -191,6 +191,36 @@ func (a *App) getId(input string) (int, *Todo) {
 		return -1, nil
 
 	}
+}
+
+func (a *App) getIds(input string) []int {
+	var ids []int
+	idGroups := strings.Split(input, ",")
+
+	singleNumberRE, _ := regexp.Compile("\\d+")
+	rangeNumberRE, _ := regexp.Compile("(\\d+)-(\\d+)")
+
+	for _, idGroup := range idGroups {
+		if matches := rangeNumberRE.FindStringSubmatch(idGroup); len(matches) > 0 {
+			lowerID, _ := strconv.Atoi(matches[1])
+			upperID, _ := strconv.Atoi(matches[2])
+			if lowerID >= upperID {
+				fmt.Printf("Invalid id group: %s.\n", idGroup)
+				break
+			}
+			for id := lowerID; id <= upperID; id++ {
+				ids = append(ids, id)
+			}
+
+		} else if singleNumberRE.MatchString(idGroup) {
+			id, _ := strconv.Atoi(singleNumberRE.FindString(idGroup))
+			ids = append(ids, id)
+
+		} else {
+			fmt.Printf("Invalid id: %s.\n", idGroup)
+		}
+	}
+	return ids
 }
 
 func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
