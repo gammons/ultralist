@@ -19,7 +19,7 @@ func (t *TodoList) Delete(ids ...int) {
 	for _, id := range ids {
 		todo := t.FindById(id)
 		if todo == nil {
-			break
+			continue
 		}
 		i := -1
 		for index, todo := range t.Data {
