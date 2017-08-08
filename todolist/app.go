@@ -190,23 +190,16 @@ func (a *App) getId(input string) int {
 	return -1
 }
 
-func (a *App) getIds(input string) []int {
-	var ids []int
+func (a *App) getIds(input string) (ids []int) {
+
 	idGroups := strings.Split(input, ",")
-
-	rangeNumberRE, _ := regexp.Compile("(\\d+)-(\\d+)")
-
 	for _, idGroup := range idGroups {
-		if matches := rangeNumberRE.FindStringSubmatch(idGroup); len(matches) > 0 {
-			lowerID, _ := strconv.Atoi(matches[1])
-			upperID, _ := strconv.Atoi(matches[2])
-			if lowerID >= upperID {
-				fmt.Printf("Invalid id group: %s.\n", idGroup)
-				break
+		if rangedIds, err := a.parseRangedIds(idGroup); len(rangedIds) > 0 || err != nil {
+			if err != nil {
+				fmt.Printf("Invalid id group: %s.\n", input)
+				continue
 			}
-			for id := lowerID; id <= upperID; id++ {
-				ids = append(ids, id)
-			}
+			ids = append(ids, rangedIds...)
 		} else if id := a.getId(idGroup); id != -1 {
 			ids = append(ids, id)
 		} else {
@@ -214,6 +207,21 @@ func (a *App) getIds(input string) []int {
 		}
 	}
 	return ids
+}
+
+func (a *App) parseRangedIds(input string) (ids []int, err error) {
+	rangeNumberRE, _ := regexp.Compile("(\\d+)-(\\d+)")
+	if matches := rangeNumberRE.FindStringSubmatch(input); len(matches) > 0 {
+		lowerID, _ := strconv.Atoi(matches[1])
+		upperID, _ := strconv.Atoi(matches[2])
+		if lowerID >= upperID {
+			return ids, fmt.Errorf("Invalid id group: %s.\n", input)
+		}
+		for id := lowerID; id <= upperID; id++ {
+			ids = append(ids, id)
+		}
+	}
+	return ids, err
 }
 
 func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
