@@ -109,6 +109,17 @@ func TestListbyContext(t *testing.T) {
 	assert.Equal(true, hasACompletedTodo)
 }
 
+func TestGetId(t *testing.T) {
+	assert := assert.New(t)
+	app := &App{TodoList: &TodoList{}, TodoStore: &MemoryStore{}}
+	// not a valid id
+	assert.Equal(-1, app.getId("p"))
+	// a single digit id
+	assert.Equal(6, app.getId("6"))
+	// a double digit id
+	assert.Equal(66, app.getId("66"))
+}
+
 func TestGetIds(t *testing.T) {
 	assert := assert.New(t)
 	app := &App{TodoList: &TodoList{}, TodoStore: &MemoryStore{}}

@@ -93,8 +93,13 @@ func (a *App) UnarchiveTodo(input string) {
 
 func (a *App) EditTodo(input string) {
 	a.Load()
-	id, todo := a.getId(input)
+	id := a.getId(input)
 	if id == -1 {
+		return
+	}
+	todo := a.TodoList.FindById(id)
+	if todo == nil {
+		fmt.Println("No such id.")
 		return
 	}
 	parser := &Parser{}
@@ -107,7 +112,7 @@ func (a *App) EditTodo(input string) {
 
 func (a *App) ExpandTodo(input string) {
 	a.Load()
-	id, _ := a.getId(input)
+	id := a.getId(input)
 	parser := &Parser{}
 	if id == -1 {
 		return
@@ -174,30 +179,21 @@ func (a *App) UnprioritizeTodo(input string) {
 	fmt.Println("Todo un-prioritized.")
 }
 
-func (a *App) getId(input string) (int, *Todo) {
+func (a *App) getId(input string) int {
 	re, _ := regexp.Compile("\\d+")
 	if re.MatchString(input) {
 		id, _ := strconv.Atoi(re.FindString(input))
-		todo := a.TodoList.FindById(id)
-		if todo == nil {
-			fmt.Println("No such id.")
-			return -1, nil
-
-		}
-		return id, todo
-
-	} else {
-		fmt.Println("Invalid id.")
-		return -1, nil
-
+		return id
 	}
+
+	fmt.Println("Invalid id.")
+	return -1
 }
 
 func (a *App) getIds(input string) []int {
 	var ids []int
 	idGroups := strings.Split(input, ",")
 
-	singleNumberRE, _ := regexp.Compile("\\d+")
 	rangeNumberRE, _ := regexp.Compile("(\\d+)-(\\d+)")
 
 	for _, idGroup := range idGroups {
@@ -211,11 +207,8 @@ func (a *App) getIds(input string) []int {
 			for id := lowerID; id <= upperID; id++ {
 				ids = append(ids, id)
 			}
-
-		} else if singleNumberRE.MatchString(idGroup) {
-			id, _ := strconv.Atoi(singleNumberRE.FindString(idGroup))
+		} else if id := a.getId(idGroup); id != -1 {
 			ids = append(ids, id)
-
 		} else {
 			fmt.Printf("Invalid id: %s.\n", idGroup)
 		}
