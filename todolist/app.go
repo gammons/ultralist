@@ -136,7 +136,7 @@ func (a *App) ArchiveCompleted() {
 	a.Load()
 	for _, todo := range a.TodoList.Todos() {
 		if todo.Completed {
-			todo.Archived = true
+			todo.Archive()
 		}
 	}
 	a.Save()
