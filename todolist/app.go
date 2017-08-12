@@ -44,7 +44,7 @@ func (a *App) DeleteTodo(input string) {
 	}
 	a.TodoList.Delete(ids...)
 	a.Save()
-	fmt.Println("Todo deleted.")
+	fmt.Printf("%s deleted.\n", pluralize(len(ids), "Todo", "Todos"))
 }
 
 func (a *App) CompleteTodo(input string) {
