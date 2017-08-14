@@ -83,6 +83,18 @@ func (p *Parser) Contexts(input string) []string {
 	return p.matchWords(input, r)
 }
 
+func (p *Parser) ParseNotes(todo *Todo, input string) string {
+	r, _ := regexp.Compile(`(\w+) \d+\s+(.*)?`)
+	matches := r.FindStringSubmatch(input)
+	if matches[1] == "an" {
+		todo.Notes = append(todo.Notes, matches[2])
+		return "add"
+	}
+
+	fmt.Println("Could not match command or id")
+	return ""
+}
+
 func (p *Parser) hasDue(input string) bool {
 	r1, _ := regexp.Compile(`due \w+$`)
 	r2, _ := regexp.Compile(`due \w+ \d+$`)
