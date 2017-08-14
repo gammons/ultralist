@@ -99,9 +99,8 @@ func (p *Parser) ParseNotes(todo *Todo, input string) string {
 		return "list"
 
 	case "dn":
-		rmid, err := strconv.Atoi(matches[2])
+		rmid, err := p.getNoteID(matches[2])
 		if err != nil {
-			fmt.Println("wrong note id")
 			return ""
 		}
 
@@ -113,10 +112,37 @@ func (p *Parser) ParseNotes(todo *Todo, input string) string {
 		}
 		fmt.Println("Could not found note id")
 		return ""
+
+	case "en":
+		r1, _ := regexp.Compile(`(\d)+\s+(.*)?`)
+		tail := r1.FindStringSubmatch(matches[2])
+		edid, err := p.getNoteID(tail[1])
+		if err != nil {
+			return ""
+		}
+
+		for id, _ := range todo.Notes {
+			if id == edid {
+				todo.Notes[id] = tail[2]
+				return "edit"
+			}
+		}
+
+		fmt.Println("Could not found note id")
+		return ""
 	}
 
 	fmt.Println("Could not match command or id")
 	return ""
+}
+
+func (p *Parser) getNoteID(input string) (int, error) {
+	ret, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println("wrong note id")
+		return -1, err
+	}
+	return ret, nil
 }
 
 func (p *Parser) hasDue(input string) bool {
