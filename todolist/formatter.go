@@ -43,6 +43,17 @@ func (f *Formatter) Print() {
 	f.Writer.Flush()
 }
 
+func (f *Formatter) PrintNotes() {
+	cyan := color.New(color.FgCyan).SprintFunc()
+	todo := f.GroupedTodos.Groups[""][0]
+	f.printTodo(todo)
+	for nid, note := range todo.Notes {
+		fmt.Fprintf(f.Writer, "   %s\t%s\t\n",
+			cyan(strconv.Itoa(nid)), note)
+	}
+	f.Writer.Flush()
+}
+
 func (f *Formatter) printTodo(todo *Todo) {
 	yellow := color.New(color.FgYellow)
 	if todo.IsPriority {

@@ -84,11 +84,18 @@ func (p *Parser) Contexts(input string) []string {
 }
 
 func (p *Parser) ParseNotes(todo *Todo, input string) string {
-	r, _ := regexp.Compile(`(\w+) \d+\s+(.*)?`)
+	r, _ := regexp.Compile(`(\w+) \d+\s*(.*)?`)
 	matches := r.FindStringSubmatch(input)
-	if matches[1] == "an" {
+	switch matches[1] {
+	case "an":
 		todo.Notes = append(todo.Notes, matches[2])
 		return "add"
+	case "ln":
+		groups := map[string][]*Todo{}
+		groups[""] = append(groups[""], todo)
+		formatter := NewFormatter(&GroupedTodos{Groups: groups})
+		formatter.PrintNotes()
+		return "list"
 	}
 
 	fmt.Println("Could not match command or id")

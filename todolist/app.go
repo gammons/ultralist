@@ -143,7 +143,9 @@ func (a *App) ManipulateNotes(input string) {
 	retStr := parser.ParseNotes(todo, input)
 	if retStr != "" {
 		a.Save()
-		fmt.Println("Notes " + retStr + "ed.")
+		if retStr != "list" {
+			fmt.Println("Notes " + retStr + "ed.")
+		}
 	}
 }
 

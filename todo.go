@@ -123,9 +123,10 @@ func usage() {
 	fmt.Println("\tDeletes a todo with id 33\n")
 
 	blueBold.Println("\nManipulating notes")
-	fmt.Println("  You can add additional information to a existing todo.\n")
 	yellow.Println("\ttodo an 12 check http://this.web.site")
 	fmt.Println("\tAdds notes \"check http://this.web.site\" to the todo with id 12\n")
+	yellow.Println("\ttodo ln 12")
+	fmt.Println("\tLists notes of the todo with id 12\n")
 
 	blueBold.Println("\nGarbage Collection")
 	yellow.Println("\ttodo gc")
@@ -158,7 +159,7 @@ func routeInput(command string, input string) {
 		app.EditTodo(input)
 	case "ex", "expand":
 		app.ExpandTodo(input)
-	case "an":
+	case "an", "ln":
 		app.ManipulateNotes(input)
 	case "gc":
 		app.GarbageCollect()
