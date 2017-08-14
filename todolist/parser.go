@@ -90,12 +90,29 @@ func (p *Parser) ParseNotes(todo *Todo, input string) string {
 	case "an":
 		todo.Notes = append(todo.Notes, matches[2])
 		return "add"
+
 	case "ln":
 		groups := map[string][]*Todo{}
 		groups[""] = append(groups[""], todo)
 		formatter := NewFormatter(&GroupedTodos{Groups: groups})
 		formatter.PrintNotes()
 		return "list"
+
+	case "dn":
+		rmid, err := strconv.Atoi(matches[2])
+		if err != nil {
+			fmt.Println("wrong note id")
+			return ""
+		}
+
+		for id, _ := range todo.Notes {
+			if id == rmid {
+				todo.Notes = append(todo.Notes[:rmid], todo.Notes[rmid+1:]...)
+				return "delete"
+			}
+		}
+		fmt.Println("Could not found note id")
+		return ""
 	}
 
 	fmt.Println("Could not match command or id")

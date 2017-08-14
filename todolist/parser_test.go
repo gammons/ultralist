@@ -84,6 +84,13 @@ func TestParseNotes(t *testing.T) {
 	if todo.Notes[0] != "www.google.com" {
 		t.Error("Expected note 1 to be 'www.google.com' but got", todo.Notes[0])
 	}
+
+	if parser.ParseNotes(todo, "dn 1 0") != "delete" {
+		t.Error("Expected Notes to be deleted")
+	}
+	if len(todo.Notes) != 0 {
+		t.Error("Expected no note")
+	}
 }
 
 func TestDueToday(t *testing.T) {
