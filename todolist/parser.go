@@ -83,6 +83,68 @@ func (p *Parser) Contexts(input string) []string {
 	return p.matchWords(input, r)
 }
 
+func (p *Parser) ParseNotes(todo *Todo, input string) string {
+	r, _ := regexp.Compile(`(\w+) \d+\s*(.*)?`)
+	matches := r.FindStringSubmatch(input)
+	switch matches[1] {
+	case "an":
+		todo.Notes = append(todo.Notes, matches[2])
+		return "add"
+
+	case "ln":
+		groups := map[string][]*Todo{}
+		groups[""] = append(groups[""], todo)
+		formatter := NewFormatter(&GroupedTodos{Groups: groups})
+		formatter.PrintNotes()
+		return "list"
+
+	case "dn":
+		rmid, err := p.getNoteID(matches[2])
+		if err != nil {
+			return ""
+		}
+
+		for id, _ := range todo.Notes {
+			if id == rmid {
+				todo.Notes = append(todo.Notes[:rmid], todo.Notes[rmid+1:]...)
+				return "delete"
+			}
+		}
+		fmt.Println("Could not found note id")
+		return ""
+
+	case "en":
+		r1, _ := regexp.Compile(`(\d)+\s+(.*)?`)
+		tail := r1.FindStringSubmatch(matches[2])
+		edid, err := p.getNoteID(tail[1])
+		if err != nil {
+			return ""
+		}
+
+		for id, _ := range todo.Notes {
+			if id == edid {
+				todo.Notes[id] = tail[2]
+				return "edit"
+			}
+		}
+
+		fmt.Println("Could not found note id")
+		return ""
+	}
+
+	fmt.Println("Could not match command or id")
+	return ""
+}
+
+func (p *Parser) getNoteID(input string) (int, error) {
+	ret, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println("wrong note id")
+		return -1, err
+	}
+	return ret, nil
+}
+
 func (p *Parser) hasDue(input string) bool {
 	r1, _ := regexp.Compile(`due \w+$`)
 	r2, _ := regexp.Compile(`due \w+ \d+$`)

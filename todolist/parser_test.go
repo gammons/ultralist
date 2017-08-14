@@ -74,6 +74,32 @@ func TestParseContexts(t *testing.T) {
 	}
 }
 
+func TestParseNotes(t *testing.T) {
+	parser := &Parser{}
+	todo := parser.ParseNewTodo("add search engine survey")
+
+	if parser.ParseNotes(todo, "an 1 www.google.com") != "add" {
+		t.Error("Expected Notes to be added")
+	}
+	if todo.Notes[0] != "www.google.com" {
+		t.Error("Expected note 1 to be 'www.google.com' but got", todo.Notes[0])
+	}
+
+	if parser.ParseNotes(todo, "en 1 0 www.duckduckgo.com") != "edit" {
+		t.Error("Expected Notes to be editted")
+	}
+	if todo.Notes[0] != "www.duckduckgo.com" {
+		t.Error("Expected note 1 to be 'www.duckduckgo.com' but got", todo.Notes[0])
+	}
+
+	if parser.ParseNotes(todo, "dn 1 0") != "delete" {
+		t.Error("Expected Notes to be deleted")
+	}
+	if len(todo.Notes) != 0 {
+		t.Error("Expected no note")
+	}
+}
+
 func TestDueToday(t *testing.T) {
 	assert := assert.New(t)
 	parser := &Parser{}
