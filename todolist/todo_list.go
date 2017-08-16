@@ -15,57 +15,93 @@ func (t *TodoList) Add(todo *Todo) {
 	t.Data = append(t.Data, todo)
 }
 
-func (t *TodoList) Delete(id int) {
-	i := -1
-	for index, todo := range t.Data {
-		if todo.Id == id {
-			i = index
+func (t *TodoList) Delete(ids ...int) {
+	for _, id := range ids {
+		todo := t.FindById(id)
+		if todo == nil {
+			continue
 		}
+		i := -1
+		for index, todo := range t.Data {
+			if todo.Id == id {
+				i = index
+			}
+		}
+
+		t.Data = append(t.Data[:i], t.Data[i+1:]...)
 	}
-
-	t.Data = append(t.Data[:i], t.Data[i+1:]...)
 }
 
-func (t *TodoList) Complete(id int) {
-	todo := t.FindById(id)
-	todo.Complete()
-	t.Delete(id)
-	t.Data = append(t.Data, todo)
+func (t *TodoList) Complete(ids ...int) {
+	for _, id := range ids {
+		todo := t.FindById(id)
+		if todo == nil {
+			continue
+		}
+		todo.Complete()
+		t.Delete(id)
+		t.Data = append(t.Data, todo)
+	}
 }
 
-func (t *TodoList) Uncomplete(id int) {
-	todo := t.FindById(id)
-	todo.Uncomplete()
-	t.Delete(id)
-	t.Data = append(t.Data, todo)
+func (t *TodoList) Uncomplete(ids ...int) {
+	for _, id := range ids {
+		todo := t.FindById(id)
+		if todo == nil {
+			continue
+		}
+		todo.Uncomplete()
+		t.Delete(id)
+		t.Data = append(t.Data, todo)
+	}
 }
 
-func (t *TodoList) Archive(id int) {
-	todo := t.FindById(id)
-	todo.Archive()
-	t.Delete(id)
-	t.Data = append(t.Data, todo)
+func (t *TodoList) Archive(ids ...int) {
+	for _, id := range ids {
+		todo := t.FindById(id)
+		if todo == nil {
+			continue
+		}
+		todo.Archive()
+		t.Delete(id)
+		t.Data = append(t.Data, todo)
+	}
 }
 
-func (t *TodoList) Unarchive(id int) {
-	todo := t.FindById(id)
-	todo.Unarchive()
-	t.Delete(id)
-	t.Data = append(t.Data, todo)
+func (t *TodoList) Unarchive(ids ...int) {
+	for _, id := range ids {
+		todo := t.FindById(id)
+		if todo == nil {
+			continue
+		}
+		todo.Unarchive()
+		t.Delete(id)
+		t.Data = append(t.Data, todo)
+	}
 }
 
-func (t *TodoList) Prioritize(id int) {
-	todo := t.FindById(id)
-	todo.Prioritize()
-	t.Delete(id)
-	t.Data = append(t.Data, todo)
+func (t *TodoList) Prioritize(ids ...int) {
+	for _, id := range ids {
+		todo := t.FindById(id)
+		if todo == nil {
+			continue
+		}
+		todo.Prioritize()
+		t.Delete(id)
+		t.Data = append(t.Data, todo)
+	}
 }
 
-func (t *TodoList) Unprioritize(id int) {
-	todo := t.FindById(id)
-	todo.Unprioritize()
-	t.Delete(id)
-	t.Data = append(t.Data, todo)
+func (t *TodoList) Unprioritize(ids ...int) {
+	for _, id := range ids {
+		todo := t.FindById(id)
+		if todo == nil {
+			continue
+		}
+		todo.Unprioritize()
+		t.Delete(id)
+		t.Data = append(t.Data, todo)
+	}
 }
 
 func (t *TodoList) IndexOf(todoToFind *Todo) int {

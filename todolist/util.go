@@ -52,3 +52,10 @@ func getNearestMonday(t time.Time) time.Time {
 		}
 	}
 }
+
+func pluralize(count int, singular, plural string) string {
+	if count > 1 {
+		return plural
+	}
+	return singular
+}
