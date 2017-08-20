@@ -91,11 +91,11 @@ func (p *Parser) ParseNotes(todo *Todo, input string) string {
 		todo.Notes = append(todo.Notes, matches[2])
 		return "add"
 
-	case "ln":
+	case "n":
 		groups := map[string][]*Todo{}
 		groups[""] = append(groups[""], todo)
 		formatter := NewFormatter(&GroupedTodos{Groups: groups})
-		formatter.PrintNotes()
+		formatter.Print(true)
 		return "list"
 
 	case "dn":

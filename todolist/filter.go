@@ -38,7 +38,7 @@ func (f *TodoFilter) filterArchived(input string) []*Todo {
 		return f.Todos
 	}
 
-	r, _ := regexp.Compile(`l archived$`)
+	r, _ := regexp.Compile(`ln? archived$`)
 	if r.MatchString(input) {
 		return f.getArchived()
 	} else {
@@ -47,7 +47,7 @@ func (f *TodoFilter) filterArchived(input string) []*Todo {
 }
 
 func (f *TodoFilter) filterPrioritized(input string) []*Todo {
-	r, _ := regexp.Compile(`l p`)
+	r, _ := regexp.Compile(`ln? p`)
 	if r.MatchString(input) {
 		return f.getPrioritized()
 	} else {

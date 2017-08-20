@@ -173,7 +173,8 @@ func (a *App) ListTodos(input string) {
 	grouped := a.getGroups(input, filtered)
 
 	formatter := NewFormatter(grouped)
-	formatter.Print()
+	re, _ := regexp.Compile(`^ln`)
+	formatter.Print(re.MatchString(input))
 }
 
 func (a *App) PrioritizeTodo(input string) {
