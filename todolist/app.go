@@ -137,6 +137,23 @@ func (a *App) ExpandTodo(input string) {
 	fmt.Println("Todo expanded.")
 }
 
+func (a *App) ManipulateNotes(input string) {
+	a.Load()
+	id, todo := a.getId(input)
+	parser := &Parser{}
+	if id == -1 {
+		return
+	}
+
+	retStr := parser.ParseNotes(todo, input)
+	if retStr != "" {
+		a.Save()
+		if retStr != "list" {
+			fmt.Println("Notes " + retStr + "ed.")
+		}
+	}
+}
+
 func (a *App) ArchiveCompleted() {
 	a.Load()
 	for _, todo := range a.TodoList.Todos() {
