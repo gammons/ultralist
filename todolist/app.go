@@ -139,9 +139,11 @@ func (a *App) ExpandTodo(input string) {
 
 func (a *App) ManipulateNotes(input string) {
 	a.Load()
-	id, todo := a.getId(input)
+	id := a.getId(input)
 	parser := &Parser{}
-	if id == -1 {
+	todo := a.TodoList.FindById(id)
+	if todo == nil {
+		fmt.Println("No such id.")
 		return
 	}
 
