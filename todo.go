@@ -166,7 +166,7 @@ func routeInput(command string, input string) {
 	case "ex", "expand":
 		app.ExpandTodo(input)
 	case "an", "n", "dn", "en":
-		app.ManipulateNotes(input)
+		app.HandleNotes(input)
 	case "gc":
 		app.GarbageCollect()
 	case "p", "prioritize":

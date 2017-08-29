@@ -137,23 +137,33 @@ func (a *App) ExpandTodo(input string) {
 	fmt.Println("Todo expanded.")
 }
 
-func (a *App) ManipulateNotes(input string) {
+func (a *App) HandleNotes(input string) {
 	a.Load()
 	id := a.getId(input)
-	parser := &Parser{}
+	if id == -1 {
+		return
+	}
 	todo := a.TodoList.FindById(id)
 	if todo == nil {
 		fmt.Println("No such id.")
 		return
 	}
+	parser := &Parser{}
 
-	retStr := parser.ParseNotes(todo, input)
-	if retStr != "" {
-		a.Save()
-		if retStr != "list" {
-			fmt.Println("Notes " + retStr + "ed.")
-		}
+	if parser.ParseAddNote(todo, input) {
+		fmt.Println("Note added.")
+	} else if parser.ParseDeleteNote(todo, input) {
+		fmt.Println("Note deleted.")
+	} else if parser.ParseEditNote(todo, input) {
+		fmt.Println("Note edited.")
+	} else if parser.ParseShowNote(todo, input) {
+		groups := map[string][]*Todo{}
+		groups[""] = append(groups[""], todo)
+		formatter := NewFormatter(&GroupedTodos{Groups: groups})
+		formatter.Print(true)
+		return
 	}
+	a.Save()
 }
 
 func (a *App) ArchiveCompleted() {

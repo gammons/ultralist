@@ -83,57 +83,66 @@ func (p *Parser) Contexts(input string) []string {
 	return p.matchWords(input, r)
 }
 
-func (p *Parser) ParseNotes(todo *Todo, input string) string {
-	r, _ := regexp.Compile(`(\w+) \d+\s*(.*)?`)
+func (p *Parser) ParseAddNote(todo *Todo, input string) bool {
+	r, _ := regexp.Compile(`^an\s+\d+\s+(.*)`)
 	matches := r.FindStringSubmatch(input)
-	switch matches[1] {
-	case "an":
-		todo.Notes = append(todo.Notes, matches[2])
-		return "add"
-
-	case "n":
-		groups := map[string][]*Todo{}
-		groups[""] = append(groups[""], todo)
-		formatter := NewFormatter(&GroupedTodos{Groups: groups})
-		formatter.Print(true)
-		return "list"
-
-	case "dn":
-		rmid, err := p.getNoteID(matches[2])
-		if err != nil {
-			return ""
-		}
-
-		for id, _ := range todo.Notes {
-			if id == rmid {
-				todo.Notes = append(todo.Notes[:rmid], todo.Notes[rmid+1:]...)
-				return "delete"
-			}
-		}
-		fmt.Println("Could not found note id")
-		return ""
-
-	case "en":
-		r1, _ := regexp.Compile(`(\d)+\s+(.*)?`)
-		tail := r1.FindStringSubmatch(matches[2])
-		edid, err := p.getNoteID(tail[1])
-		if err != nil {
-			return ""
-		}
-
-		for id, _ := range todo.Notes {
-			if id == edid {
-				todo.Notes[id] = tail[2]
-				return "edit"
-			}
-		}
-
-		fmt.Println("Could not found note id")
-		return ""
+	if len(matches) != 2 {
+		return false
 	}
 
-	fmt.Println("Could not match command or id")
-	return ""
+	todo.Notes = append(todo.Notes, matches[1])
+	return true
+}
+
+func (p *Parser) ParseDeleteNote(todo *Todo, input string) bool {
+	r, _ := regexp.Compile(`^dn\s+\d+\s+(\d+)`)
+	matches := r.FindStringSubmatch(input)
+	if len(matches) != 2 {
+		return false
+	}
+
+	rmid, err := p.getNoteID(matches[1])
+	if err != nil {
+		return false
+	}
+
+	for id, _ := range todo.Notes {
+		if id == rmid {
+			todo.Notes = append(todo.Notes[:rmid], todo.Notes[rmid+1:]...)
+			return true
+		}
+	}
+	return false
+}
+
+func (p *Parser) ParseEditNote(todo *Todo, input string) bool {
+	r, _ := regexp.Compile(`^en\s+\d+\s+(\d+)\s+(.*)`)
+	matches := r.FindStringSubmatch(input)
+	if len(matches) != 3 {
+		return false
+	}
+
+	edid, err := p.getNoteID(matches[1])
+	if err != nil {
+		return false
+	}
+
+	for id, _ := range todo.Notes {
+		if id == edid {
+			todo.Notes[id] = matches[2]
+			return true
+		}
+	}
+	return false
+}
+
+func (p *Parser) ParseShowNote(todo *Todo, input string) bool {
+	r, _ := regexp.Compile(`^n\s+\d+`)
+	matches := r.FindStringSubmatch(input)
+	if len(matches) != 1 {
+		return false
+	}
+	return true
 }
 
 func (p *Parser) getNoteID(input string) (int, error) {
