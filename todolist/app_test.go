@@ -44,6 +44,18 @@ func TestAddTodoWithEuropeanDates(t *testing.T) {
 	assert.Equal([]string{}, todo.Contexts)
 }
 
+func TestAddEmptyTodo(t *testing.T) {
+	assert := assert.New(t)
+	app := &App{TodoList: &TodoList{}, TodoStore: &MemoryStore{}}
+
+	app.AddTodo("a")
+	app.AddTodo("a      ")
+	app.AddTodo("a\t\t\t\t")
+	app.AddTodo("a\t \t  \t   \t")
+
+	assert.Equal(len(app.TodoList.Data), 0)
+}
+
 func TestListbyProject(t *testing.T) {
 	assert := assert.New(t)
 	app := &App{TodoList: &TodoList{}, TodoStore: &MemoryStore{}}
