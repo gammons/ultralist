@@ -122,6 +122,18 @@ func usage() {
 	yellow.Println("\ttodo d 33")
 	fmt.Println("\tDeletes a todo with id 33\n")
 
+	blueBold.Println("\nManipulating notes")
+	yellow.Println("\ttodo ln")
+	fmt.Println("\tlists all todos with their notes")
+	yellow.Println("\ttodo an 12 check http://this.web.site")
+	fmt.Println("\tAdds notes \"check http://this.web.site\" to the todo with id 12\n")
+	yellow.Println("\ttodo n 12")
+	fmt.Println("\tLists notes of the todo with id 12\n")
+	yellow.Println("\ttodo dn 12 3")
+	fmt.Println("\tDeletes the 3rd note of the todo with id 12\n")
+	yellow.Println("\ttodo en 12 3 check http://that.web.site")
+	fmt.Println("\tEditing the 3rd note of the todo with id 12 to \"http://that.web.site\" \n")
+
 	blueBold.Println("\nGarbage Collection")
 	yellow.Println("\ttodo gc")
 	fmt.Println("\tDeletes all archived todos.\n")
@@ -133,7 +145,7 @@ func usage() {
 func routeInput(command string, input string) {
 	app := todolist.NewApp()
 	switch command {
-	case "l", "list", "agenda":
+	case "l", "ln", "list", "agenda":
 		app.ListTodos(input)
 	case "a", "add":
 		app.AddTodo(input)
@@ -153,6 +165,8 @@ func routeInput(command string, input string) {
 		app.EditTodo(input)
 	case "ex", "expand":
 		app.ExpandTodo(input)
+	case "an", "n", "dn", "en":
+		app.HandleNotes(input)
 	case "gc":
 		app.GarbageCollect()
 	case "p", "prioritize":

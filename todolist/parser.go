@@ -83,6 +83,77 @@ func (p *Parser) Contexts(input string) []string {
 	return p.matchWords(input, r)
 }
 
+func (p *Parser) ParseAddNote(todo *Todo, input string) bool {
+	r, _ := regexp.Compile(`^an\s+\d+\s+(.*)`)
+	matches := r.FindStringSubmatch(input)
+	if len(matches) != 2 {
+		return false
+	}
+
+	todo.Notes = append(todo.Notes, matches[1])
+	return true
+}
+
+func (p *Parser) ParseDeleteNote(todo *Todo, input string) bool {
+	r, _ := regexp.Compile(`^dn\s+\d+\s+(\d+)`)
+	matches := r.FindStringSubmatch(input)
+	if len(matches) != 2 {
+		return false
+	}
+
+	rmid, err := p.getNoteID(matches[1])
+	if err != nil {
+		return false
+	}
+
+	for id, _ := range todo.Notes {
+		if id == rmid {
+			todo.Notes = append(todo.Notes[:rmid], todo.Notes[rmid+1:]...)
+			return true
+		}
+	}
+	return false
+}
+
+func (p *Parser) ParseEditNote(todo *Todo, input string) bool {
+	r, _ := regexp.Compile(`^en\s+\d+\s+(\d+)\s+(.*)`)
+	matches := r.FindStringSubmatch(input)
+	if len(matches) != 3 {
+		return false
+	}
+
+	edid, err := p.getNoteID(matches[1])
+	if err != nil {
+		return false
+	}
+
+	for id, _ := range todo.Notes {
+		if id == edid {
+			todo.Notes[id] = matches[2]
+			return true
+		}
+	}
+	return false
+}
+
+func (p *Parser) ParseShowNote(todo *Todo, input string) bool {
+	r, _ := regexp.Compile(`^n\s+\d+`)
+	matches := r.FindStringSubmatch(input)
+	if len(matches) != 1 {
+		return false
+	}
+	return true
+}
+
+func (p *Parser) getNoteID(input string) (int, error) {
+	ret, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println("wrong note id")
+		return -1, err
+	}
+	return ret, nil
+}
+
 func (p *Parser) hasDue(input string) bool {
 	r1, _ := regexp.Compile(`due \w+$`)
 	r2, _ := regexp.Compile(`due \w+ \d+$`)

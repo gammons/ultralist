@@ -137,6 +137,35 @@ func (a *App) ExpandTodo(input string) {
 	fmt.Println("Todo expanded.")
 }
 
+func (a *App) HandleNotes(input string) {
+	a.Load()
+	id := a.getId(input)
+	if id == -1 {
+		return
+	}
+	todo := a.TodoList.FindById(id)
+	if todo == nil {
+		fmt.Println("No such id.")
+		return
+	}
+	parser := &Parser{}
+
+	if parser.ParseAddNote(todo, input) {
+		fmt.Println("Note added.")
+	} else if parser.ParseDeleteNote(todo, input) {
+		fmt.Println("Note deleted.")
+	} else if parser.ParseEditNote(todo, input) {
+		fmt.Println("Note edited.")
+	} else if parser.ParseShowNote(todo, input) {
+		groups := map[string][]*Todo{}
+		groups[""] = append(groups[""], todo)
+		formatter := NewFormatter(&GroupedTodos{Groups: groups})
+		formatter.Print(true)
+		return
+	}
+	a.Save()
+}
+
 func (a *App) ArchiveCompleted() {
 	a.Load()
 	for _, todo := range a.TodoList.Todos() {
@@ -154,7 +183,8 @@ func (a *App) ListTodos(input string) {
 	grouped := a.getGroups(input, filtered)
 
 	formatter := NewFormatter(grouped)
-	formatter.Print()
+	re, _ := regexp.Compile(`^ln`)
+	formatter.Print(re.MatchString(input))
 }
 
 func (a *App) PrioritizeTodo(input string) {

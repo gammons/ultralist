@@ -25,7 +25,7 @@ func NewFormatter(todos *GroupedTodos) *Formatter {
 	return formatter
 }
 
-func (f *Formatter) Print() {
+func (f *Formatter) Print(printNotes bool) {
 	cyan := color.New(color.FgCyan).SprintFunc()
 
 	var keys []string
@@ -38,6 +38,12 @@ func (f *Formatter) Print() {
 		fmt.Fprintf(f.Writer, "\n %s\n", cyan(key))
 		for _, todo := range f.GroupedTodos.Groups[key] {
 			f.printTodo(todo)
+			if printNotes {
+				for nid, note := range todo.Notes {
+					fmt.Fprintf(f.Writer, "   %s\t%s\t\n",
+						cyan(strconv.Itoa(nid)), note)
+				}
+			}
 		}
 	}
 	f.Writer.Flush()

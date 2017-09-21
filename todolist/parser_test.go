@@ -74,6 +74,96 @@ func TestParseContexts(t *testing.T) {
 	}
 }
 
+func TestParseAddNote(t *testing.T) {
+	parser := &Parser{}
+	todo := parser.ParseNewTodo("add write the test functions")
+
+	b1 := parser.ParseAddNote(todo, "an 1 TestPasrseAddNote")
+	b2 := parser.ParseAddNote(todo, "an 1 TestPasrseDeleteNote")
+	b3 := parser.ParseAddNote(todo, "an 1 TestPasrseEditNote")
+
+	if !b1 || !b2 || !b3 {
+		t.Error("Fail adding notes, expected 3 notes but", len(todo.Notes))
+	}
+}
+
+func TestParseDeleteNote(t *testing.T) {
+	parser := &Parser{}
+	todo := parser.ParseNewTodo("add buy notebook")
+
+	todo.Notes = append(todo.Notes, "ASUStek")
+	todo.Notes = append(todo.Notes, "Apple")
+	todo.Notes = append(todo.Notes, "Dell")
+	todo.Notes = append(todo.Notes, "Acer")
+
+	b1 := parser.ParseDeleteNote(todo, "dn 1 1")
+	b2 := parser.ParseDeleteNote(todo, "dn 1 1")
+
+	if !b1 || !b2 {
+		t.Error("Fail deleting notes, expected 2 notes left but", len(todo.Notes))
+	}
+
+	if todo.Notes[0] != "ASUStek" || todo.Notes[1] != "Acer" {
+		t.Error("Fail deleting notes,", todo.Notes[0], "and", todo.Notes[1], "are left")
+	}
+}
+
+func TestParseEditNote(t *testing.T) {
+	parser := &Parser{}
+	todo := parser.ParseNewTodo("add record the weather")
+
+	todo.Notes = append(todo.Notes, "Aug 29 Wed")
+	todo.Notes = append(todo.Notes, "Cloudy")
+	todo.Notes = append(todo.Notes, "40°C")
+	todo.Notes = append(todo.Notes, "Tokyo")
+
+	parser.ParseEditNote(todo, "en 1 0 Aug 29 Tue")
+	if todo.Notes[0] != "Aug 29 Tue" {
+		t.Error("Fail editing notes, note 0 should be \"Aug 29 Tue\" but got", todo.Notes[0])
+	}
+
+	parser.ParseEditNote(todo, "en 1 1 Sunny")
+	if todo.Notes[1] != "Sunny" {
+		t.Error("Fail editing notes, note 1 should be \"Sunny\" but got", todo.Notes[1])
+	}
+
+	parser.ParseEditNote(todo, "en 1 2 22°C")
+	if todo.Notes[2] != "22°C" {
+		t.Error("Fail editing notes, note 2 should be \"22°C\" but got", todo.Notes[2])
+	}
+
+	parser.ParseEditNote(todo, "en 1 3 Seoul")
+	if todo.Notes[3] != "Seoul" {
+		t.Error("Fail editing notes, note 3 should be \"Seoul\" but got", todo.Notes[3])
+	}
+}
+
+func TestHandleNotes(t *testing.T) {
+	parser := &Parser{}
+	todo := parser.ParseNewTodo("add search engine survey")
+
+	if !parser.ParseAddNote(todo, "an 1 www.google.com") {
+		t.Error("Expected Notes to be added")
+	}
+	if todo.Notes[0] != "www.google.com" {
+		t.Error("Expected note 1 to be 'www.google.com' but got", todo.Notes[0])
+	}
+
+	if !parser.ParseEditNote(todo, "en 1 0 www.duckduckgo.com") {
+		t.Error("Expected Notes to be editted")
+	}
+	if todo.Notes[0] != "www.duckduckgo.com" {
+		t.Error("Expected note 1 to be 'www.duckduckgo.com' but got", todo.Notes[0])
+	}
+
+	if !parser.ParseDeleteNote(todo, "dn 1 0") {
+		t.Error("Expected Notes to be deleted")
+	}
+	if len(todo.Notes) != 0 {
+		t.Error("Expected no note")
+	}
+}
+
 func TestDueToday(t *testing.T) {
 	assert := assert.New(t)
 	parser := &Parser{}
