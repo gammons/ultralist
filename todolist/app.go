@@ -36,6 +36,26 @@ func (a *App) AddTodo(input string) {
 	fmt.Printf("Todo %d added.\n", id)
 }
 
+// AddDoneTodo Adds a todo and immediately completed it.
+func (a *App) AddDoneTodo(input string) {
+	a.Load()
+
+	r, _ := regexp.Compile(`^(done)(\s*|)`)
+	input = r.ReplaceAllString(input, "")
+	parser := &Parser{}
+	todo := parser.ParseNewTodo(input)
+	if todo == nil {
+		fmt.Println("I need more information. Try something like 'todo done chating with @bob'")
+		return
+	}
+
+	id := a.TodoList.NextId()
+	a.TodoList.Add(todo)
+	a.TodoList.Complete(id)
+	a.Save()
+	fmt.Printf("Completed Todo %d added.\n", id)
+}
+
 func (a *App) DeleteTodo(input string) {
 	a.Load()
 	ids := a.getIds(input)

@@ -27,6 +27,22 @@ func TestAddTodo(t *testing.T) {
 	assert.Equal([]string{}, todo.Contexts)
 }
 
+func TestAddDoneTodo(t *testing.T) {
+	assert := assert.New(t)
+	app := &App{TodoList: &TodoList{}, TodoStore: &MemoryStore{}}
+
+	app.AddDoneTodo("Groked how to do done todos @pop")
+
+	todo := app.TodoList.FindById(1)
+	assert.Equal("Groked how to do done todos @pop", todo.Subject)
+	assert.Equal(true, todo.Completed)
+	assert.Equal(false, todo.Archived)
+	assert.Equal(false, todo.IsPriority)
+	assert.Equal([]string{}, todo.Projects)
+	assert.Equal(1, len(todo.Contexts))
+	assert.Equal("pop", todo.Contexts[0])
+}
+
 func TestAddTodoWithEuropeanDates(t *testing.T) {
 	assert := assert.New(t)
 	app := &App{TodoList: &TodoList{}, TodoStore: &MemoryStore{}}
