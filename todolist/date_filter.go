@@ -112,9 +112,12 @@ func (f *DateFilter) filterCompletedToday(pivot time.Time) []*Todo {
 }
 
 func (f *DateFilter) filterDay(pivot time.Time, day time.Weekday) []*Todo {
-	thisWeek := NewDateFilter(f.filterThisWeek(pivot))
-	pivot = f.FindSunday(pivot).AddDate(0, 0, int(day))
-	return thisWeek.filterToExactDate(pivot, filterOnDue)
+	var weeklyOffset = 0
+	if int(pivot.Weekday()) > int(day) {
+		weeklyOffset = 7
+	}
+	pivot = f.FindSunday(pivot).AddDate(0, 0, int(day)+weeklyOffset)
+	return f.filterToExactDate(pivot, filterOnDue)
 }
 
 func (f *DateFilter) filterBetweenDatesInclusive(begin, end time.Time, filterOn func(*Todo) string) []*Todo {
