@@ -25,3 +25,9 @@ task :build do
     `rm -rf dist/#{Version}/todolist`
   end
 end
+
+task :test do
+  system "go test ./..."
+end
+
+task default: :test
