@@ -130,7 +130,7 @@ func TestFilterOverdue(t *testing.T) {
 	assert.Equal(1, filtered[0].Id)
 }
 
-func TestFilterDay(t *testing.T) {
+func TestFilterDueDay(t *testing.T) {
 	assert := assert.New(t)
 
 	var todos []*Todo
@@ -154,13 +154,13 @@ func TestFilterDay(t *testing.T) {
 
 	// set the users day to be Monday.
 	filter := NewDateFilter(todos)
-	filtered := filter.filterDay(monday, time.Tuesday)
+	filtered := filter.filterDueDay(monday, time.Tuesday)
 
 	assert.Equal(1, len(filtered))
 	assert.Equal(tuesdayTodo.Subject, filtered[0].Subject)
 
 	// set the users day to be Wednesday.
-	filtered = filter.filterDay(wednesday, time.Tuesday)
+	filtered = filter.filterDueDay(wednesday, time.Tuesday)
 
 	assert.Equal(1, len(filtered))
 	assert.Equal(nextTuesdayTodo.Subject, filtered[0].Subject)
