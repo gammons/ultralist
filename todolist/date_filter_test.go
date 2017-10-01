@@ -7,6 +7,22 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestFilterDateOverdue(t *testing.T) {
+	assert := assert.New(t)
+
+	var todos []*Todo
+	todayTodo := &Todo{Id: 1, Subject: "one", Due: time.Now().Format("2006-01-02")}
+	yesterdayTodo := &Todo{Id: 2, Subject: "two", Due: time.Now().AddDate(0, 0, -1).Format("2006-01-02")}
+	todos = append(todos, todayTodo)
+	todos = append(todos, yesterdayTodo)
+
+	filter := NewDateFilter(todos)
+	filtered := filter.FilterDate("overdue")
+
+	assert.Equal(1, len(filtered))
+	assert.Equal(filtered[0].Id, yesterdayTodo.Id)
+}
+
 func TestFilterToday(t *testing.T) {
 	assert := assert.New(t)
 
