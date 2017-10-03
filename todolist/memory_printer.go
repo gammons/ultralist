@@ -5,5 +5,5 @@ type MemoryPrinter struct {
 }
 
 func (m *MemoryPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
-	f.Groups = groupedTodos
+	m.Groups = groupedTodos
 }

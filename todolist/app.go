@@ -184,7 +184,7 @@ func (a *App) HandleNotes(input string) {
 	} else if parser.ParseShowNote(todo, input) {
 		groups := map[string][]*Todo{}
 		groups[""] = append(groups[""], todo)
-		a.Printer.Print(&GroupedTodos{Groups: groups}, false)
+		a.Printer.Print(&GroupedTodos{Groups: groups}, true)
 		return
 	}
 	a.Save()
