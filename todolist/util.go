@@ -59,3 +59,23 @@ func pluralize(count int, singular, plural string) string {
 	}
 	return singular
 }
+
+func isToday(t time.Time) bool {
+	nowYear, nowMonth, nowDay := time.Now().Date()
+	timeYear, timeMonth, timeDay := t.Date()
+	return nowYear == timeYear &&
+		nowMonth == timeMonth &&
+		nowDay == timeDay
+}
+
+func isTomorrow(t time.Time) bool {
+	nowYear, nowMonth, nowDay := time.Now().AddDate(0, 0, 1).Date()
+	timeYear, timeMonth, timeDay := t.Date()
+	return nowYear == timeYear &&
+		nowMonth == timeMonth &&
+		nowDay == timeDay
+}
+
+func isPastDue(t time.Time) bool {
+	return time.Now().After(t)
+}

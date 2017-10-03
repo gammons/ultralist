@@ -9,11 +9,16 @@ import (
 
 type App struct {
 	TodoStore Store
+	Printer   Printer
 	TodoList  *TodoList
 }
 
 func NewApp() *App {
-	app := &App{TodoList: &TodoList{}, TodoStore: NewFileStore()}
+	app := &App{
+		TodoList:  &TodoList{},
+		Printer:   NewScreenPrinter(),
+		TodoStore: NewFileStore(),
+	}
 	return app
 }
 
@@ -179,8 +184,7 @@ func (a *App) HandleNotes(input string) {
 	} else if parser.ParseShowNote(todo, input) {
 		groups := map[string][]*Todo{}
 		groups[""] = append(groups[""], todo)
-		formatter := NewFormatter(&GroupedTodos{Groups: groups})
-		formatter.Print(true)
+		a.Printer.Print(&GroupedTodos{Groups: groups}, false)
 		return
 	}
 	a.Save()
@@ -202,9 +206,8 @@ func (a *App) ListTodos(input string) {
 	filtered := NewFilter(a.TodoList.Todos()).Filter(input)
 	grouped := a.getGroups(input, filtered)
 
-	formatter := NewFormatter(grouped)
 	re, _ := regexp.Compile(`^ln`)
-	formatter.Print(re.MatchString(input))
+	a.Printer.Print(grouped, re.MatchString(input))
 }
 
 func (a *App) PrioritizeTodo(input string) {
