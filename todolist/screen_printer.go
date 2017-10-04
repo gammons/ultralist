@@ -13,30 +13,29 @@ import (
 	"github.com/fatih/color"
 )
 
-type Formatter struct {
-	GroupedTodos *GroupedTodos
-	Writer       *tabwriter.Writer
+type ScreenPrinter struct {
+	Writer *tabwriter.Writer
 }
 
-func NewFormatter(todos *GroupedTodos) *Formatter {
+func NewScreenPrinter() *ScreenPrinter {
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
-	formatter := &Formatter{GroupedTodos: todos, Writer: w}
+	formatter := &ScreenPrinter{Writer: w}
 	return formatter
 }
 
-func (f *Formatter) Print(printNotes bool) {
+func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 	cyan := color.New(color.FgCyan).SprintFunc()
 
 	var keys []string
-	for key := range f.GroupedTodos.Groups {
+	for key := range groupedTodos.Groups {
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)
 
 	for _, key := range keys {
 		fmt.Fprintf(f.Writer, "\n %s\n", cyan(key))
-		for _, todo := range f.GroupedTodos.Groups[key] {
+		for _, todo := range groupedTodos.Groups[key] {
 			f.printTodo(todo)
 			if printNotes {
 				for nid, note := range todo.Notes {
@@ -49,7 +48,7 @@ func (f *Formatter) Print(printNotes bool) {
 	f.Writer.Flush()
 }
 
-func (f *Formatter) printTodo(todo *Todo) {
+func (f *ScreenPrinter) printTodo(todo *Todo) {
 	yellow := color.New(color.FgYellow)
 	if todo.IsPriority {
 		yellow.Add(color.Bold, color.Italic)
@@ -61,7 +60,7 @@ func (f *Formatter) printTodo(todo *Todo) {
 		f.formatSubject(todo.Subject, todo.IsPriority))
 }
 
-func (f *Formatter) formatDue(due string, isPriority bool) string {
+func (f *ScreenPrinter) formatDue(due string, isPriority bool) string {
 	blue := color.New(color.FgBlue)
 	red := color.New(color.FgRed)
 
@@ -92,27 +91,7 @@ func (f *Formatter) formatDue(due string, isPriority bool) string {
 	}
 }
 
-func isToday(t time.Time) bool {
-	nowYear, nowMonth, nowDay := time.Now().Date()
-	timeYear, timeMonth, timeDay := t.Date()
-	return nowYear == timeYear &&
-		nowMonth == timeMonth &&
-		nowDay == timeDay
-}
-
-func isTomorrow(t time.Time) bool {
-	nowYear, nowMonth, nowDay := time.Now().AddDate(0, 0, 1).Date()
-	timeYear, timeMonth, timeDay := t.Date()
-	return nowYear == timeYear &&
-		nowMonth == timeMonth &&
-		nowDay == timeDay
-}
-
-func isPastDue(t time.Time) bool {
-	return time.Now().After(t)
-}
-
-func (f *Formatter) formatSubject(subject string, isPriority bool) string {
+func (f *ScreenPrinter) formatSubject(subject string, isPriority bool) string {
 
 	red := color.New(color.FgRed)
 	magenta := color.New(color.FgMagenta)
@@ -143,7 +122,7 @@ func (f *Formatter) formatSubject(subject string, isPriority bool) string {
 
 }
 
-func (f *Formatter) formatCompleted(completed bool) string {
+func (f *ScreenPrinter) formatCompleted(completed bool) string {
 	if completed {
 		return "[x]"
 	} else {
