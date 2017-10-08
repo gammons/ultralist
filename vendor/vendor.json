@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "GcBvMviKcI44asw/peuk23QdvJo=",
+			"path": "github.com/NonerKao/color-aware-tabwriter",
+			"revision": "aa1eec33dba09895cad8bfeb7cdfa355e44c1e22",
+			"revisionTime": "2017-10-05T12:30:16Z"
+		},
+		{
 			"checksumSHA1": "5rPfda8jFccr3A6heL+JAmi9K9g=",
 			"origin": "github.com/stretchr/testify/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
