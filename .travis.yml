@@ -4,5 +4,9 @@ go:
   - 1.6.2
 os:
   - linux
+  - osx
+
+osx_image: xcode7.3 
+
 script:
   - go test -v ./...
