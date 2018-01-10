@@ -53,11 +53,13 @@ func (f *ScreenPrinter) printTodo(todo *Todo) {
 	if todo.IsPriority {
 		yellow.Add(color.Bold, color.Italic)
 	}
+
+	re, _ := regexp.Compile(`[[:space:]]+`)
 	fmt.Fprintf(f.Writer, " %s\t%s\t%s\t%s\t\n",
 		yellow.SprintFunc()(strconv.Itoa(todo.Id)),
 		f.formatCompleted(todo.Completed),
 		f.formatDue(todo.Due, todo.IsPriority),
-		f.formatSubject(todo.Subject, todo.IsPriority))
+		f.formatSubject(re.ReplaceAllString(todo.Subject, " "), todo.IsPriority))
 }
 
 func (f *ScreenPrinter) formatDue(due string, isPriority bool) string {

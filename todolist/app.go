@@ -146,7 +146,7 @@ func (a *App) ExpandTodo(input string) {
 	commonProject := parser.ExpandProject(input)
 	todos := strings.LastIndex(input, ":")
 	if commonProject == "" || len(input) <= todos+1 || todos == -1 {
-		fmt.Println("I'm expecting a format like \"todolist ex <project>: <todo1>, <todo2>, ...\"")
+		fmt.Println("I'm expecting a format like \"todolist ex <todoID> <project>: <todo1>, <todo2>, ...\"")
 		return
 	}
 
