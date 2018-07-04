@@ -3,6 +3,7 @@ package todolist
 import (
 	"regexp"
 	"time"
+        "strings"
 )
 
 type DateFilter struct {
@@ -30,7 +31,7 @@ func (f *DateFilter) FilterDate(input string) []*Todo {
 
 	// filter due items
 	r, _ := regexp.Compile(`due .*$`)
-	match := r.FindString(input)
+	match := strings.ToLower(r.FindString(input))
 	switch {
 	case match == "due tod" || match == "due today":
 		return f.filterDueToday(bod(time.Now()))
@@ -62,7 +63,7 @@ func (f *DateFilter) FilterDate(input string) []*Todo {
 
 	// filter completed items
 	r, _ = regexp.Compile(`completed .*$`)
-	match = r.FindString(input)
+	match = strings.ToLower(r.FindString(input))
 	switch {
 	case match == "completed tod" || match == "completed today":
 		return f.filterCompletedToday(bod(time.Now()))
