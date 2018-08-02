@@ -25,3 +25,15 @@ task :build do
     `rm -rf dist/#{Version}/todolist`
   end
 end
+
+desc "Rebuilds vendor dir, assumes only a vendor/vendor.json file in ./vendor"
+task :rebuild_vendor do
+  system "govendor fetch +missing,^program"
+end
+
+desc "Tests all the things"
+task :test do
+  system "go test ./..."
+end
+
+task default: :test
