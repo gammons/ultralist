@@ -130,25 +130,40 @@ func TestFilterOverdue(t *testing.T) {
 	assert.Equal(1, filtered[0].Id)
 }
 
-func TestFilterDay(t *testing.T) {
+func TestFilterDueDay(t *testing.T) {
 	assert := assert.New(t)
 
 	var todos []*Todo
 	df := &DateFilter{}
 	sunday := df.FindSunday(time.Now())
 
-	mondayTodo := &Todo{Id: 1, Subject: "one", Due: sunday.AddDate(0, 0, 1).Format("2006-01-02")}
-	tuesdayTodo := &Todo{Id: 2, Subject: "two", Due: sunday.AddDate(0, 0, 2).Format("2006-01-02")}
+	monday := sunday.AddDate(0, 0, 1)
+	tuesday := sunday.AddDate(0, 0, 2)
+	wednesday := sunday.AddDate(0, 0, 3)
+
+	tuesdayNext := tuesday.AddDate(0, 0, 7)
+
+	mondayTodo := &Todo{Id: 1, Subject: "mondayTodo", Due: monday.Format("2006-01-02")}
+	tuesdayTodo := &Todo{Id: 2, Subject: "tuesdayTodo", Due: tuesday.Format("2006-01-02")}
+
+	nextTuesdayTodo := &Todo{Id: 3, Subject: "nextTuesdayTodo", Due: tuesdayNext.Format("2006-01-02")}
 
 	todos = append(todos, mondayTodo)
 	todos = append(todos, tuesdayTodo)
+	todos = append(todos, nextTuesdayTodo)
 
+	// set the users day to be Monday.
 	filter := NewDateFilter(todos)
-
-	filtered := filter.filterDay(sunday, time.Monday)
+	filtered := filter.filterDueDay(monday, time.Tuesday)
 
 	assert.Equal(1, len(filtered))
-	assert.Equal(1, filtered[0].Id)
+	assert.Equal(tuesdayTodo.Subject, filtered[0].Subject)
+
+	// set the users day to be Wednesday.
+	filtered = filter.filterDueDay(wednesday, time.Tuesday)
+
+	assert.Equal(1, len(filtered))
+	assert.Equal(nextTuesdayTodo.Subject, filtered[0].Subject)
 }
 
 func TestFilterAgenda(t *testing.T) {
