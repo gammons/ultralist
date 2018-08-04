@@ -28,6 +28,11 @@ func (f *DateFilter) FilterDate(input string) []*Todo {
 		return f.filterAgenda(bod(time.Now()))
 	}
 
+	overdueRegex, _ := regexp.Compile(`overdue.*$`)
+	if overdueRegex.MatchString(input) {
+		return f.filterOverdue(bod(time.Now()))
+	}
+
 	// filter due items
 	r, _ := regexp.Compile(`due .*$`)
 	match := r.FindString(input)
@@ -56,8 +61,6 @@ func (f *DateFilter) FilterDate(input string) []*Todo {
 		return f.filterNextWeek(bod(time.Now()))
 	case match == "due last week":
 		return f.filterLastWeek(bod(time.Now()))
-	case match == "overdue":
-		return f.filterOverdue(bod(time.Now()))
 	}
 
 	// filter completed items
