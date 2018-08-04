@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	VERSION = "0.6"
+	VERSION = "0.6.1"
 	S3URL   = "https://s3.amazonaws.com/todolist-local/" + VERSION
 )
 
@@ -43,7 +43,7 @@ func IndexScaffold(w http.ResponseWriter, r *http.Request, _ httprouter.Params) 
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css">
+    <link rel="stylesheet" href="https://bootswatch.com/3/flatly/bootstrap.min.css">
     <title>Todolist</title>
     <link href="` + urlFor("main.css") + `" rel="stylesheet">
   </head>
@@ -64,7 +64,7 @@ func RedirectScaffold(w http.ResponseWriter, r *http.Request) {
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="https://bootswatch.com/flatly/bootstrap.min.css">
+    <link rel="stylesheet" href="https://bootswatch.com/3/flatly/bootstrap.min.css">
     <title>Todolist</title>
     <link href="` + urlFor("main.css") + `" rel="stylesheet">
   </head>

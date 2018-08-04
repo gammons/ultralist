@@ -3,50 +3,56 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "5rPfda8jFccr3A6heL+JAmi9K9g=",
+			"checksumSHA1": "GcBvMviKcI44asw/peuk23QdvJo=",
+			"path": "github.com/NonerKao/color-aware-tabwriter",
+			"revision": "aa1eec33dba09895cad8bfeb7cdfa355e44c1e22",
+			"revisionTime": "2017-10-05T12:30:16Z"
+		},
+		{
+			"checksumSHA1": "dvabztWVQX8f6oMLRyv4dLH+TGY=",
 			"origin": "github.com/stretchr/testify/vendor/github.com/davecgh/go-spew/spew",
 			"path": "github.com/davecgh/go-spew/spew",
-			"revision": "d77da356e56a7428ad25149ca77381849a6a5232",
-			"revisionTime": "2016-06-15T09:26:46Z"
+			"revision": "f35b8ab0b5a2cef36673838d662e249dd9c94686",
+			"revisionTime": "2018-05-06T18:05:49Z"
 		},
 		{
-			"checksumSHA1": "gkRIq2AsG0e/ngNfqW+IF/zr9o8=",
+			"checksumSHA1": "HbOJxa+FsQ1TTsF+BkHAvzqqZv4=",
 			"path": "github.com/fatih/color",
-			"revision": "533cd7fd8a85905f67a1753afb4deddc85ea174f",
-			"revisionTime": "2016-03-17T09:31:53Z"
+			"revision": "2d684516a8861da43017284349b7e303e809ac21",
+			"revisionTime": "2018-05-16T10:03:07Z"
 		},
 		{
-			"checksumSHA1": "zfyMbr3iYjsHsnOR49KW0EQ4ZS0=",
+			"checksumSHA1": "1qDKTZ60A59b6RZuYhRxhHTYqPU=",
 			"path": "github.com/jinzhu/now",
-			"revision": "ce80572eb55aa0ac839330041ca9db1afa5f1f6c",
-			"revisionTime": "2015-10-01T14:15:11Z"
+			"revision": "ed742868f2aebdb1c0c437bf4f7257f88834b66f",
+			"revisionTime": "2018-05-11T01:59:16Z"
 		},
 		{
-			"checksumSHA1": "Farach1xcmsQYrhiUfkwF2rbIaE=",
+			"checksumSHA1": "z/DzcKNumSHzzxg9Widbi9KgwNw=",
 			"path": "github.com/julienschmidt/httprouter",
-			"revision": "6aacfd5ab513e34f7e64ea9627ab9670371b34e7",
-			"revisionTime": "2015-07-08T21:54:00Z"
+			"revision": "348b672cd90d8190f8240323e372ecd1e66b59dc",
+			"revisionTime": "2018-07-15T16:18:54Z"
 		},
 		{
-			"checksumSHA1": "rCffFCN6TpDAN3Jylyo8RFzhQ9E=",
+			"checksumSHA1": "SEnjvwVyfuU2xBaOfXfwPD5MZqk=",
 			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-colorable",
 			"path": "github.com/mattn/go-colorable",
-			"revision": "533cd7fd8a85905f67a1753afb4deddc85ea174f",
-			"revisionTime": "2016-03-17T09:31:53Z"
+			"revision": "efa589957cd060542a26d2dd7832fd6a6c6c3ade",
+			"revisionTime": "2018-03-10T13:32:14Z"
 		},
 		{
-			"checksumSHA1": "NkbetqlpWBi3gP08JDneC+axTKw=",
+			"checksumSHA1": "w5RcOnfv5YDr3j2bd1YydkPiZx4=",
 			"origin": "github.com/fatih/color/vendor/github.com/mattn/go-isatty",
 			"path": "github.com/mattn/go-isatty",
-			"revision": "533cd7fd8a85905f67a1753afb4deddc85ea174f",
-			"revisionTime": "2016-03-17T09:31:53Z"
+			"revision": "6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c",
+			"revisionTime": "2017-11-07T05:05:31Z"
 		},
 		{
-			"checksumSHA1": "zKKp5SZ3d3ycKe4EKMNT0BqAWBw=",
+			"checksumSHA1": "LuFv4/jlrmFNnDb/5SCSEPAM9vU=",
 			"origin": "github.com/stretchr/testify/vendor/github.com/pmezard/go-difflib/difflib",
 			"path": "github.com/pmezard/go-difflib/difflib",
-			"revision": "c5d7a69bf8a2c9c374798160849c071093e41dd1",
-			"revisionTime": "2016-04-18T22:58:27Z"
+			"revision": "f35b8ab0b5a2cef36673838d662e249dd9c94686",
+			"revisionTime": "2018-05-06T18:05:49Z"
 		},
 		{
 			"checksumSHA1": "h/HMhokbQHTdLUbruoBBTee+NYw=",
@@ -55,16 +61,16 @@
 			"revisionTime": "2016-03-02T14:40:31Z"
 		},
 		{
-			"checksumSHA1": "Bn333k9lTndxU3D6n/G5c+GMcYY=",
+			"checksumSHA1": "c6pbpF7eowwO59phRTpF8cQ80Z0=",
 			"path": "github.com/stretchr/testify/assert",
-			"revision": "c5d7a69bf8a2c9c374798160849c071093e41dd1",
-			"revisionTime": "2016-04-18T22:58:27Z"
+			"revision": "f35b8ab0b5a2cef36673838d662e249dd9c94686",
+			"revisionTime": "2018-05-06T18:05:49Z"
 		},
 		{
-			"checksumSHA1": "c8iMfP5+K3GEg26HJiO0OVVLiM4=",
+			"checksumSHA1": "8bXeGlNPkVW1H7Br5/9i7somgyM=",
 			"path": "golang.org/x/sys/unix",
-			"revision": "f64b50fbea64174967a8882830d621a18ee1548e",
-			"revisionTime": "2016-04-14T13:31:22Z"
+			"revision": "3dc4335d56c789b04b0ba99b7a37249d9b614314",
+			"revisionTime": "2018-07-17T20:24:21Z"
 		}
 	],
 	"rootPath": "github.com/gammons/todolist"
