@@ -1,6 +1,10 @@
 package todolist
 
-import "testing"
+import (
+	"testing"
+
+	"os"
+)
 
 func TestNewTodo(t *testing.T) {
 	todo := NewTodo()
@@ -44,4 +48,13 @@ func SetUpTestMemoryTodoList() *TodoList {
 	list.Add(todo2)
 
 	return list
+}
+
+func testFileCleanUp(filename string) {
+	var err = os.Remove(filename)
+	if err != nil {
+		panic(err)
+	}
+
+	return
 }
