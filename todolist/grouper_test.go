@@ -9,11 +9,7 @@ import (
 func TestGroupByContext(t *testing.T) {
 	assert := assert.New(t)
 
-	store := &FileStore{FileLocation: "todos.json"}
-	list := &TodoList{}
-	todos, _ := store.Load()
-	list.Load(todos)
-
+	list := SetUpTestMemoryTodoList()
 	grouper := &Grouper{}
 	grouped := grouper.GroupByContext(list.Todos())
 
@@ -24,11 +20,7 @@ func TestGroupByContext(t *testing.T) {
 func TestGroupByProject(t *testing.T) {
 	assert := assert.New(t)
 
-	store := &FileStore{FileLocation: "todos.json"}
-	list := &TodoList{}
-	todos, _ := store.Load()
-	list.Load(todos)
-
+	list := SetUpTestMemoryTodoList()
 	grouper := &Grouper{}
 	grouped := grouper.GroupByProject(list.Todos())
 
