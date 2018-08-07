@@ -6,8 +6,8 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
+	"github.com/gammons/todolist/todolist"
 	"github.com/skratchdot/open-golang/open"
-	"github.com/stuartskelton/todolist/todolist"
 )
 
 const (
