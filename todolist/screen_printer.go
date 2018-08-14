@@ -70,7 +70,7 @@ func (f *ScreenPrinter) formatDue(due string, isPriority bool) string {
 	}
 
 	if due == "" {
-		return blue.SprintFunc()(" ")
+		return blue.SprintFunc()("          ")
 	}
 	dueTime, err := time.Parse("2006-01-02", due)
 
@@ -81,13 +81,13 @@ func (f *ScreenPrinter) formatDue(due string, isPriority bool) string {
 	}
 
 	if isToday(dueTime) {
-		return blue.SprintFunc()("today")
+		return blue.SprintFunc()("today     ")
 	} else if isTomorrow(dueTime) {
-		return blue.SprintFunc()("tomorrow")
+		return blue.SprintFunc()("tomorrow  ")
 	} else if isPastDue(dueTime) {
-		return red.SprintFunc()(dueTime.Format("Mon Jan 2"))
+		return red.SprintFunc()(dueTime.Format("Mon Jan 02"))
 	} else {
-		return blue.SprintFunc()(dueTime.Format("Mon Jan 2"))
+		return blue.SprintFunc()(dueTime.Format("Mon Jan 02"))
 	}
 }
 
