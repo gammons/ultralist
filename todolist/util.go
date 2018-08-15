@@ -1,6 +1,11 @@
 package todolist
 
-import "time"
+import (
+	"fmt"
+	"time"
+
+	"github.com/twinj/uuid"
+)
 
 func AddIfNotThere(arr []string, items []string) []string {
 	for _, item := range items {
@@ -28,6 +33,10 @@ func AddTodoIfNotThere(arr []*Todo, item *Todo) []*Todo {
 		arr = append(arr, item)
 	}
 	return arr
+}
+
+func newUUID() string {
+	return fmt.Sprintf("%s", uuid.NewV4())
 }
 
 func bod(t time.Time) time.Time {

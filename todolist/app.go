@@ -8,9 +8,11 @@ import (
 )
 
 type App struct {
-	TodoStore Store
-	Printer   Printer
-	TodoList  *TodoList
+	EventLogger *EventLogger
+	TodoStore   Store
+	Printer     Printer
+	TodoList    *TodoList
+	IsSynced    bool
 }
 
 func NewApp() *App {
@@ -18,6 +20,7 @@ func NewApp() *App {
 		TodoList:  &TodoList{},
 		Printer:   NewScreenPrinter(),
 		TodoStore: NewFileStore(),
+		IsSynced:  true,
 	}
 	return app
 }
@@ -307,9 +310,13 @@ func (a *App) Load() error {
 		return err
 	}
 	a.TodoList.Load(todos)
+	a.EventLogger = NewEventLogger(a.TodoList)
 	return nil
 }
 
 func (a *App) Save() {
 	a.TodoStore.Save(a.TodoList.Data)
+	if a.IsSynced {
+		a.EventLogger.ProcessEvents()
+	}
 }

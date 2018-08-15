@@ -1,12 +1,16 @@
 package todolist
 
-import "time"
+import (
+	"reflect"
+	"time"
+)
 
 // Timestamp format to include date, time with timezone support. Easy to parse
 const ISO8601_TIMESTAMP_FORMAT = "2006-01-02T15:04:05Z07:00"
 
 type Todo struct {
 	Id            int      `json:"id"`
+	UUID          string   `json:"uuid"`
 	Subject       string   `json:"subject"`
 	Projects      []string `json:"projects"`
 	Contexts      []string `json:"contexts"`
@@ -19,7 +23,7 @@ type Todo struct {
 }
 
 func NewTodo() *Todo {
-	return &Todo{Completed: false, Archived: false, IsPriority: false}
+	return &Todo{UUID: newUUID(), Completed: false, Archived: false, IsPriority: false}
 }
 
 func (t Todo) Valid() bool {
@@ -65,4 +69,22 @@ func (t *Todo) Unprioritize() {
 func (t Todo) CompletedDateToDate() string {
 	parsedTime, _ := time.Parse(ISO8601_TIMESTAMP_FORMAT, t.CompletedDate)
 	return parsedTime.Format("2006-01-02")
+}
+
+// Equals : Compare 2 todos for equality.
+func (t Todo) Equals(other *Todo) bool {
+	if t.Id != other.Id ||
+		t.UUID != other.UUID ||
+		t.Subject != other.Subject ||
+		!reflect.DeepEqual(t.Projects, other.Projects) ||
+		!reflect.DeepEqual(t.Contexts, other.Contexts) ||
+		t.Due != other.Due ||
+		t.Completed != other.Completed ||
+		t.CompletedDate != other.CompletedDate ||
+		t.Archived != other.Archived ||
+		t.IsPriority != other.IsPriority ||
+		!reflect.DeepEqual(t.Notes, other.Notes) {
+		return false
+	}
+	return true
 }

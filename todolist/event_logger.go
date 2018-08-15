@@ -1,0 +1,129 @@
+package todolist
+
+import (
+	"encoding/json"
+	"io/ioutil"
+	"os"
+
+	"github.com/jinzhu/copier"
+)
+
+// The different types of events that can occur
+const (
+	AddEvent    = "EventAdded"
+	UpdateEvent = "EventUpdated"
+	DeleteEvent = "EventDeleted"
+)
+
+// EventLogger is the main struct of this file
+type EventLogger struct {
+	PreviousTodoList *TodoList
+	CurrentTodoList  *TodoList
+	Events           []*EventLog
+}
+
+// EventLog is a log of events that occurred, with the Todo data.
+type EventLog struct {
+	EventType     string   `json:"eventType"`
+	ID            int      `json:"id"`
+	UUID          string   `json:"uuid"`
+	Subject       string   `json:"subject"`
+	Projects      []string `json:"projects"`
+	Contexts      []string `json:"contexts"`
+	Due           string   `json:"due"`
+	Completed     bool     `json:"completed"`
+	CompletedDate string   `json:"completedDate"`
+	Archived      bool     `json:"archived"`
+	IsPriority    bool     `json:"isPriority"`
+	Notes         []string `json:"notes"`
+}
+
+// NewEventLogger : Create a new event logger
+func NewEventLogger(todoList *TodoList) *EventLogger {
+	var previousTodos []*Todo
+
+	for _, todo := range todoList.Data {
+		var newTodo Todo
+		copier.Copy(&newTodo, &todo)
+		previousTodos = append(previousTodos, &newTodo)
+	}
+	var previousTodoList = &TodoList{Data: previousTodos}
+	return &EventLogger{CurrentTodoList: todoList, PreviousTodoList: previousTodoList}
+}
+
+// ProcessEvents : process all events that occurred when todolist ran, and write them to a log file.
+func (e *EventLogger) ProcessEvents() {
+	e.CreateEventLogs()
+	e.WriteEventLogs()
+}
+
+// CreateEventLogs : makes event logs.
+func (e *EventLogger) CreateEventLogs() {
+	var eventLogs []*EventLog
+
+	// find events added or updated
+	for _, todo := range e.CurrentTodoList.Data {
+		previousTodo := e.PreviousTodoList.FindById(todo.Id)
+		if previousTodo != nil {
+			if todo.Equals(previousTodo) == false {
+				eventLogs = append(eventLogs, e.writeTodoEvent(UpdateEvent, todo))
+			}
+		} else {
+			eventLogs = append(eventLogs, e.writeTodoEvent(AddEvent, todo))
+		}
+	}
+
+	// find deleted events
+	for _, todo := range e.PreviousTodoList.Data {
+		currentTodo := e.CurrentTodoList.FindById(todo.Id)
+		if currentTodo == nil {
+			eventLogs = append(eventLogs, e.writeTodoEvent(DeleteEvent, todo))
+		}
+	}
+	e.Events = eventLogs
+}
+
+// WriteEventLogs : Writes event logs to disk
+func (e *EventLogger) WriteEventLogs() {
+
+	previousEvents := e.loadPreviousEvents()
+	newEvents := append(previousEvents, e.Events...)
+
+	data, _ := json.Marshal(newEvents)
+
+	if err := ioutil.WriteFile("sync.json", []byte(data), 0600); err != nil {
+		panic(err)
+	}
+}
+
+func (e *EventLogger) loadPreviousEvents() []*EventLog {
+	var events []*EventLog
+
+	if _, err := os.Stat("sync.json"); os.IsNotExist(err) {
+		return events
+	}
+
+	data, _ := ioutil.ReadFile("sync.json")
+	jerr := json.Unmarshal(data, &events)
+	if jerr != nil {
+		panic(jerr)
+	}
+	return events
+}
+
+func (e *EventLogger) writeTodoEvent(eventType string, todo *Todo) *EventLog {
+	return &EventLog{
+		EventType:     eventType,
+		ID:            todo.Id,
+		UUID:          todo.UUID,
+		Subject:       todo.Subject,
+		Projects:      todo.Projects,
+		Contexts:      todo.Contexts,
+		Due:           todo.Due,
+		Completed:     todo.Completed,
+		CompletedDate: todo.CompletedDate,
+		Archived:      todo.Archived,
+		IsPriority:    todo.IsPriority,
+		Notes:         todo.Notes,
+	}
+}
