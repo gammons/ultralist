@@ -54,7 +54,7 @@ func (f *ScreenPrinter) printTodo(todo *Todo) {
 		yellow.Add(color.Bold, color.Italic)
 	}
 	fmt.Fprintf(f.Writer, " %s\t%s\t%s\t%s\t\n",
-		yellow.SprintFunc()(strconv.Itoa(todo.Id)),
+		yellow.SprintFunc()(fmt.Sprintf("%-4d", todo.Id)),
 		f.formatCompleted(todo.Completed),
 		f.formatDue(todo.Due, todo.IsPriority),
 		f.formatSubject(todo.Subject, todo.IsPriority))
