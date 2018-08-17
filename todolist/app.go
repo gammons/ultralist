@@ -40,7 +40,7 @@ func (a *App) AddTodo(input string) {
 
 	id := a.TodoList.NextId()
 	a.TodoList.Add(todo)
-	a.Save()
+	a.save()
 	fmt.Printf("Todo %d added.\n", id)
 }
 
@@ -60,7 +60,7 @@ func (a *App) AddDoneTodo(input string) {
 	id := a.TodoList.NextId()
 	a.TodoList.Add(todo)
 	a.TodoList.Complete(id)
-	a.Save()
+	a.save()
 	fmt.Printf("Completed Todo %d added.\n", id)
 }
 
@@ -72,7 +72,7 @@ func (a *App) DeleteTodo(input string) {
 		return
 	}
 	a.TodoList.Delete(ids...)
-	a.Save()
+	a.save()
 	fmt.Printf("%s deleted.\n", pluralize(len(ids), "Todo", "Todos"))
 }
 
@@ -84,7 +84,7 @@ func (a *App) CompleteTodo(input string) {
 		return
 	}
 	a.TodoList.Complete(ids...)
-	a.Save()
+	a.save()
 	fmt.Println("Todo completed.")
 }
 
@@ -96,7 +96,7 @@ func (a *App) UncompleteTodo(input string) {
 		return
 	}
 	a.TodoList.Uncomplete(ids...)
-	a.Save()
+	a.save()
 	fmt.Println("Todo uncompleted.")
 }
 
@@ -108,7 +108,7 @@ func (a *App) ArchiveTodo(input string) {
 		return
 	}
 	a.TodoList.Archive(ids...)
-	a.Save()
+	a.save()
 	fmt.Println("Todo archived.")
 }
 
@@ -120,7 +120,7 @@ func (a *App) UnarchiveTodo(input string) {
 		return
 	}
 	a.TodoList.Unarchive(ids...)
-	a.Save()
+	a.save()
 	fmt.Println("Todo unarchived.")
 }
 
@@ -139,7 +139,7 @@ func (a *App) EditTodo(input string) {
 	parser := &Parser{}
 
 	if parser.ParseEditTodo(todo, input) {
-		a.Save()
+		a.save()
 		fmt.Println("Todo updated.")
 	}
 }
@@ -168,7 +168,7 @@ func (a *App) ExpandTodo(input string) {
 	}
 
 	a.TodoList.Delete(id)
-	a.Save()
+	a.save()
 	fmt.Println("Todo expanded.")
 }
 
@@ -198,7 +198,7 @@ func (a *App) HandleNotes(input string) {
 		a.Printer.Print(&GroupedTodos{Groups: groups}, true)
 		return
 	}
-	a.Save()
+	a.save()
 }
 
 // ArchiveCompleted will archive all completed todos
@@ -209,7 +209,7 @@ func (a *App) ArchiveCompleted() {
 			todo.Archive()
 		}
 	}
-	a.Save()
+	a.save()
 	fmt.Println("All completed todos have been archived.")
 }
 
@@ -231,7 +231,7 @@ func (a *App) PrioritizeTodo(input string) {
 		return
 	}
 	a.TodoList.Prioritize(ids...)
-	a.Save()
+	a.save()
 	fmt.Println("Todo prioritized.")
 }
 
@@ -243,7 +243,7 @@ func (a *App) UnprioritizeTodo(input string) {
 		return
 	}
 	a.TodoList.Unprioritize(ids...)
-	a.Save()
+	a.save()
 	fmt.Println("Todo un-prioritized.")
 }
 
@@ -251,8 +251,17 @@ func (a *App) UnprioritizeTodo(input string) {
 func (a *App) GarbageCollect() {
 	a.Load()
 	a.TodoList.GarbageCollect()
-	a.Save()
+	a.save()
 	fmt.Println("Garbage collection complete.")
+}
+
+// Sync will sync the todolist with ultralist.io
+func (a *App) Sync(input string) {
+	a.Load()
+	a.save()
+	if input != "-q" {
+		fmt.Println("Garbage collection complete.")
+	}
 }
 
 // Load the todolist from the store
@@ -267,7 +276,7 @@ func (a *App) Load() error {
 }
 
 // Save the todolist to the store
-func (a *App) Save() {
+func (a *App) save() {
 	a.TodoStore.Save(a.TodoList.Data)
 	if a.IsSynced {
 		a.EventLogger.ProcessEvents()

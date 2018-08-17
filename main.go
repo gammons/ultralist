@@ -58,6 +58,8 @@ func routeInput(command string, input string) {
 		app.UnprioritizeTodo(input)
 	case "init":
 		app.InitializeRepo()
+	case "sync":
+		app.Sync(input)
 	case "web":
 		if err := app.Load(); err != nil {
 			os.Exit(1)
