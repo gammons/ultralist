@@ -64,6 +64,7 @@ func (a *App) AddDoneTodo(input string) {
 	fmt.Printf("Completed Todo %d added.\n", id)
 }
 
+// DeleteTodo deletes a todo
 func (a *App) DeleteTodo(input string) {
 	a.Load()
 	ids := a.getIds(input)
@@ -75,6 +76,7 @@ func (a *App) DeleteTodo(input string) {
 	fmt.Printf("%s deleted.\n", pluralize(len(ids), "Todo", "Todos"))
 }
 
+// CompleteTodo completes a todo
 func (a *App) CompleteTodo(input string) {
 	a.Load()
 	ids := a.getIds(input)
@@ -86,6 +88,7 @@ func (a *App) CompleteTodo(input string) {
 	fmt.Println("Todo completed.")
 }
 
+// UncompleteTodo marks a todo as not completed
 func (a *App) UncompleteTodo(input string) {
 	a.Load()
 	ids := a.getIds(input)
@@ -97,6 +100,7 @@ func (a *App) UncompleteTodo(input string) {
 	fmt.Println("Todo uncompleted.")
 }
 
+// ArchiveTodo marks a todo as archived
 func (a *App) ArchiveTodo(input string) {
 	a.Load()
 	ids := a.getIds(input)
@@ -108,6 +112,7 @@ func (a *App) ArchiveTodo(input string) {
 	fmt.Println("Todo archived.")
 }
 
+// UnarchiveTodo marks a todo as unarchived
 func (a *App) UnarchiveTodo(input string) {
 	a.Load()
 	ids := a.getIds(input)
@@ -119,6 +124,7 @@ func (a *App) UnarchiveTodo(input string) {
 	fmt.Println("Todo unarchived.")
 }
 
+// EditTodo edit a todo with the input
 func (a *App) EditTodo(input string) {
 	a.Load()
 	id := a.getId(input)
@@ -138,6 +144,7 @@ func (a *App) EditTodo(input string) {
 	}
 }
 
+// ExpandTodo expands a todo
 func (a *App) ExpandTodo(input string) {
 	a.Load()
 	id := a.getId(input)
@@ -165,6 +172,7 @@ func (a *App) ExpandTodo(input string) {
 	fmt.Println("Todo expanded.")
 }
 
+// HandleNotes is a sub-function that will handle notes on a todo.
 func (a *App) HandleNotes(input string) {
 	a.Load()
 	id := a.getId(input)
@@ -193,6 +201,7 @@ func (a *App) HandleNotes(input string) {
 	a.Save()
 }
 
+// ArchiveCompleted will archive all completed todos
 func (a *App) ArchiveCompleted() {
 	a.Load()
 	for _, todo := range a.TodoList.Todos() {
@@ -204,6 +213,7 @@ func (a *App) ArchiveCompleted() {
 	fmt.Println("All completed todos have been archived.")
 }
 
+// ListTodos will list all todos
 func (a *App) ListTodos(input string) {
 	a.Load()
 	filtered := NewFilter(a.TodoList.Todos()).Filter(input)
@@ -213,6 +223,7 @@ func (a *App) ListTodos(input string) {
 	a.Printer.Print(grouped, re.MatchString(input))
 }
 
+// PrioritizeTodo will prioritize a todo
 func (a *App) PrioritizeTodo(input string) {
 	a.Load()
 	ids := a.getIds(input)
@@ -224,6 +235,7 @@ func (a *App) PrioritizeTodo(input string) {
 	fmt.Println("Todo prioritized.")
 }
 
+// UnprioritizeTodo un-prioritizes a todo
 func (a *App) UnprioritizeTodo(input string) {
 	a.Load()
 	ids := a.getIds(input)
@@ -233,6 +245,33 @@ func (a *App) UnprioritizeTodo(input string) {
 	a.TodoList.Unprioritize(ids...)
 	a.Save()
 	fmt.Println("Todo un-prioritized.")
+}
+
+// GarbageCollect will delete all archived todos
+func (a *App) GarbageCollect() {
+	a.Load()
+	a.TodoList.GarbageCollect()
+	a.Save()
+	fmt.Println("Garbage collection complete.")
+}
+
+// Load the todolist from the store
+func (a *App) Load() error {
+	todos, err := a.TodoStore.Load()
+	if err != nil {
+		return err
+	}
+	a.TodoList.Load(todos)
+	a.EventLogger = NewEventLogger(a.TodoList)
+	return nil
+}
+
+// Save the todolist to the store
+func (a *App) Save() {
+	a.TodoStore.Save(a.TodoList.Data)
+	if a.IsSynced {
+		a.EventLogger.ProcessEvents()
+	}
 }
 
 func (a *App) getId(input string) int {
@@ -247,7 +286,6 @@ func (a *App) getId(input string) int {
 }
 
 func (a *App) getIds(input string) (ids []int) {
-
 	idGroups := strings.Split(input, ",")
 	for _, idGroup := range idGroups {
 		if rangedIds, err := a.parseRangedIds(idGroup); len(rangedIds) > 0 || err != nil {
@@ -295,28 +333,4 @@ func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 		grouped = grouper.GroupByNothing(todos)
 	}
 	return grouped
-}
-
-func (a *App) GarbageCollect() {
-	a.Load()
-	a.TodoList.GarbageCollect()
-	a.Save()
-	fmt.Println("Garbage collection complete.")
-}
-
-func (a *App) Load() error {
-	todos, err := a.TodoStore.Load()
-	if err != nil {
-		return err
-	}
-	a.TodoList.Load(todos)
-	a.EventLogger = NewEventLogger(a.TodoList)
-	return nil
-}
-
-func (a *App) Save() {
-	a.TodoStore.Save(a.TodoList.Data)
-	if a.IsSynced {
-		a.EventLogger.ProcessEvents()
-	}
 }
