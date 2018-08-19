@@ -12,7 +12,7 @@ func TestCreateEventLogsWithAddingTodo(t *testing.T) {
 	list := &TodoList{}
 	list.Add(todo)
 
-	logger := NewEventLogger(list)
+	logger := NewEventLogger(list, &MemoryStore{})
 	todo2 := NewTodo()
 	list.Add(todo2)
 	logger.CreateEventLogs()
@@ -28,7 +28,7 @@ func TestCreateEventLogsWithAddingMultipleTodos(t *testing.T) {
 	list := &TodoList{}
 	list.Add(todo)
 
-	logger := NewEventLogger(list)
+	logger := NewEventLogger(list, &MemoryStore{})
 	todo2 := NewTodo()
 	list.Add(todo2)
 	todo3 := NewTodo()
@@ -48,7 +48,7 @@ func TestUpdateEvent(t *testing.T) {
 	list := &TodoList{}
 	list.Add(todo)
 
-	logger := NewEventLogger(list)
+	logger := NewEventLogger(list, &MemoryStore{})
 	todo.Subject = "testing2"
 	logger.CreateEventLogs()
 
@@ -65,7 +65,7 @@ func TestDeleteEvent(t *testing.T) {
 	list.Add(todo)
 	list.Add(todo2)
 
-	logger := NewEventLogger(list)
+	logger := NewEventLogger(list, &MemoryStore{})
 	list.Delete(todo.Id)
 	logger.CreateEventLogs()
 

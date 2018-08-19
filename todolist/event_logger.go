@@ -2,8 +2,10 @@ package todolist
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
+	"os/user"
 
 	"github.com/jinzhu/copier"
 )
@@ -17,9 +19,19 @@ const (
 
 // EventLogger is the main struct of this file
 type EventLogger struct {
-	PreviousTodoList *TodoList
-	CurrentTodoList  *TodoList
-	Events           []*EventLog
+	PreviousTodoList  *TodoList
+	CurrentTodoList   *TodoList
+	Store             Store
+	SyncedLists       []*SyncedList
+	CurrentSyncedList *SyncedList
+	Events            []*EventLog
+}
+
+// SyncedList is a representation of a todolist for syncing
+type SyncedList struct {
+	Filename string      `json:"filename"`
+	UUID     string      `json:"uuid"`
+	Events   []*EventLog `json:"events"`
 }
 
 // EventLog is a log of events that occurred, with the Todo data.
@@ -39,7 +51,7 @@ type EventLog struct {
 }
 
 // NewEventLogger : Create a new event logger
-func NewEventLogger(todoList *TodoList) *EventLogger {
+func NewEventLogger(todoList *TodoList, store Store) *EventLogger {
 	var previousTodos []*Todo
 
 	for _, todo := range todoList.Data {
@@ -48,7 +60,11 @@ func NewEventLogger(todoList *TodoList) *EventLogger {
 		previousTodos = append(previousTodos, &newTodo)
 	}
 	var previousTodoList = &TodoList{Data: previousTodos}
-	return &EventLogger{CurrentTodoList: todoList, PreviousTodoList: previousTodoList}
+	return &EventLogger{
+		CurrentTodoList:  todoList,
+		PreviousTodoList: previousTodoList,
+		Store:            store,
+	}
 }
 
 // ProcessEvents : process all events that occurred when todolist ran, and write them to a log file.
@@ -85,30 +101,61 @@ func (e *EventLogger) CreateEventLogs() {
 
 // WriteEventLogs : Writes event logs to disk
 func (e *EventLogger) WriteEventLogs() {
+	e.loadSyncedLists()
+	e.CurrentSyncedList.Events = append(e.CurrentSyncedList.Events, e.Events...)
+	e.writeSyncedLists()
+}
 
-	previousEvents := e.loadPreviousEvents()
-	newEvents := append(previousEvents, e.Events...)
+func (e *EventLogger) loadSyncedLists() {
+	if _, err := os.Stat(e.syncedListsFile()); os.IsNotExist(err) {
+		list := &SyncedList{
+			Filename: e.Store.GetLocation(),
+			UUID:     newUUID(),
+		}
+		e.SyncedLists = []*SyncedList{list}
+		e.CurrentSyncedList = list
+		return
+	}
 
-	data, _ := json.Marshal(newEvents)
+	data, _ := ioutil.ReadFile(e.syncedListsFile())
+	err := json.Unmarshal(data, &e.SyncedLists)
+	if err != nil {
+		panic(err)
+	}
 
-	if err := ioutil.WriteFile("sync.json", []byte(data), 0600); err != nil {
+	for _, list := range e.SyncedLists {
+		if list.Filename == e.Store.GetLocation() {
+			e.CurrentSyncedList = list
+			return
+		}
+	}
+	e.CurrentSyncedList = &SyncedList{
+		Filename: e.Store.GetLocation(),
+		UUID:     newUUID(),
+	}
+}
+
+func (e *EventLogger) writeSyncedLists() {
+	data, _ := json.Marshal(e.SyncedLists)
+	if _, err := os.Stat(e.syncedListsConfigDir()); os.IsNotExist(err) {
+		os.MkdirAll(e.syncedListsConfigDir(), os.ModePerm)
+		if _, cerr := os.Create(e.syncedListsConfigDir()); cerr != nil {
+			panic(cerr)
+		}
+	}
+
+	if err := ioutil.WriteFile(e.syncedListsFile(), data, 0644); err != nil {
 		panic(err)
 	}
 }
 
-func (e *EventLogger) loadPreviousEvents() []*EventLog {
-	var events []*EventLog
+func (e *EventLogger) syncedListsConfigDir() string {
+	usr, _ := user.Current()
+	return fmt.Sprintf("%s/.config/ultralist/", usr.HomeDir)
+}
 
-	if _, err := os.Stat("sync.json"); os.IsNotExist(err) {
-		return events
-	}
-
-	data, _ := ioutil.ReadFile("sync.json")
-	jerr := json.Unmarshal(data, &events)
-	if jerr != nil {
-		panic(jerr)
-	}
-	return events
+func (e *EventLogger) syncedListsFile() string {
+	return e.syncedListsConfigDir() + "synced_lists.json"
 }
 
 func (e *EventLogger) writeTodoEvent(eventType string, todo *Todo) *EventLog {

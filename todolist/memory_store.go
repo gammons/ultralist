@@ -17,3 +17,7 @@ func (m *MemoryStore) Load() ([]*Todo, error) {
 func (m *MemoryStore) Save(todos []*Todo) {
 	m.Todos = todos
 }
+
+func (m *MemoryStore) GetLocation() string {
+	return ""
+}

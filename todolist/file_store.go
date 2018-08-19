@@ -36,7 +36,7 @@ func (f *FileStore) Initialize() {
 
 func (f *FileStore) Load() ([]*Todo, error) {
 	if f.FileLocation == "" {
-		f.FileLocation = getLocation()
+		f.FileLocation = f.GetLocation()
 	}
 
 	data, err := ioutil.ReadFile(f.FileLocation)
@@ -66,7 +66,7 @@ func (f *FileStore) Save(todos []*Todo) {
 	}
 }
 
-func getLocation() string {
+func (f *FileStore) GetLocation() string {
 	localrepo := ".todos.json"
 	usr, _ := user.Current()
 	homerepo := fmt.Sprintf("%s/.todos.json", usr.HomeDir)

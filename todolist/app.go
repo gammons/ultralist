@@ -258,9 +258,11 @@ func (a *App) GarbageCollect() {
 // Sync will sync the todolist with ultralist.io
 func (a *App) Sync(input string) {
 	a.Load()
+	synchronizer := &Synchronizer{}
+	synchronizer.Sync(a.TodoList)
 	a.save()
 	if input != "-q" {
-		fmt.Println("Garbage collection complete.")
+		fmt.Println("Sync complete.")
 	}
 }
 
@@ -271,7 +273,7 @@ func (a *App) Load() error {
 		return err
 	}
 	a.TodoList.Load(todos)
-	a.EventLogger = NewEventLogger(a.TodoList)
+	a.EventLogger = NewEventLogger(a.TodoList, a.TodoStore)
 	return nil
 }
 
