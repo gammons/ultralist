@@ -101,12 +101,12 @@ func (e *EventLogger) CreateEventLogs() {
 
 // WriteEventLogs : Writes event logs to disk
 func (e *EventLogger) WriteEventLogs() {
-	e.loadSyncedLists()
+	e.LoadSyncedLists()
 	e.CurrentSyncedList.Events = append(e.CurrentSyncedList.Events, e.Events...)
 	e.writeSyncedLists()
 }
 
-func (e *EventLogger) loadSyncedLists() {
+func (e *EventLogger) LoadSyncedLists() {
 	if _, err := os.Stat(e.syncedListsFile()); os.IsNotExist(err) {
 		list := &SyncedList{
 			Filename: e.Store.GetLocation(),
