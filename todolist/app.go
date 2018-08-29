@@ -261,7 +261,7 @@ func (a *App) Sync(input string) {
 	logger := NewEventLogger(a.TodoList, a.TodoStore)
 	logger.LoadSyncedLists()
 	synchronizer := NewSynchronizer(input)
-	synchronizer.Sync(logger.CurrentSyncedList)
+	synchronizer.Sync(a.TodoList, logger.CurrentSyncedList)
 	a.save()
 }
 

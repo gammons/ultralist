@@ -4,7 +4,6 @@ import "sort"
 
 type TodoList struct {
 	Data []*Todo
-	UUID string
 }
 
 func (t *TodoList) Load(todos []*Todo) {

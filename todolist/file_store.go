@@ -60,6 +60,13 @@ func (f *FileStore) Load() ([]*Todo, error) {
 }
 
 func (f *FileStore) Save(todos []*Todo) {
+	// ensure UUID is set for todos at save time
+	for _, todo := range todos {
+		if todo.UUID == "" {
+			todo.UUID = newUUID()
+		}
+	}
+
 	data, _ := json.Marshal(todos)
 	if err := ioutil.WriteFile(f.FileLocation, []byte(data), 0644); err != nil {
 		fmt.Println("Error writing json file", err)
@@ -67,9 +74,12 @@ func (f *FileStore) Save(todos []*Todo) {
 }
 
 func (f *FileStore) GetLocation() string {
-	localrepo := ".todos.json"
+	dir, _ := os.Getwd()
+	localrepo := fmt.Sprintf("%s/.todos.json", dir)
+
 	usr, _ := user.Current()
 	homerepo := fmt.Sprintf("%s/.todos.json", usr.HomeDir)
+
 	_, ferr := os.Stat(localrepo)
 
 	if ferr == nil {
