@@ -14,6 +14,7 @@ import (
 type Synchronizer struct {
 	Creds     string `json:"creds"`
 	QuietSync bool
+	Success   bool
 }
 
 const (
@@ -26,7 +27,7 @@ func NewSynchronizer(input string) *Synchronizer {
 		quietSync = true
 	}
 
-	return &Synchronizer{QuietSync: quietSync}
+	return &Synchronizer{QuietSync: quietSync, Success: false}
 }
 
 func (s *Synchronizer) Sync(todolist *TodoList, syncedList *SyncedList) {
@@ -42,23 +43,41 @@ func (s *Synchronizer) Sync(todolist *TodoList, syncedList *SyncedList) {
 		return
 	}
 
-	s.sync(todolist, syncedList)
+	s.doSync(todolist, syncedList)
 }
 
-type RequestTodolist struct {
+func (s *Synchronizer) WasSuccessful() bool {
+	return s.Success
+}
+
+type TodolistRequest struct {
 	UUID                string  `json:"uuid"`
 	Name                string  `json:"name"`
 	TodoItemsAttributes []*Todo `json:"todo_items_attributes"`
 }
+
 type Request struct {
 	Events   []*EventLog      `json:"events"`
-	Todolist *RequestTodolist `json:"todolist"`
+	Todolist *TodolistRequest `json:"todolist"`
 }
 
-func (s *Synchronizer) sync(todolist *TodoList, syncedList *SyncedList) {
+func (s *Synchronizer) doSync(todolist *TodoList, syncedList *SyncedList) {
+	bodyBytes := s.performSyncRequest(todolist, syncedList)
+
+	// assign the local todolist data to the values that came back from the server.
+	// the server will have the "correct" list, since it will have assimilated all of the change
+	// from various clients.
+	var response *TodolistRequest
+	if err := json.Unmarshal(bodyBytes, &response); err != nil {
+		panic(err)
+	}
+	todolist.Data = response.TodoItemsAttributes
+}
+
+func (s *Synchronizer) performSyncRequest(todolist *TodoList, syncedList *SyncedList) []byte {
 	requestData := &Request{
 		Events: syncedList.Events,
-		Todolist: &RequestTodolist{
+		Todolist: &TodolistRequest{
 			UUID:                syncedList.UUID,
 			Name:                "test todolist",
 			TodoItemsAttributes: todolist.Data,
@@ -79,16 +98,23 @@ func (s *Synchronizer) sync(todolist *TodoList, syncedList *SyncedList) {
 	var requestError error
 	var response *http.Response
 
-	if response, requestError = client.Do(req); requestError != nil {
-		fmt.Println("Error contacting server: ", requestError)
-		os.Exit(0)
-	}
+	response, requestError = client.Do(req)
 	defer response.Body.Close()
 
-	// bodyBytes, err := ioutil.ReadAll(response.Body)
-	// if err != nil {
-	// 	panic(err)
-	// }
+	if requestError != nil {
+		fmt.Println("Error contacting server: ", requestError)
+		os.Exit(0)
+		return nil
+	}
+
+	s.Success = true
+
+	bodyBytes, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	return bodyBytes
 }
 
 func (s *Synchronizer) println(text string) {
