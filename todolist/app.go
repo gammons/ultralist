@@ -260,9 +260,14 @@ func (a *App) Sync(input string) {
 	a.Load()
 	logger := NewEventLogger(a.TodoList, a.TodoStore)
 	logger.LoadSyncedLists()
+
 	synchronizer := NewSynchronizer(input)
 	synchronizer.Sync(a.TodoList, logger.CurrentSyncedList)
-	a.save()
+
+	if synchronizer.WasSuccessful() {
+		logger.ClearEventLogs()
+	}
+	a.TodoStore.Save(a.TodoList.Data)
 }
 
 // Load the todolist from the store

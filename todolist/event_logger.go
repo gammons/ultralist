@@ -106,6 +106,12 @@ func (e *EventLogger) WriteEventLogs() {
 	e.writeSyncedLists()
 }
 
+func (e *EventLogger) ClearEventLogs() {
+	e.LoadSyncedLists()
+	e.CurrentSyncedList.Events = []*EventLog{}
+	e.writeSyncedLists()
+}
+
 func (e *EventLogger) LoadSyncedLists() {
 	if _, err := os.Stat(e.syncedListsFile()); os.IsNotExist(err) {
 		list := &SyncedList{
