@@ -286,6 +286,9 @@ func (a *App) save() {
 	a.TodoStore.Save(a.TodoList.Data)
 	if a.IsSynced {
 		a.EventLogger.ProcessEvents()
+
+		synchronizer := NewSynchronizer("")
+		synchronizer.ExecSyncInBackground()
 	}
 }
 

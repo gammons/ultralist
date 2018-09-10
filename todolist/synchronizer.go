@@ -7,7 +7,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/user"
+	"syscall"
 	"time"
 )
 
@@ -28,6 +30,24 @@ func NewSynchronizer(input string) *Synchronizer {
 	}
 
 	return &Synchronizer{QuietSync: quietSync, Success: false}
+}
+
+func (s *Synchronizer) ExecSyncInBackground() {
+	binary, lookErr := exec.LookPath("todolist")
+	if lookErr != nil {
+		panic(lookErr)
+	}
+	cmd := exec.Command(binary, "sync", "-q")
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		Setpgid: true,
+		Pgid:    0,
+	}
+	if err := cmd.Start(); err != nil {
+		panic(err)
+	}
 }
 
 func (s *Synchronizer) Sync(todolist *TodoList, syncedList *SyncedList) {
@@ -162,6 +182,5 @@ func (s *Synchronizer) loadCreds() string {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(string(data))
 	return string(data)
 }
