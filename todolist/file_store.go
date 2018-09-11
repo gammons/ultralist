@@ -31,7 +31,6 @@ func (f *FileStore) Initialize() {
 		fmt.Println("Error writing json file", err)
 		os.Exit(1)
 	}
-	fmt.Println("Todo repo initialized.")
 }
 
 func (f *FileStore) Load() ([]*Todo, error) {

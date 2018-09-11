@@ -1,10 +1,13 @@
 package todolist
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/manifoldco/promptui"
 )
 
 type App struct {
@@ -27,6 +30,52 @@ func NewApp() *App {
 
 func (a *App) InitializeRepo() {
 	a.TodoStore.Initialize()
+	fmt.Println("Todo repo initialized.")
+
+	backend := NewBackend()
+
+	if !backend.CredsFileExists() {
+		return
+	}
+
+	prompt := promptui.Prompt{
+		Label:     "Do you wish to sync this list with ultralist.io",
+		IsConfirm: true,
+	}
+
+	result, _ := prompt.Run()
+	if result != "y" {
+		return
+	}
+
+	// fetch lists from ultralist.io, or allow user to create a new list
+	// use the "select_add" example in promptui as a way to do this
+	type Todolist struct {
+		Name string `json:"name"`
+		UUID string `json:"uuid"`
+	}
+	type Response struct {
+		Todolists []Todolist `json:"todolists"`
+	}
+
+	var response *Response
+
+	resp := backend.PerformRequest("GET", "/api/v1/todo_lists", []byte{})
+	json.Unmarshal(resp, &response)
+
+	var todolistNames []string
+	for _, todolist := range response.Todolists {
+		todolistNames = append(todolistNames, todolist.Name)
+	}
+
+	prompt2 := promptui.SelectWithAdd{
+		Label:    "You can sync with an existing list on ultralist, or create a new list.",
+		Items:    todolistNames,
+		AddLabel: "New list...",
+	}
+
+	_, selectedList, _ := prompt2.Run()
+	fmt.Println(selectedList)
 }
 
 func (a *App) AddTodo(input string) {
@@ -261,7 +310,7 @@ func (a *App) Sync(input string) {
 	logger := NewEventLogger(a.TodoList, a.TodoStore)
 	logger.LoadSyncedLists()
 
-	synchronizer := NewSynchronizer(input)
+	synchronizer := NewSynchronizerWithInput(input)
 	synchronizer.Sync(a.TodoList, logger.CurrentSyncedList)
 
 	if synchronizer.WasSuccessful() {
@@ -287,7 +336,7 @@ func (a *App) save() {
 	if a.IsSynced {
 		a.EventLogger.ProcessEvents()
 
-		synchronizer := NewSynchronizer("")
+		synchronizer := NewSynchronizer()
 		synchronizer.ExecSyncInBackground()
 	}
 }
