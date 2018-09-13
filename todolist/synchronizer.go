@@ -79,7 +79,10 @@ type Request struct {
 }
 
 func (s *Synchronizer) doSync(todolist *TodoList, syncedList *SyncedList) {
-	bodyBytes := s.performSyncRequest(todolist, syncedList)
+	data := s.buildRequest(todolist, syncedList)
+	path := fmt.Sprintf("/api/v1/todo_lists/%s", syncedList.UUID)
+
+	bodyBytes := s.Backend.PerformRequest("PUT", path, data)
 
 	// assign the local todolist data to the values that came back from the server.
 	// the server will have the "correct" list, since it will have assimilated all of the change
@@ -91,7 +94,7 @@ func (s *Synchronizer) doSync(todolist *TodoList, syncedList *SyncedList) {
 	todolist.Data = response.TodoItemsAttributes
 }
 
-func (s *Synchronizer) performSyncRequest(todolist *TodoList, syncedList *SyncedList) []byte {
+func (s *Synchronizer) buildRequest(todolist *TodoList, syncedList *SyncedList) []byte {
 	requestData := &Request{
 		Events: syncedList.Events,
 		Todolist: &TodolistRequest{
@@ -100,11 +103,8 @@ func (s *Synchronizer) performSyncRequest(todolist *TodoList, syncedList *Synced
 			TodoItemsAttributes: todolist.Data,
 		},
 	}
-
-	path := fmt.Sprintf("/api/v1/todo_lists/%s", syncedList.UUID)
 	data, _ := json.Marshal(requestData)
-
-	return s.Backend.PerformRequest("PUT", path, data)
+	return data
 }
 
 func (s *Synchronizer) println(text string) {

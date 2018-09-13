@@ -15,7 +15,6 @@ type App struct {
 	TodoStore   Store
 	Printer     Printer
 	TodoList    *TodoList
-	IsSynced    bool
 }
 
 func NewApp() *App {
@@ -23,7 +22,6 @@ func NewApp() *App {
 		TodoList:  &TodoList{},
 		Printer:   NewScreenPrinter(),
 		TodoStore: NewFileStore(),
-		IsSynced:  true,
 	}
 	return app
 }
@@ -33,6 +31,8 @@ func (a *App) InitializeRepo() {
 	fmt.Println("Todo repo initialized.")
 
 	backend := NewBackend()
+	eventLogger := &EventLogger{Store: a.TodoStore}
+	eventLogger.LoadSyncedLists()
 
 	if !backend.CredsFileExists() {
 		return
@@ -48,14 +48,15 @@ func (a *App) InitializeRepo() {
 		return
 	}
 
+	if !backend.CanConnect() {
+		fmt.Println("I cannot connect to ultralist.io right now.")
+		return
+	}
+
 	// fetch lists from ultralist.io, or allow user to create a new list
 	// use the "select_add" example in promptui as a way to do this
-	type Todolist struct {
-		Name string `json:"name"`
-		UUID string `json:"uuid"`
-	}
 	type Response struct {
-		Todolists []Todolist `json:"todolists"`
+		Todolists []TodoList `json:"todolists"`
 	}
 
 	var response *Response
@@ -74,8 +75,17 @@ func (a *App) InitializeRepo() {
 		AddLabel: "New list...",
 	}
 
-	_, selectedList, _ := prompt2.Run()
-	fmt.Println(selectedList)
+	idx, name, _ := prompt2.Run()
+	if idx == -1 {
+		eventLogger.CurrentSyncedList.Name = name
+	} else {
+		eventLogger.CurrentSyncedList.Name = response.Todolists[idx].Name
+		eventLogger.CurrentSyncedList.UUID = response.Todolists[idx].UUID
+		a.TodoList = &response.Todolists[idx]
+		a.save()
+	}
+
+	eventLogger.WriteSyncedLists()
 }
 
 func (a *App) AddTodo(input string) {
@@ -333,7 +343,7 @@ func (a *App) Load() error {
 // Save the todolist to the store
 func (a *App) save() {
 	a.TodoStore.Save(a.TodoList.Data)
-	if a.IsSynced {
+	if a.TodoList.IsSynced {
 		a.EventLogger.ProcessEvents()
 
 		synchronizer := NewSynchronizer()

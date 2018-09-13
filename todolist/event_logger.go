@@ -31,6 +31,7 @@ type EventLogger struct {
 type SyncedList struct {
 	Filename string      `json:"filename"`
 	UUID     string      `json:"uuid"`
+	Name     string      `json:"name"`
 	Events   []*EventLog `json:"events"`
 }
 
@@ -103,13 +104,13 @@ func (e *EventLogger) CreateEventLogs() {
 func (e *EventLogger) WriteEventLogs() {
 	e.LoadSyncedLists()
 	e.CurrentSyncedList.Events = append(e.CurrentSyncedList.Events, e.Events...)
-	e.writeSyncedLists()
+	e.WriteSyncedLists()
 }
 
 func (e *EventLogger) ClearEventLogs() {
 	e.LoadSyncedLists()
 	e.CurrentSyncedList.Events = []*EventLog{}
-	e.writeSyncedLists()
+	e.WriteSyncedLists()
 }
 
 func (e *EventLogger) LoadSyncedLists() {
@@ -141,7 +142,7 @@ func (e *EventLogger) LoadSyncedLists() {
 	}
 }
 
-func (e *EventLogger) writeSyncedLists() {
+func (e *EventLogger) WriteSyncedLists() {
 	data, _ := json.Marshal(e.SyncedLists)
 	if _, err := os.Stat(e.syncedListsConfigDir()); os.IsNotExist(err) {
 		os.MkdirAll(e.syncedListsConfigDir(), os.ModePerm)

@@ -3,7 +3,10 @@ package todolist
 import "sort"
 
 type TodoList struct {
-	Data []*Todo
+	Name     string `json:"name"`
+	UUID     string `json:"uuid"`
+	IsSynced bool
+	Data     []*Todo `json:"todo_items_attributes"`
 }
 
 func (t *TodoList) Load(todos []*Todo) {
