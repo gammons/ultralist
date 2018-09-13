@@ -337,6 +337,7 @@ func (a *App) Load() error {
 	}
 	a.TodoList.Load(todos)
 	a.EventLogger = NewEventLogger(a.TodoList, a.TodoStore)
+	a.EventLogger.LoadSyncedLists()
 	return nil
 }
 

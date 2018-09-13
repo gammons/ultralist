@@ -27,7 +27,7 @@ func NewSynchronizerWithInput(input string) *Synchronizer {
 	if input == "sync -q" {
 		quietSync = true
 	}
-	return &Synchronizer{QuietSync: quietSync, Success: false}
+	return &Synchronizer{QuietSync: quietSync, Success: false, Backend: NewBackend()}
 }
 
 func (s *Synchronizer) ExecSyncInBackground() {
@@ -91,6 +91,7 @@ func (s *Synchronizer) doSync(todolist *TodoList, syncedList *SyncedList) {
 	if err := json.Unmarshal(bodyBytes, &response); err != nil {
 		panic(err)
 	}
+	s.Success = true
 	todolist.Data = response.TodoItemsAttributes
 }
 

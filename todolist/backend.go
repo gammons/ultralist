@@ -31,7 +31,6 @@ func (b *Backend) PerformRequest(method string, path string, data []byte) []byte
 	req, _ := http.NewRequest(method, url, bytes.NewBuffer(data))
 	authHeader := fmt.Sprintf("Bearer %s", b.Creds)
 
-	fmt.Println("authHeader:", authHeader)
 	req.Header.Set("Authorization", authHeader)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
@@ -57,9 +56,7 @@ func (b *Backend) PerformRequest(method string, path string, data []byte) []byte
 		panic(err)
 	}
 
-	fmt.Println(string(bodyBytes))
 	return bodyBytes
-
 }
 
 func (b *Backend) CanConnect() bool {

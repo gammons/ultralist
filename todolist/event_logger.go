@@ -133,6 +133,7 @@ func (e *EventLogger) LoadSyncedLists() {
 	for _, list := range e.SyncedLists {
 		if list.Filename == e.Store.GetLocation() {
 			e.CurrentSyncedList = list
+			e.CurrentTodoList.IsSynced = true
 			return
 		}
 	}
@@ -140,6 +141,7 @@ func (e *EventLogger) LoadSyncedLists() {
 		Filename: e.Store.GetLocation(),
 		UUID:     newUUID(),
 	}
+	e.SyncedLists = append(e.SyncedLists, e.CurrentSyncedList)
 }
 
 func (e *EventLogger) WriteSyncedLists() {
