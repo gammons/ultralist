@@ -115,12 +115,7 @@ func (e *EventLogger) ClearEventLogs() {
 
 func (e *EventLogger) LoadSyncedLists() {
 	if _, err := os.Stat(e.syncedListsFile()); os.IsNotExist(err) {
-		list := &SyncedList{
-			Filename: e.Store.GetLocation(),
-			UUID:     newUUID(),
-		}
-		e.SyncedLists = []*SyncedList{list}
-		e.CurrentSyncedList = list
+		e.initializeSyncedList()
 		return
 	}
 
@@ -137,11 +132,17 @@ func (e *EventLogger) LoadSyncedLists() {
 			return
 		}
 	}
-	e.CurrentSyncedList = &SyncedList{
+
+	e.initializeSyncedList()
+}
+
+func (e *EventLogger) initializeSyncedList() {
+	list := &SyncedList{
 		Filename: e.Store.GetLocation(),
 		UUID:     newUUID(),
 	}
-	e.SyncedLists = append(e.SyncedLists, e.CurrentSyncedList)
+	e.SyncedLists = []*SyncedList{list}
+	e.CurrentSyncedList = list
 }
 
 func (e *EventLogger) WriteSyncedLists() {
