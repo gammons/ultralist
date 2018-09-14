@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/manifoldco/promptui"
+	"github.com/skratchdot/open-golang/open"
 )
 
 type App struct {
@@ -327,6 +328,15 @@ func (a *App) Sync(input string) {
 		logger.ClearEventLogs()
 	}
 	a.TodoStore.Save(a.TodoList.Data)
+}
+
+func (a *App) AuthWorkflow() {
+	webapp := &Webapp{}
+	backend := NewBackend()
+
+	open.Start(backend.AuthUrl())
+	fmt.Println("Listening for auth response...")
+	webapp.Run()
 }
 
 // Load the todolist from the store

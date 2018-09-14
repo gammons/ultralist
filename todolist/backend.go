@@ -13,7 +13,7 @@ import (
 
 type Backend struct {
 	Creds   string `json:"creds"`
-	Success bool
+	Success bool   `json:"-"`
 }
 
 func NewBackend() *Backend {
@@ -73,6 +73,20 @@ func (b *Backend) CredsFileExists() bool {
 		return false
 	}
 	return true
+}
+
+func (b *Backend) AuthUrl() string {
+	return b.apiUrl("/cli_auth")
+}
+
+func (b *Backend) WriteCreds(token string) {
+	b.Creds = token
+	data, _ := json.Marshal(b)
+
+	if err := ioutil.WriteFile(b.credsFilePath(), data, 0600); err != nil {
+		fmt.Println("Error writing creds file!")
+		panic(err)
+	}
 }
 
 func (b *Backend) apiUrl(path string) string {

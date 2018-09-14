@@ -1,10 +1,10 @@
 package todolist
 
 import (
-	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+	"os"
+	"time"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -16,99 +16,37 @@ const (
 
 type Webapp struct {
 	Router *httprouter.Router
-}
-
-func NewWebapp() *Webapp {
-	return &Webapp{Router: setupRoutes()}
+	server *http.Server
 }
 
 func (w *Webapp) Run() {
-	log.Fatal(http.ListenAndServe(":7890", w.Router))
+	w.server = &http.Server{Addr: ":9976"}
+
+	http.HandleFunc("/", w.handleAuthResponse)
+	http.HandleFunc("/favicon.ico", w.handleFavicon)
+
+	w.server.ListenAndServe()
 }
 
-func setupRoutes() *httprouter.Router {
-	router := httprouter.New()
-	router.GET("/", IndexScaffold)
-	router.OPTIONS("/todos", TodoOptions)
-	router.GET("/todos", GetTodos)
-	router.POST("/todos", SaveTodos)
-	router.NotFound = http.HandlerFunc(RedirectScaffold)
-	return router
+func (w *Webapp) handleFavicon(writer http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(writer, "")
 }
 
-func IndexScaffold(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	template := `
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="https://bootswatch.com/3/flatly/bootstrap.min.css">
-    <title>Todolist</title>
-    <link href="` + urlFor("main.css") + `" rel="stylesheet">
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="text/javascript" src="` + urlFor("common.js") + `"></script>
-    <script type="text/javascript" src="` + urlFor("main.js") + `"></script>
-  </body>
-</html>
-	`
-	fmt.Fprintf(w, template)
-}
-
-func RedirectScaffold(w http.ResponseWriter, r *http.Request) {
-	template := `
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="stylesheet" href="https://bootswatch.com/3/flatly/bootstrap.min.css">
-    <title>Todolist</title>
-    <link href="` + urlFor("main.css") + `" rel="stylesheet">
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="text/javascript" src="` + urlFor("common.js") + `"></script>
-    <script type="text/javascript" src="` + urlFor("main.js") + `"></script>
-  </body>
-</html>
-	`
-	fmt.Fprintf(w, template)
-}
-
-func urlFor(file string) string {
-	return S3URL + "/" + file
-}
-
-func RedirectToIndex(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, S3URL+r.URL.Path, 301)
-}
-
-func GetTodos(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	app := NewApp()
-	app.Load()
-	json, _ := json.Marshal(app.TodoList.Data)
-	fmt.Fprintf(w, string(json))
-}
-func TodoOptions(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	w.Header().Set("Access-Control-Allow-Headers", "*")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	fmt.Fprintf(w, "")
-}
-
-func SaveTodos(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	w.Header().Set("Access-Control-Allow-Headers", "*")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	decoder := json.NewDecoder(r.Body)
-	var todos []*Todo
-	err := decoder.Decode(&todos)
-	if err != nil {
-		log.Fatal("encountered an error parsing json, ", err)
+func (w *Webapp) handleAuthResponse(writer http.ResponseWriter, r *http.Request) {
+	keys, ok := r.URL.Query()["token"]
+	if ok == false {
+		fmt.Println("Something went wrong.. I did not get a token back.")
+		os.Exit(0)
 	}
-	app := NewApp()
-	app.TodoStore.Load()
-	app.TodoStore.Save(todos)
+
+	backend := NewBackend()
+	backend.WriteCreds(keys[0])
+	fmt.Println("Authorization successful!")
+	fmt.Fprintf(writer, "Authorization complete.  Head back to your terminal for next steps.")
+
+	// sleep 1 second before shutting server down, so we can display msg on web.
+	go func() {
+		time.Sleep(1 * time.Second)
+		w.server.Shutdown(nil)
+	}()
 }

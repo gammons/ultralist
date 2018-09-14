@@ -1,12 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
 	"github.com/gammons/todolist/todolist"
-	"github.com/skratchdot/open-golang/open"
 )
 
 // the current version of todolist
@@ -60,14 +58,7 @@ func routeInput(command string, input string) {
 		app.InitializeRepo()
 	case "sync":
 		app.Sync(input)
-	case "web":
-		if err := app.Load(); err != nil {
-			os.Exit(1)
-		} else {
-			web := todolist.NewWebapp()
-			fmt.Println("Now serving todolist web.\nHead to http://localhost:7890 to see your todo list!")
-			open.Start("http://localhost:7890")
-			web.Run()
-		}
+	case "auth":
+		app.AuthWorkflow()
 	}
 }
