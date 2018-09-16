@@ -139,7 +139,7 @@ func (e *EventLogger) initializeSyncedList() {
 		Filename: e.Store.GetLocation(),
 		UUID:     newUUID(),
 	}
-	e.SyncedLists = []*SyncedList{list}
+	e.SyncedLists = append(e.SyncedLists, list)
 	e.CurrentSyncedList = list
 }
 
