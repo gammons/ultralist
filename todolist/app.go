@@ -318,16 +318,23 @@ func (a *App) GarbageCollect() {
 // Sync will sync the todolist with ultralist.io
 func (a *App) Sync(input string) {
 	a.Load()
-	logger := NewEventLogger(a.TodoList, a.TodoStore)
-	logger.LoadSyncedLists()
+
+	if a.EventLogger.CurrentSyncedList.Name == "" {
+		prompt := promptui.Prompt{
+			Label: "Give this list a name",
+		}
+
+		result, _ := prompt.Run()
+		a.EventLogger.CurrentSyncedList.Name = result
+	}
 
 	synchronizer := NewSynchronizerWithInput(input)
-	synchronizer.Sync(a.TodoList, logger.CurrentSyncedList)
+	synchronizer.Sync(a.TodoList, a.EventLogger.CurrentSyncedList)
 
 	if synchronizer.WasSuccessful() {
-		logger.ClearEventLogs()
+		a.EventLogger.ClearEventLogs()
+		a.TodoStore.Save(a.TodoList.Data)
 	}
-	a.TodoStore.Save(a.TodoList.Data)
 }
 
 func (a *App) AuthWorkflow() {

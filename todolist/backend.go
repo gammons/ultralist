@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/user"
+	"strings"
 	"time"
 )
 
@@ -46,6 +47,12 @@ func (b *Backend) PerformRequest(method string, path string, data []byte) []byte
 	if requestError != nil {
 		fmt.Println("Error contacting server: ", requestError)
 		b.Success = false
+		return nil
+	}
+
+	if !strings.HasPrefix(response.Status, "2") {
+		fmt.Printf("Got a status of %s from server. Aborting.", response.Status)
+		os.Exit(0)
 		return nil
 	}
 

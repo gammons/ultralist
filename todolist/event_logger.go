@@ -102,13 +102,11 @@ func (e *EventLogger) CreateEventLogs() {
 
 // WriteEventLogs : Writes event logs to disk
 func (e *EventLogger) WriteEventLogs() {
-	e.LoadSyncedLists()
 	e.CurrentSyncedList.Events = append(e.CurrentSyncedList.Events, e.Events...)
 	e.WriteSyncedLists()
 }
 
 func (e *EventLogger) ClearEventLogs() {
-	e.LoadSyncedLists()
 	e.CurrentSyncedList.Events = []*EventLog{}
 	e.WriteSyncedLists()
 }

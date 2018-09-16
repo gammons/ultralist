@@ -91,8 +91,10 @@ func (s *Synchronizer) doSync(todolist *TodoList, syncedList *SyncedList) {
 	if err := json.Unmarshal(bodyBytes, &response); err != nil {
 		panic(err)
 	}
-	s.Success = true
-	todolist.Data = response.TodoItemsAttributes
+	if s.Backend.Success {
+		s.Success = true
+		todolist.Data = response.TodoItemsAttributes
+	}
 }
 
 func (s *Synchronizer) buildRequest(todolist *TodoList, syncedList *SyncedList) []byte {
@@ -100,7 +102,7 @@ func (s *Synchronizer) buildRequest(todolist *TodoList, syncedList *SyncedList) 
 		Events: syncedList.Events,
 		Todolist: &TodolistRequest{
 			UUID:                syncedList.UUID,
-			Name:                "test todolist",
+			Name:                syncedList.Name,
 			TodoItemsAttributes: todolist.Data,
 		},
 	}
