@@ -56,11 +56,11 @@ func (f *ScreenPrinter) printTodo(todo *Todo) {
 	fmt.Fprintf(f.Writer, " %s\t%s\t%s\t%s\t\n",
 		yellow.SprintFunc()(strconv.Itoa(todo.Id)),
 		f.formatCompleted(todo.Completed),
-		f.formatDue(todo.Due, todo.IsPriority),
+		f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
 		f.formatSubject(todo.Subject, todo.IsPriority))
 }
 
-func (f *ScreenPrinter) formatDue(due string, isPriority bool) string {
+func (f *ScreenPrinter) formatDue(due string, isPriority bool, completed bool) string {
 	blue := color.New(color.FgBlue)
 	red := color.New(color.FgRed)
 
@@ -84,7 +84,7 @@ func (f *ScreenPrinter) formatDue(due string, isPriority bool) string {
 		return blue.SprintFunc()("today     ")
 	} else if isTomorrow(dueTime) {
 		return blue.SprintFunc()("tomorrow  ")
-	} else if isPastDue(dueTime) {
+	} else if isPastDue(dueTime) && !completed {
 		return red.SprintFunc()(dueTime.Format("Mon Jan 02"))
 	} else {
 		return blue.SprintFunc()(dueTime.Format("Mon Jan 02"))
