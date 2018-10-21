@@ -155,9 +155,9 @@ func (p *Parser) getNoteID(input string) (int, error) {
 }
 
 func (p *Parser) hasDue(input string) bool {
-	r1, _ := regexp.Compile(`due (\w| )+$`)
-	r2, _ := regexp.Compile(`due (\w| )+(\d| )+$`)
-	r3, _ := regexp.Compile(`due (\d| )+(\w| )+$`)
+	r1, _ := regexp.Compile(`\sdue (\w| )+$`)
+	r2, _ := regexp.Compile(`\sdue (\w| )+(\d| )+$`)
+	r3, _ := regexp.Compile(`\sdue (\d| )+(\w| )+$`)
 	return (r1.MatchString(input) || r2.MatchString(input) || r3.MatchString(input))
 }
 
