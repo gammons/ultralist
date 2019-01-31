@@ -90,9 +90,16 @@ func (b *Backend) WriteCreds(token string) {
 	b.Creds = token
 	data, _ := json.Marshal(b)
 
+	if _, err := os.Stat(b.credsFolderPath()); os.IsNotExist(err) {
+		if err := os.MkdirAll(b.credsFolderPath(), os.ModePerm); err != nil {
+			fmt.Println("Could not create ~/.config/ultralist directory! Permissions issue?")
+			os.Exit(1)
+		}
+	}
+
 	if err := ioutil.WriteFile(b.credsFilePath(), data, 0600); err != nil {
 		fmt.Println("Error writing creds file!")
-		panic(err)
+		os.Exit(1)
 	}
 }
 
@@ -105,9 +112,13 @@ func (b *Backend) apiUrl(path string) string {
 	return apiUrl + path
 }
 
-func (b *Backend) credsFilePath() string {
+func (b *Backend) credsFolderPath() string {
 	usr, _ := user.Current()
-	return fmt.Sprintf("%s/.config/ultralist/creds.json", usr.HomeDir)
+	return fmt.Sprintf("%s/.config/ultralist/", usr.HomeDir)
+}
+
+func (b *Backend) credsFilePath() string {
+	return b.credsFolderPath() + "creds.json"
 }
 
 func (b *Backend) loadCreds() string {
