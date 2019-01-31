@@ -4,17 +4,17 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gammons/todolist/todolist"
+	"github.com/gammons/ultralist/ultralist"
 )
 
-// the current version of todolist
+// the current version of ultralist
 const (
-	VERSION = "0.8.1"
+	VERSION = "0.9"
 )
 
 func main() {
 	if len(os.Args) <= 1 {
-		todolist.Usage()
+		ultralist.Usage()
 		os.Exit(0)
 	}
 	input := strings.Join(os.Args[1:], " ")
@@ -22,7 +22,7 @@ func main() {
 }
 
 func routeInput(command string, input string) {
-	app := todolist.NewApp()
+	app := ultralist.NewApp()
 	switch command {
 	case "l", "ln", "list", "agenda":
 		app.ListTodos(input)
