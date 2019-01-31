@@ -1,4 +1,4 @@
-package todolist
+package ultralist
 
 import (
 	"fmt"
@@ -7,9 +7,9 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"text/tabwriter"
 	"time"
 
-	"github.com/NonerKao/color-aware-tabwriter"
 	"github.com/fatih/color"
 )
 

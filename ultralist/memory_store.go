@@ -1,4 +1,4 @@
-package todolist
+package ultralist
 
 type MemoryStore struct {
 	Todos []*Todo

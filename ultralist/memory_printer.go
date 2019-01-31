@@ -1,4 +1,4 @@
-package todolist
+package ultralist
 
 type MemoryPrinter struct {
 	Groups *GroupedTodos

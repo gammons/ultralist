@@ -1,4 +1,4 @@
-package todolist
+package ultralist
 
 import (
 	"reflect"
