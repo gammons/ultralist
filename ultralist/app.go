@@ -358,6 +358,16 @@ func (a *App) Load() error {
 	return nil
 }
 
+func (a *App) OpenWeb() {
+	a.Load()
+	if !a.TodoList.IsSynced {
+		fmt.Println("This list isn't synced!  Use 'ultralist sync' to synchronize this list with ultralist.io.")
+		return
+	}
+
+	open.Start("https://app.ultralist.io/todolist/" + a.TodoList.UUID)
+}
+
 // Save the todolist to the store
 func (a *App) save() {
 	a.TodoStore.Save(a.TodoList.Data)

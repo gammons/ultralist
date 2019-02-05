@@ -60,5 +60,7 @@ func routeInput(command string, input string) {
 		app.Sync(input)
 	case "auth":
 		app.AuthWorkflow()
+	case "web":
+		app.OpenWeb()
 	}
 }
