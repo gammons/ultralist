@@ -29,7 +29,7 @@ func NewApp() *App {
 
 func (a *App) InitializeRepo() {
 	a.TodoStore.Initialize()
-	fmt.Println("Todo repo initialized.")
+	fmt.Println("Repo initialized.")
 
 	backend := NewBackend()
 	eventLogger := &EventLogger{Store: a.TodoStore}
