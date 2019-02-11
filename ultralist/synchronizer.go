@@ -31,7 +31,7 @@ func NewSynchronizerWithInput(input string) *Synchronizer {
 }
 
 func (s *Synchronizer) ExecSyncInBackground() {
-	binary, lookErr := exec.LookPath("todolist")
+	binary, lookErr := exec.LookPath("ultralist")
 	if lookErr != nil {
 		panic(lookErr)
 	}
