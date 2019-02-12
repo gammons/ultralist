@@ -4,7 +4,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gammons/ultralist/ultralist"
+	"github.com/ultralist/ultralist/ultralist"
 )
 
 // the current version of ultralist
