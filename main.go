@@ -9,7 +9,7 @@ import (
 
 // the current version of ultralist
 const (
-	VERSION = "0.9"
+	VERSION = "0.9.2"
 )
 
 func main() {
