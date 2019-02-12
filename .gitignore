@@ -1,4 +1,5 @@
 .goxc.local.json
+go.mod
 dist
 
 # OSX metadata
