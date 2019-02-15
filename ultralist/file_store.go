@@ -41,7 +41,7 @@ func (f *FileStore) Load() ([]*Todo, error) {
 	data, err := ioutil.ReadFile(f.FileLocation)
 	if err != nil {
 		fmt.Println("No todo file found!")
-		fmt.Println("Initialize a new todo repo by running 'todolist init'")
+		fmt.Println("Initialize a new todo repo by running 'ultralist init'")
 		os.Exit(0)
 		return nil, err
 	}
