@@ -7,11 +7,6 @@ import (
 	"github.com/ultralist/ultralist/ultralist"
 )
 
-// the current version of ultralist
-const (
-	VERSION = "0.9.2"
-)
-
 func main() {
 	if len(os.Args) <= 1 {
 		ultralist.Usage()
