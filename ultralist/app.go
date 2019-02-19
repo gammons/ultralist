@@ -342,6 +342,11 @@ func (a *App) Sync(input string) {
 	}
 }
 
+func (a *App) CheckAuth() {
+	synchronizer := NewSynchronizer()
+	synchronizer.CheckAuth()
+}
+
 func (a *App) AuthWorkflow() {
 	webapp := &Webapp{}
 	backend := NewBackend()

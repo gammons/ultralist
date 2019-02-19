@@ -63,8 +63,36 @@ func (s *Synchronizer) Sync(todolist *TodoList, syncedList *SyncedList) {
 	s.doSync(todolist, syncedList)
 }
 
+func (s *Synchronizer) CheckAuth() {
+	if s.Backend.CredsFileExists() == false {
+		fmt.Println("It looks like you are not authenticated with ultralist.io.")
+		return
+	}
+
+	if s.Backend.CanConnect() == false {
+		fmt.Println("Cannot connect to api.ultralist.io right now.")
+		return
+	}
+
+	bodyBytes := s.Backend.PerformRequest("GET", "/me", []byte(""))
+
+	var response *UserRequest
+	if err := json.Unmarshal(bodyBytes, &response); err != nil {
+		panic(err)
+	}
+	if s.Backend.Success {
+		s.Success = true
+		fmt.Printf("Hello %s! You are successfully authenticated.\n", response.Name)
+	}
+}
+
 func (s *Synchronizer) WasSuccessful() bool {
 	return s.Success
+}
+
+type UserRequest struct {
+	UUID string `json:"uuid"`
+	Name string `json:"name"`
 }
 
 type TodolistRequest struct {
