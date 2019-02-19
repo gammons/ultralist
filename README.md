@@ -1,5 +1,5 @@
 # Ultralist
-### Task management for tech folks.
+### Simple task management for tech folks.
 
 [![](https://goreportcard.com/badge/github.com/ultralist/ultralist)](https://goreportcard.com/report/github.com/ultralist/ultralist)
 [![Build Status](https://travis-ci.org/ultralist/todolist.svg?branch=master)](https://travis-ci.org/ultralist/ultralist)
