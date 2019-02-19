@@ -21,6 +21,13 @@ Combined with [ultralist.io](https://ultralist.io), Ultralist provides a superio
 
 Yes.  Yes it is.
 
+## Installation
+
+* **Mac OS**: Run `brew install ultralist`.
+* **Other systems**: Get the correct ultralist binary from the [releases page](https://github.com/ultralist/ultralist/releases).
+* If you have Golang installed: Run `go get github.com/ultralist/ultralist`.
+
+Then, follow the [quick start](https://docs.ultralist.io/quickstart.html) in the docs to quickly get up and running.
 
 ## How does Ultralist relate to ultralist.io?
 
