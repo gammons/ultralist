@@ -14,25 +14,25 @@ func Usage() {
 
 	blueBold := blue.Add(color.Bold)
 
-	fmt.Printf("Ultralist v%s, a simple, command line based, GTD-style task manager\n", VERSION)
+	fmt.Printf("Ultralist v%s, simple task management for tech folks.\n", VERSION)
 
 	blueBold.Println("\nAdding todos")
-	fmt.Println("  the 'a' command adds todos.")
-	fmt.Println("  You can also optionally specify a due date.")
-	fmt.Println("  Specify a due date by putting 'due <date>' at the end, where <date> is in (tod|today|tom|tomorrow|mon|tue|wed|thu|fri|sat|sun)")
-	fmt.Println("\n  Examples for adding a todo:")
+	fmt.Println("the 'a' command adds todos.")
+	fmt.Println("You can also optionally specify a due date.")
+	fmt.Println("Specify a due date by putting 'due <date>' at the end, where <date> is in (tod|today|tom|tomorrow|mon|tue|wed|thu|fri|sat|sun)")
+	fmt.Println("\nExamples for adding a todo:")
 	yellow.Println("\tultralist a Meeting with @bob about +importantPrject due today")
 	yellow.Println("\tultralist a +work +verify did @john fix the build\\?")
 
 	blueBold.Println("\nListing todos")
-	fmt.Println("  When listing todos, you can filter and group the output.")
+	fmt.Println("When listing todos, you can filter and group the output.")
 	fmt.Println()
 
-	fmt.Println("  ultralist l due (tod|today|tom|tomorrow|overdue|this week|next week|last week|mon|tue|wed|thu|fri|sat|sun|none)")
-	fmt.Println("  ultralist l overdue")
-
-	cyan.Println("  Filtering by date:")
+	fmt.Println("ultralist l due (tod|today|tom|tomorrow|overdue|this week|next week|last week|mon|tue|wed|thu|fri|sat|sun|none)")
+	fmt.Println("ultralist l overdue")
 	fmt.Println()
+
+	cyan.Println("Filtering by date:")
 	yellow.Println("\tultralist l due tod")
 	fmt.Println("\tlists all todos due today")
 	fmt.Println()
@@ -46,22 +46,24 @@ func Usage() {
 	fmt.Println("\tlists all todos where the due date is in the past")
 	fmt.Println()
 	yellow.Println("\tultralist agenda")
-	fmt.Println("\tultralist all todos where the due date is today or in the past")
+	fmt.Println("\tlists all todos where the due date is today or in the past")
 	fmt.Println()
 
-	fmt.Println("  ultralist l completed (tod|today|this week)")
-	cyan.Println("  Filtering by date:")
+	yellow.Println("\tultralist l completed (tod|today|this week)")
+	fmt.Println("\tshow completed todos.")
 	fmt.Println()
 
 	yellow.Println("\tultralist l completed (tod|today)")
 	fmt.Println("\tlists all todos that were completed today")
 	fmt.Println()
+
 	yellow.Println("\tultralist l completed this week")
 	fmt.Println("\tlists all todos that were completed this week")
 	fmt.Println()
 
-	cyan.Println("  Grouping:")
-	fmt.Println("  You can group todos by context or project.")
+	cyan.Println("Grouping:")
+	fmt.Println("You can group todos by context or project.")
+	fmt.Println()
 	yellow.Println("\tultralist l by c")
 	fmt.Println("\tlists all todos grouped by context")
 	fmt.Println()
@@ -69,8 +71,8 @@ func Usage() {
 	fmt.Println("\tlists all todos grouped by project")
 	fmt.Println()
 
-	cyan.Println("  Grouping and filtering:")
-	fmt.Println("  Of course, you can combine grouping and filtering to get a nice formatted list.")
+	cyan.Println("Grouping and filtering:")
+	fmt.Println("Of course, you can combine grouping and filtering to get a nice formatted list.")
 	fmt.Println()
 	yellow.Println("\tultralist l due today by c")
 	fmt.Println("\tlists all todos due today grouped by context")
@@ -127,11 +129,6 @@ func Usage() {
 	fmt.Println("\tEdits the todo with 33 and removes the due date")
 	fmt.Println()
 
-	blueBold.Println("\nExpanding existing todos")
-	yellow.Println("\tultralist ex 39 +final: read physics due mon, do literature report due fri")
-	fmt.Println("\tRemoves the todo with id 39, and adds following two todos")
-	fmt.Println()
-
 	blueBold.Println("\nDeleting")
 	yellow.Println("\tultralist d 33")
 	fmt.Println("\tDeletes a todo with id 33")
@@ -156,6 +153,10 @@ func Usage() {
 	blueBold.Println("\nGarbage Collection")
 	yellow.Println("\tultralist gc")
 	fmt.Println("\tDeletes all archived todos.")
+	fmt.Println()
+
+	blueBold.Println("\nSyncing with ultralist.io")
+	fmt.Println("\tPlease see https://docs.ultralist.io/service.html for instructions for syncing.")
 	fmt.Println()
 
 	fmt.Println("Ultralist was lovingly crafted by Grant Ammons (https://twitter.com/gammons).")
