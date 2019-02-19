@@ -11,6 +11,11 @@ import (
 	"github.com/skratchdot/open-golang/open"
 )
 
+// the current version of ultralist
+const (
+	VERSION string = "0.9.2"
+)
+
 type App struct {
 	EventLogger *EventLogger
 	TodoStore   Store
