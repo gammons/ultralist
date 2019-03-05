@@ -375,7 +375,8 @@ func (a *App) OpenWeb() {
 		return
 	}
 
-	open.Start("https://app.ultralist.io/todolist/" + a.TodoList.UUID)
+	fmt.Println("Opening this list on your browser...")
+	open.Start("https://app.ultralist.io/todolist/" + a.EventLogger.CurrentSyncedList.UUID)
 }
 
 // Save the todolist to the store
