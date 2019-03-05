@@ -9,10 +9,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-const (
-	S3URL = "https://s3.amazonaws.com/todolist-local/" + VERSION
-)
-
 type Webapp struct {
 	Router *httprouter.Router
 	server *http.Server
