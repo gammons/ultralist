@@ -13,7 +13,7 @@ import (
 
 // the current version of ultralist
 const (
-	VERSION string = "0.9.2"
+	VERSION string = "0.9.3"
 )
 
 type App struct {
