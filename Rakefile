@@ -19,10 +19,18 @@ task :build do
     ENV["GOARCH"] = env[:arch]
     puts "Building #{env[:goos]} #{env[:arch]}"
     `GOOS=#{env[:goos]} GOARCH=#{env[:arch]} go build -v -o dist/#{Version}/ultralist`
-    puts "Tarring #{env[:goos]} #{env[:arch]}"
-    `tar -czvf dist/#{Version}/ultralist#{env[:goos]}_#{env[:arch]}.tar.gz dist/#{Version}/ultralist`
-    puts "Removing dist/#{Version}/ultralist"
-    `rm -rf dist/#{Version}/ultralist`
+    if env[:goos] == "windows"
+      puts "Creating windows executable"
+      `mv dist/#{Version}/ultralist dist/#{Version}/ultralist.exe`
+      `cd dist/#{Version} && zip ultralist.zip ultralist.exe`
+      puts "Removing windows executable"
+      `rm -rf dist/#{Version}/ultralist.exe`
+    else
+      puts "Tarring #{env[:goos]} #{env[:arch]}"
+      `cd dist/#{Version} && tar -czvf ultralist#{env[:goos]}_#{env[:arch]}.tar.gz ultralist`
+      puts "Removing dist/#{Version}/ultralist"
+      `rm -rf dist/#{Version}/ultralist`
+    end
   end
 end
 
