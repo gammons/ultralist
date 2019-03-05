@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"syscall"
 )
 
 type Synchronizer struct {
@@ -35,15 +34,17 @@ func (s *Synchronizer) ExecSyncInBackground() {
 	if lookErr != nil {
 		panic(lookErr)
 	}
-	cmd := exec.Command(binary, "sync", "-q")
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Setpgid: true,
-		Pgid:    0,
+
+	var procAttr os.ProcAttr
+	procAttr.Files = []*os.File{os.Stdin, os.Stdout, os.Stderr}
+	process, err := os.StartProcess(binary, []string{binary, "sync", "q"}, &procAttr)
+
+	if err != nil {
+		panic(err)
 	}
-	if err := cmd.Start(); err != nil {
+
+	err = process.Release()
+	if err != nil {
 		panic(err)
 	}
 }
