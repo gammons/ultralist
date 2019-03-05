@@ -10,7 +10,7 @@ Envs = [
   {goos: "windows", arch: "amd64"}
 ]
 
-Version = "0.9.2"
+Version = "0.9.3"
 
 task :build do
   `rm -rf dist/#{Version}`
@@ -22,7 +22,7 @@ task :build do
     if env[:goos] == "windows"
       puts "Creating windows executable"
       `mv dist/#{Version}/ultralist dist/#{Version}/ultralist.exe`
-      `cd dist/#{Version} && zip ultralist.zip ultralist.exe`
+      `cd dist/#{Version} && zip ultralist_win.zip ultralist.exe`
       puts "Removing windows executable"
       `rm -rf dist/#{Version}/ultralist.exe`
     else
