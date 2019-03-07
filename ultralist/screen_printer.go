@@ -70,7 +70,7 @@ func (f *ScreenPrinter) formatDue(due string, isPriority bool, completed bool) s
 	}
 
 	if due == "" {
-		return blue.SprintFunc()("          ")
+		return color.New().SprintFunc()("          ")
 	}
 	dueTime, err := time.Parse("2006-01-02", due)
 
