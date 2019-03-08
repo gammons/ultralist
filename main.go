@@ -1,19 +1,12 @@
 package main
 
 import (
-	"os"
-	"strings"
-
+	"github.com/ultralist/ultralist/cmd"
 	"github.com/ultralist/ultralist/ultralist"
 )
 
 func main() {
-	if len(os.Args) <= 1 {
-		ultralist.Usage()
-		os.Exit(0)
-	}
-	input := strings.Join(os.Args[1:], " ")
-	routeInput(os.Args[1], input)
+	cmd.Execute()
 }
 
 func routeInput(command string, input string) {
