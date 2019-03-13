@@ -11,11 +11,12 @@ import (
 	"github.com/skratchdot/open-golang/open"
 )
 
-// the current version of ultralist
+// Current version of ultralist.
 const (
 	VERSION string = "0.9.3"
 )
 
+// App is the giving you the structure of the ultralist app.
 type App struct {
 	EventLogger *EventLogger
 	TodoStore   Store
@@ -23,6 +24,7 @@ type App struct {
 	TodoList    *TodoList
 }
 
+// NewApp is creating a new ultralist app.
 func NewApp() *App {
 	app := &App{
 		TodoList:  &TodoList{},
@@ -32,6 +34,7 @@ func NewApp() *App {
 	return app
 }
 
+// InitializeRepo is initializing ultralist repo.
 func (a *App) InitializeRepo() {
 	a.TodoStore.Initialize()
 	fmt.Println("Repo initialized.")
@@ -94,6 +97,7 @@ func (a *App) InitializeRepo() {
 	eventLogger.WriteSyncedLists()
 }
 
+// AddTodo is adding a new todo.
 func (a *App) AddTodo(input string) {
 	a.Load()
 	parser := &Parser{}
@@ -103,13 +107,13 @@ func (a *App) AddTodo(input string) {
 		return
 	}
 
-	id := a.TodoList.NextId()
+	id := a.TodoList.NextID()
 	a.TodoList.Add(todo)
 	a.save()
 	fmt.Printf("Todo %d added.\n", id)
 }
 
-// AddDoneTodo Adds a todo and immediately completed it.
+// AddDoneTodo adds a new todo and immediately completed it.
 func (a *App) AddDoneTodo(input string) {
 	a.Load()
 
@@ -122,17 +126,17 @@ func (a *App) AddDoneTodo(input string) {
 		return
 	}
 
-	id := a.TodoList.NextId()
+	id := a.TodoList.NextID()
 	a.TodoList.Add(todo)
 	a.TodoList.Complete(id)
 	a.save()
 	fmt.Printf("Completed Todo %d added.\n", id)
 }
 
-// DeleteTodo deletes a todo
+// DeleteTodo deletes a todo.
 func (a *App) DeleteTodo(input string) {
 	a.Load()
-	ids := a.getIds(input)
+	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
 	}
@@ -141,10 +145,10 @@ func (a *App) DeleteTodo(input string) {
 	fmt.Printf("%s deleted.\n", pluralize(len(ids), "Todo", "Todos"))
 }
 
-// CompleteTodo completes a todo
+// CompleteTodo completes a todo.
 func (a *App) CompleteTodo(input string) {
 	a.Load()
-	ids := a.getIds(input)
+	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
 	}
@@ -153,10 +157,10 @@ func (a *App) CompleteTodo(input string) {
 	fmt.Println("Todo completed.")
 }
 
-// UncompleteTodo marks a todo as not completed
+// UncompleteTodo uncompletes a todo.
 func (a *App) UncompleteTodo(input string) {
 	a.Load()
-	ids := a.getIds(input)
+	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
 	}
@@ -165,10 +169,10 @@ func (a *App) UncompleteTodo(input string) {
 	fmt.Println("Todo uncompleted.")
 }
 
-// ArchiveTodo marks a todo as archived
+// ArchiveTodo archives a todo.
 func (a *App) ArchiveTodo(input string) {
 	a.Load()
-	ids := a.getIds(input)
+	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
 	}
@@ -177,10 +181,10 @@ func (a *App) ArchiveTodo(input string) {
 	fmt.Println("Todo archived.")
 }
 
-// UnarchiveTodo marks a todo as unarchived
+// UnarchiveTodo unarchives a todo.
 func (a *App) UnarchiveTodo(input string) {
 	a.Load()
-	ids := a.getIds(input)
+	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
 	}
@@ -189,14 +193,14 @@ func (a *App) UnarchiveTodo(input string) {
 	fmt.Println("Todo unarchived.")
 }
 
-// EditTodo edit a todo with the input
+// EditTodo edits a todo with the given input.
 func (a *App) EditTodo(input string) {
 	a.Load()
-	id := a.getId(input)
+	id := a.getID(input)
 	if id == -1 {
 		return
 	}
-	todo := a.TodoList.FindById(id)
+	todo := a.TodoList.FindByID(id)
 	if todo == nil {
 		fmt.Println("No such id.")
 		return
@@ -209,10 +213,10 @@ func (a *App) EditTodo(input string) {
 	}
 }
 
-// ExpandTodo expands a todo
+// ExpandTodo expands a todo.
 func (a *App) ExpandTodo(input string) {
 	a.Load()
-	id := a.getId(input)
+	id := a.getID(input)
 	parser := &Parser{}
 	if id == -1 {
 		return
@@ -221,7 +225,7 @@ func (a *App) ExpandTodo(input string) {
 	commonProject := parser.ExpandProject(input)
 	todos := strings.LastIndex(input, ":")
 	if commonProject == "" || len(input) <= todos+1 || todos == -1 {
-		fmt.Println("I'm expecting a format like \"todolist ex <project>: <todo1>, <todo2>, ...\"")
+		fmt.Println("I'm expecting a format like \"ultralist ex <project>: <todo1>, <todo2>, ...\"")
 		return
 	}
 
@@ -240,11 +244,11 @@ func (a *App) ExpandTodo(input string) {
 // HandleNotes is a sub-function that will handle notes on a todo.
 func (a *App) HandleNotes(input string) {
 	a.Load()
-	id := a.getId(input)
+	id := a.getID(input)
 	if id == -1 {
 		return
 	}
-	todo := a.TodoList.FindById(id)
+	todo := a.TodoList.FindByID(id)
 	if todo == nil {
 		fmt.Println("No such id.")
 		return
@@ -266,7 +270,7 @@ func (a *App) HandleNotes(input string) {
 	a.save()
 }
 
-// ArchiveCompleted will archive all completed todos
+// ArchiveCompleted will archive all completed todos.
 func (a *App) ArchiveCompleted() {
 	a.Load()
 	for _, todo := range a.TodoList.Todos() {
@@ -278,7 +282,7 @@ func (a *App) ArchiveCompleted() {
 	fmt.Println("All completed todos have been archived.")
 }
 
-// ListTodos will list all todos
+// ListTodos will list all todos.
 func (a *App) ListTodos(input string) {
 	a.Load()
 	filtered := NewFilter(a.TodoList.Todos()).Filter(input)
@@ -288,10 +292,10 @@ func (a *App) ListTodos(input string) {
 	a.Printer.Print(grouped, re.MatchString(input))
 }
 
-// PrioritizeTodo will prioritize a todo
+// PrioritizeTodo will prioritize a todo.
 func (a *App) PrioritizeTodo(input string) {
 	a.Load()
-	ids := a.getIds(input)
+	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
 	}
@@ -300,10 +304,10 @@ func (a *App) PrioritizeTodo(input string) {
 	fmt.Println("Todo prioritized.")
 }
 
-// UnprioritizeTodo un-prioritizes a todo
+// UnprioritizeTodo unprioritizes a todo.
 func (a *App) UnprioritizeTodo(input string) {
 	a.Load()
-	ids := a.getIds(input)
+	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
 	}
@@ -312,7 +316,7 @@ func (a *App) UnprioritizeTodo(input string) {
 	fmt.Println("Todo un-prioritized.")
 }
 
-// GarbageCollect will delete all archived todos
+// GarbageCollect will delete all archived todos.
 func (a *App) GarbageCollect() {
 	a.Load()
 	a.TodoList.GarbageCollect()
@@ -320,7 +324,7 @@ func (a *App) GarbageCollect() {
 	fmt.Println("Garbage collection complete.")
 }
 
-// Sync will sync the todolist with ultralist.io
+// Sync will sync the todolist with ultralist.io.
 func (a *App) Sync(input string) {
 	a.Load()
 
@@ -342,21 +346,23 @@ func (a *App) Sync(input string) {
 	}
 }
 
+// CheckAuth is checking the authentication against ultralist.io.
 func (a *App) CheckAuth() {
 	synchronizer := NewSynchronizer()
 	synchronizer.CheckAuth()
 }
 
+// AuthWorkflow is creating the authentication workflow.
 func (a *App) AuthWorkflow() {
 	webapp := &Webapp{}
 	backend := NewBackend()
 
-	open.Start(backend.AuthUrl())
+	open.Start(backend.AuthURL())
 	fmt.Println("Listening for auth response...")
 	webapp.Run()
 }
 
-// Load the todolist from the store
+// Load the todolist from the todo store.
 func (a *App) Load() error {
 	todos, err := a.TodoStore.Load()
 	if err != nil {
@@ -368,10 +374,11 @@ func (a *App) Load() error {
 	return nil
 }
 
+// OpenWeb is opening the current list on ultralist.io in your browser.
 func (a *App) OpenWeb() {
 	a.Load()
 	if !a.TodoList.IsSynced {
-		fmt.Println("This list isn't synced!  Use 'ultralist sync' to synchronize this list with ultralist.io.")
+		fmt.Println("This list isn't synced! Use 'ultralist sync' to synchronize this list with ultralist.io.")
 		return
 	}
 
@@ -379,7 +386,7 @@ func (a *App) OpenWeb() {
 	open.Start("https://app.ultralist.io/todolist/" + a.EventLogger.CurrentSyncedList.UUID)
 }
 
-// Save the todolist to the store
+// Save the todolist to the store.
 func (a *App) save() {
 	a.TodoStore.Save(a.TodoList.Data)
 	if a.TodoList.IsSynced {
@@ -390,7 +397,7 @@ func (a *App) save() {
 	}
 }
 
-func (a *App) getId(input string) int {
+func (a *App) getID(input string) int {
 	re, _ := regexp.Compile("\\d+")
 	if re.MatchString(input) {
 		id, _ := strconv.Atoi(re.FindString(input))
@@ -401,7 +408,7 @@ func (a *App) getId(input string) int {
 	return -1
 }
 
-func (a *App) getIds(input string) (ids []int) {
+func (a *App) getIDs(input string) (ids []int) {
 	idGroups := strings.Split(input, ",")
 	for _, idGroup := range idGroups {
 		if rangedIds, err := a.parseRangedIds(idGroup); len(rangedIds) > 0 || err != nil {
@@ -410,7 +417,7 @@ func (a *App) getIds(input string) (ids []int) {
 				continue
 			}
 			ids = append(ids, rangedIds...)
-		} else if id := a.getId(idGroup); id != -1 {
+		} else if id := a.getID(idGroup); id != -1 {
 			ids = append(ids, id)
 		} else {
 			fmt.Printf("Invalid id: %s.\n", idGroup)
@@ -425,7 +432,7 @@ func (a *App) parseRangedIds(input string) (ids []int, err error) {
 		lowerID, _ := strconv.Atoi(matches[1])
 		upperID, _ := strconv.Atoi(matches[2])
 		if lowerID >= upperID {
-			return ids, fmt.Errorf("Invalid id group: %s.\n", input)
+			return ids, fmt.Errorf("Invalid id group: %s", input)
 		}
 		for id := lowerID; id <= upperID; id++ {
 			ids = append(ids, id)

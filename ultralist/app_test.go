@@ -16,7 +16,7 @@ func TestAddTodo(t *testing.T) {
 
 	app.AddTodo("a do some stuff due may 23")
 
-	todo := app.TodoList.FindById(1)
+	todo := app.TodoList.FindByID(1)
 	assert.Equal("do some stuff", todo.Subject)
 	assert.Equal(fmt.Sprintf("%s-05-23", year), todo.Due)
 	assert.Equal(false, todo.Completed)
@@ -33,7 +33,7 @@ func TestAddDoneTodo(t *testing.T) {
 
 	app.AddDoneTodo("Groked how to do done todos @pop")
 
-	todo := app.TodoList.FindById(1)
+	todo := app.TodoList.FindByID(1)
 	assert.Equal("Groked how to do done todos @pop", todo.Subject)
 	assert.Equal(true, todo.Completed)
 	assert.Equal(false, todo.Archived)
@@ -50,7 +50,7 @@ func TestAddTodoWithEuropeanDates(t *testing.T) {
 
 	app.AddTodo("a do some stuff due 23 may")
 
-	todo := app.TodoList.FindById(1)
+	todo := app.TodoList.FindByID(1)
 	assert.Equal("do some stuff", todo.Subject)
 	assert.Equal(fmt.Sprintf("%s-05-23", year), todo.Due)
 	assert.Equal(false, todo.Completed)
@@ -142,27 +142,27 @@ func TestGetId(t *testing.T) {
 	assert := assert.New(t)
 	app := &App{TodoList: &TodoList{}, TodoStore: &MemoryStore{}}
 	// not a valid id
-	assert.Equal(-1, app.getId("p"))
+	assert.Equal(-1, app.getID("p"))
 	// a single digit id
-	assert.Equal(6, app.getId("6"))
+	assert.Equal(6, app.getID("6"))
 	// a double digit id
-	assert.Equal(66, app.getId("66"))
+	assert.Equal(66, app.getID("66"))
 }
 
 func TestGetIds(t *testing.T) {
 	assert := assert.New(t)
 	app := &App{TodoList: &TodoList{}, TodoStore: &MemoryStore{}}
 	// no valid id here
-	assert.Equal(0, len(app.getIds("p")))
+	assert.Equal(0, len(app.getIDs("p")))
 	// one valid value here
-	assert.Equal([]int{6}, app.getIds("6"))
+	assert.Equal([]int{6}, app.getIDs("6"))
 	// lots of single post numbers
-	assert.Equal([]int{6, 10, 8, 4}, app.getIds("6,10,8,4"))
+	assert.Equal([]int{6, 10, 8, 4}, app.getIDs("6,10,8,4"))
 	// a correct range
-	assert.Equal([]int{6, 7, 8}, app.getIds("6-8"))
+	assert.Equal([]int{6, 7, 8}, app.getIDs("6-8"))
 	// some incorrect ranges
-	assert.Equal(0, len(app.getIds("6-6")))
-	assert.Equal(0, len(app.getIds("8-6")))
+	assert.Equal(0, len(app.getIDs("6-6")))
+	assert.Equal(0, len(app.getIDs("8-6")))
 	// some compsite ranges
-	assert.Equal([]int{5, 6, 7, 8, 10, 11, 9}, app.getIds("5,6-8,10-11,9"))
+	assert.Equal([]int{5, 6, 7, 8, 10, 11, 9}, app.getIDs("5,6-8,10-11,9"))
 }

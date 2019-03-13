@@ -5,11 +5,13 @@ import (
 	"time"
 )
 
+// DateFilter filters todos based on their time.
 type DateFilter struct {
 	Todos    []*Todo
 	Location *time.Location
 }
 
+// NewDateFilter starts a new filter which filters todos based on the current time.
 func NewDateFilter(todos []*Todo) *DateFilter {
 	return &DateFilter{Todos: todos, Location: time.Now().Location()}
 }
@@ -22,6 +24,7 @@ func filterOnCompletedDate(todo *Todo) string {
 	return todo.CompletedDateToDate()
 }
 
+// FilterDate filters a todo based on a input string.
 func (f *DateFilter) FilterDate(input string) []*Todo {
 	agendaRegex, _ := regexp.Compile(`agenda.*$`)
 	if agendaRegex.MatchString(input) {
@@ -193,6 +196,7 @@ func (f *DateFilter) filterOverdue(pivot time.Time) []*Todo {
 	return ret
 }
 
+// FindSunday finds the time of next sunday.
 func (f *DateFilter) FindSunday(pivot time.Time) time.Time {
 	switch pivot.Weekday() {
 	case time.Sunday:

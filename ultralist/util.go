@@ -7,6 +7,7 @@ import (
 	"github.com/twinj/uuid"
 )
 
+// AddIfNotThere is appending an item to an array if the item is not already present.
 func AddIfNotThere(arr []string, items []string) []string {
 	for _, item := range items {
 		there := false
@@ -22,10 +23,11 @@ func AddIfNotThere(arr []string, items []string) []string {
 	return arr
 }
 
+// AddTodoIfNotThere is appending an todo item to an todo array if the item is not already present.
 func AddTodoIfNotThere(arr []*Todo, item *Todo) []*Todo {
 	there := false
 	for _, arrItem := range arr {
-		if item.Id == arrItem.Id {
+		if item.ID == arrItem.ID {
 			there = true
 		}
 	}

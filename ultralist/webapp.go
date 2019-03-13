@@ -9,11 +9,13 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// Webapp is the main struct of this file.
 type Webapp struct {
 	Router *httprouter.Router
 	server *http.Server
 }
 
+// Run is starting the ultralist webapp.
 func (w *Webapp) Run() {
 	w.server = &http.Server{Addr: ":9976"}
 
@@ -30,14 +32,14 @@ func (w *Webapp) handleFavicon(writer http.ResponseWriter, r *http.Request) {
 func (w *Webapp) handleAuthResponse(writer http.ResponseWriter, r *http.Request) {
 	keys, ok := r.URL.Query()["token"]
 	if ok == false {
-		fmt.Println("Something went wrong.. I did not get a token back.")
+		fmt.Println("Something went wrong... I did not get a token back.")
 		os.Exit(0)
 	}
 
 	backend := NewBackend()
 	backend.WriteCreds(keys[0])
 	fmt.Println("Authorization successful!")
-	fmt.Fprintf(writer, "Authorization complete.  Head back to your terminal for next steps.")
+	fmt.Fprintf(writer, "Authorization complete. Head back to your terminal for next steps.")
 
 	// sleep 1 second before shutting server down, so we can display msg on web.
 	go func() {

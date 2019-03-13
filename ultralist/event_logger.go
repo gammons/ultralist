@@ -10,14 +10,14 @@ import (
 	"github.com/jinzhu/copier"
 )
 
-// The different types of events that can occur
+// The different types of events that can occur.
 const (
 	AddEvent    = "EventAdded"
 	UpdateEvent = "EventUpdated"
 	DeleteEvent = "EventDeleted"
 )
 
-// EventLogger is the main struct of this file
+// EventLogger is the main struct of this file.
 type EventLogger struct {
 	PreviousTodoList  *TodoList
 	CurrentTodoList   *TodoList
@@ -27,7 +27,7 @@ type EventLogger struct {
 	Events            []*EventLog
 }
 
-// SyncedList is a representation of a todolist for syncing
+// SyncedList is a representation of a todolist for syncing.
 type SyncedList struct {
 	Filename string      `json:"filename"`
 	UUID     string      `json:"uuid"`
@@ -35,7 +35,7 @@ type SyncedList struct {
 	Events   []*EventLog `json:"events"`
 }
 
-// EventLog is a log of events that occurred, with the Todo data.
+// EventLog is a log of events that occurred, with the todo data.
 type EventLog struct {
 	EventType     string   `json:"eventType"`
 	ID            int      `json:"id"`
@@ -51,7 +51,7 @@ type EventLog struct {
 	Notes         []string `json:"notes"`
 }
 
-// NewEventLogger : Create a new event logger
+// NewEventLogger is creating a new event logger.
 func NewEventLogger(todoList *TodoList, store Store) *EventLogger {
 	var previousTodos []*Todo
 
@@ -68,19 +68,19 @@ func NewEventLogger(todoList *TodoList, store Store) *EventLogger {
 	}
 }
 
-// ProcessEvents : process all events that occurred when todolist ran, and write them to a log file.
+// ProcessEvents processes all events that occurred when ultralist ran and write them to a log file.
 func (e *EventLogger) ProcessEvents() {
 	e.CreateEventLogs()
 	e.WriteEventLogs()
 }
 
-// CreateEventLogs : makes event logs.
+// CreateEventLogs makes event logs.
 func (e *EventLogger) CreateEventLogs() {
 	var eventLogs []*EventLog
 
 	// find events added or updated
 	for _, todo := range e.CurrentTodoList.Data {
-		previousTodo := e.PreviousTodoList.FindById(todo.Id)
+		previousTodo := e.PreviousTodoList.FindByID(todo.ID)
 		if previousTodo != nil {
 			if todo.Equals(previousTodo) == false {
 				eventLogs = append(eventLogs, e.writeTodoEvent(UpdateEvent, todo))
@@ -92,7 +92,7 @@ func (e *EventLogger) CreateEventLogs() {
 
 	// find deleted events
 	for _, todo := range e.PreviousTodoList.Data {
-		currentTodo := e.CurrentTodoList.FindById(todo.Id)
+		currentTodo := e.CurrentTodoList.FindByID(todo.ID)
 		if currentTodo == nil {
 			eventLogs = append(eventLogs, e.writeTodoEvent(DeleteEvent, todo))
 		}
@@ -100,17 +100,19 @@ func (e *EventLogger) CreateEventLogs() {
 	e.Events = eventLogs
 }
 
-// WriteEventLogs : Writes event logs to disk
+// WriteEventLogs writes event logs to disk.
 func (e *EventLogger) WriteEventLogs() {
 	e.CurrentSyncedList.Events = append(e.CurrentSyncedList.Events, e.Events...)
 	e.WriteSyncedLists()
 }
 
+// ClearEventLogs is clearing the event logs and writes it to disk.
 func (e *EventLogger) ClearEventLogs() {
 	e.CurrentSyncedList.Events = []*EventLog{}
 	e.WriteSyncedLists()
 }
 
+// LoadSyncedLists is loading a synced list.
 func (e *EventLogger) LoadSyncedLists() {
 	if _, err := os.Stat(e.syncedListsFile()); os.IsNotExist(err) {
 		e.initializeSyncedList()
@@ -143,6 +145,7 @@ func (e *EventLogger) initializeSyncedList() {
 	e.CurrentSyncedList = list
 }
 
+// WriteSyncedLists is writing a synced list.
 func (e *EventLogger) WriteSyncedLists() {
 	data, _ := json.Marshal(e.SyncedLists)
 	if _, err := os.Stat(e.syncedListsConfigDir()); os.IsNotExist(err) {
@@ -169,7 +172,7 @@ func (e *EventLogger) syncedListsFile() string {
 func (e *EventLogger) writeTodoEvent(eventType string, todo *Todo) *EventLog {
 	return &EventLog{
 		EventType:     eventType,
-		ID:            todo.Id,
+		ID:            todo.ID,
 		UUID:          todo.UUID,
 		Subject:       todo.Subject,
 		Projects:      todo.Projects,

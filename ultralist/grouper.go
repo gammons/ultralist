@@ -1,11 +1,14 @@
 package ultralist
 
+// Grouper is the group struct.
 type Grouper struct{}
 
+// GroupedTodos is the main struct of this file.
 type GroupedTodos struct {
 	Groups map[string][]*Todo
 }
 
+// GroupByContext is grouping todos by its context.
 func (g *Grouper) GroupByContext(todos []*Todo) *GroupedTodos {
 	groups := map[string][]*Todo{}
 
@@ -27,6 +30,7 @@ func (g *Grouper) GroupByContext(todos []*Todo) *GroupedTodos {
 	return &GroupedTodos{Groups: groups}
 }
 
+// GroupByProject is grouping todos by its project.
 func (g *Grouper) GroupByProject(todos []*Todo) *GroupedTodos {
 	groups := map[string][]*Todo{}
 
@@ -47,6 +51,7 @@ func (g *Grouper) GroupByProject(todos []*Todo) *GroupedTodos {
 	return &GroupedTodos{Groups: groups}
 }
 
+// GroupByNothing is the default result if todos are not grouped by context project.
 func (g *Grouper) GroupByNothing(todos []*Todo) *GroupedTodos {
 	groups := map[string][]*Todo{}
 	groups["all"] = todos

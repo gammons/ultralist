@@ -12,7 +12,7 @@ func TestFileStore(t *testing.T) {
 	testFilename := "TestFileStore_todos.json"
 	store := &FileStore{FileLocation: testFilename}
 	defer testFileCleanUp(testFilename)
-	list.FindById(2).Subject = "this is an non-fixture subject"
+	list.FindByID(2).Subject = "this is an non-fixture subject"
 	store.Save(list.Todos())
 
 	store1 := &FileStore{FileLocation: testFilename}
