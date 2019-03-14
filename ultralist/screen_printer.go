@@ -38,9 +38,10 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 		for _, todo := range groupedTodos.Groups[key] {
 			f.printTodo(todo)
 			if printNotes {
+				white := color.New(color.FgWhite)
 				for nid, note := range todo.Notes {
 					fmt.Fprintf(f.Writer, "   %s\t\t\t%s\t\n",
-						cyan(strconv.Itoa(nid)), note)
+						cyan(strconv.Itoa(nid)), white.SprintFunc()(note))
 				}
 			}
 		}
