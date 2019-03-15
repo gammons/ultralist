@@ -93,9 +93,8 @@ func (f *ScreenPrinter) formatDue(due string, isPriority bool, completed bool) s
 		return blue.Sprint("tomorrow  ")
 	} else if isPastDue(dueTime) && !completed {
 		return red.Sprint(dueTime.Format("Mon Jan 02"))
-	} else {
-		return blue.Sprint(dueTime.Format("Mon Jan 02"))
 	}
+	return blue.Sprint(dueTime.Format("Mon Jan 02"))
 }
 
 func (f *ScreenPrinter) formatSubject(subject string, isPriority bool) string {
@@ -121,7 +120,6 @@ func (f *ScreenPrinter) formatSubject(subject string, isPriority bool) string {
 		}
 	}
 	return strings.Join(coloredWords, " ")
-
 }
 
 func (f *ScreenPrinter) formatCompleted(completed bool) string {
