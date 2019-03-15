@@ -9,8 +9,10 @@ import (
 	"time"
 )
 
+// Parser is the main struct of this file.
 type Parser struct{}
 
+// ParseNewTodo is parsing a new todo.
 func (p *Parser) ParseNewTodo(input string) *Todo {
 	r, _ := regexp.Compile(`^(add|a)(\s*|)`)
 	input = r.ReplaceAllString(input, "")
@@ -28,6 +30,7 @@ func (p *Parser) ParseNewTodo(input string) *Todo {
 	return todo
 }
 
+// ParseEditTodo is parsing an edited todo.
 func (p *Parser) ParseEditTodo(todo *Todo, input string) bool {
 	r := regexp.MustCompile(`(\w+)\s+(\d+)(\s+(.*))?`)
 	matches := r.FindStringSubmatch(input)
@@ -49,15 +52,16 @@ func (p *Parser) ParseEditTodo(todo *Todo, input string) bool {
 	return true
 }
 
+// Subject finds the subject of a todo.
 func (p *Parser) Subject(input string) string {
 	if strings.Contains(input, " due") {
 		index := strings.LastIndex(input, " due")
 		return strings.TrimSpace(input[0:index])
-	} else {
-		return strings.TrimSpace(input)
 	}
+	return strings.TrimSpace(input)
 }
 
+// ExpandProject expands a project.
 func (p *Parser) ExpandProject(input string) string {
 	r, _ := regexp.Compile(`(ex|expand) +\d+ +\+[\p{L}\d_-]+:`)
 	pattern := r.FindString(input)
@@ -70,11 +74,13 @@ func (p *Parser) ExpandProject(input string) string {
 	return project[len(project)-1]
 }
 
+// Projects finds all projects of a todo.
 func (p *Parser) Projects(input string) []string {
 	r, _ := regexp.Compile(`\+[\p{L}\d_-]+`)
 	return p.matchWords(input, r)
 }
 
+// Contexts finds all contexts of a todo.
 func (p *Parser) Contexts(input string) []string {
 	r, err := regexp.Compile(`\@[\p{L}\d_]+`)
 	if err != nil {
@@ -83,6 +89,7 @@ func (p *Parser) Contexts(input string) []string {
 	return p.matchWords(input, r)
 }
 
+// ParseAddNote is adding a note to an todo.
 func (p *Parser) ParseAddNote(todo *Todo, input string) bool {
 	r, _ := regexp.Compile(`^an\s+\d+\s+(.*)`)
 	matches := r.FindStringSubmatch(input)
@@ -94,6 +101,7 @@ func (p *Parser) ParseAddNote(todo *Todo, input string) bool {
 	return true
 }
 
+// ParseDeleteNote is deleting a note from an todo.
 func (p *Parser) ParseDeleteNote(todo *Todo, input string) bool {
 	r, _ := regexp.Compile(`^dn\s+\d+\s+(\d+)`)
 	matches := r.FindStringSubmatch(input)
@@ -106,7 +114,7 @@ func (p *Parser) ParseDeleteNote(todo *Todo, input string) bool {
 		return false
 	}
 
-	for id, _ := range todo.Notes {
+	for id := range todo.Notes {
 		if id == rmid {
 			todo.Notes = append(todo.Notes[:rmid], todo.Notes[rmid+1:]...)
 			return true
@@ -115,6 +123,7 @@ func (p *Parser) ParseDeleteNote(todo *Todo, input string) bool {
 	return false
 }
 
+// ParseEditNote is editing a note from an todo.
 func (p *Parser) ParseEditNote(todo *Todo, input string) bool {
 	r, _ := regexp.Compile(`^en\s+\d+\s+(\d+)\s+(.*)`)
 	matches := r.FindStringSubmatch(input)
@@ -127,7 +136,7 @@ func (p *Parser) ParseEditNote(todo *Todo, input string) bool {
 		return false
 	}
 
-	for id, _ := range todo.Notes {
+	for id := range todo.Notes {
 		if id == edid {
 			todo.Notes[id] = matches[2]
 			return true
@@ -136,6 +145,7 @@ func (p *Parser) ParseEditNote(todo *Todo, input string) bool {
 	return false
 }
 
+// ParseShowNote is defining if notes should be shown or not.
 func (p *Parser) ParseShowNote(todo *Todo, input string) bool {
 	r, _ := regexp.Compile(`^n\s+\d+`)
 	matches := r.FindStringSubmatch(input)
@@ -161,6 +171,7 @@ func (p *Parser) hasDue(input string) bool {
 	return (r1.MatchString(input) || r2.MatchString(input) || r3.MatchString(input))
 }
 
+// Due is returning the the due date of a todo.
 func (p *Parser) Due(input string, day time.Time) string {
 	r, _ := regexp.Compile(`due .*$`)
 
@@ -267,9 +278,8 @@ func (p *Parser) sunday(day time.Time) string {
 func (p *Parser) thisOrNextWeek(day time.Time, pivotDay time.Time) string {
 	if day.Before(pivotDay) {
 		return day.AddDate(0, 0, 7).Format("2006-01-02")
-	} else {
-		return day.Format("2006-01-02")
 	}
+	return day.Format("2006-01-02")
 }
 
 func (p *Parser) matchWords(input string, r *regexp.Regexp) []string {

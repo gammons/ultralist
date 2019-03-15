@@ -12,11 +12,17 @@ import (
 	"time"
 )
 
+const (
+	apiURL = "https://api.ultralist.io"
+)
+
+// Backend is giving you the structure of the ultralist API backend.
 type Backend struct {
 	Creds   string `json:"creds"`
 	Success bool   `json:"-"`
 }
 
+// NewBackend is starting a new backend.
 func NewBackend() *Backend {
 	backend := &Backend{Success: false}
 
@@ -27,8 +33,9 @@ func NewBackend() *Backend {
 	return backend
 }
 
+// PerformRequest is performing a request to the ultralist API backend.
 func (b *Backend) PerformRequest(method string, path string, data []byte) []byte {
-	url := b.apiUrl(path)
+	url := b.apiURL(path)
 	req, _ := http.NewRequest(method, url, bytes.NewBuffer(data))
 	authHeader := fmt.Sprintf("Bearer %s", b.Creds)
 
@@ -66,15 +73,17 @@ func (b *Backend) PerformRequest(method string, path string, data []byte) []byte
 	return bodyBytes
 }
 
+// CanConnect is checking if ultralist can connect to the API backend.
 func (b *Backend) CanConnect() bool {
 	timeout := time.Duration(2 * time.Second)
 	client := http.Client{Timeout: timeout}
-	if _, err := client.Get(b.apiUrl("/api/v1/hb")); err != nil {
+	if _, err := client.Get(b.apiURL("/api/v1/hb")); err != nil {
 		return false
 	}
 	return true
 }
 
+// CredsFileExists is checking if an credential file is existing.
 func (b *Backend) CredsFileExists() bool {
 	if _, err := os.Stat(b.credsFilePath()); os.IsNotExist(err) {
 		return false
@@ -82,10 +91,12 @@ func (b *Backend) CredsFileExists() bool {
 	return true
 }
 
-func (b *Backend) AuthUrl() string {
-	return b.apiUrl("/cli_auth")
+// AuthURL is providing the full auth URL for a API backend.
+func (b *Backend) AuthURL() string {
+	return b.apiURL("/cli_auth")
 }
 
+// WriteCreds is writing the backend credential file.
 func (b *Backend) WriteCreds(token string) {
 	b.Creds = token
 	data, _ := json.Marshal(b)
@@ -103,13 +114,13 @@ func (b *Backend) WriteCreds(token string) {
 	}
 }
 
-func (b *Backend) apiUrl(path string) string {
-	apiUrl := os.Getenv("ULTRALIST_API_URL")
+func (b *Backend) apiURL(path string) string {
+	envAPIURL := os.Getenv("ULTRALIST_API_URL")
 
-	if apiUrl == "" {
-		apiUrl = ApiUrl
+	if envAPIURL != "" {
+		return envAPIURL + path
 	}
-	return apiUrl + path
+	return apiURL + path
 }
 
 func (b *Backend) credsFolderPath() string {

@@ -7,20 +7,19 @@ import (
 	"os/exec"
 )
 
+// Synchronizer is the default struct of this file.
 type Synchronizer struct {
 	QuietSync bool
 	Success   bool
 	Backend   *Backend
 }
 
-const (
-	ApiUrl = "https://api.ultralist.io"
-)
-
+// NewSynchronizer is creating a new synchronizer.
 func NewSynchronizer() *Synchronizer {
 	return &Synchronizer{QuietSync: true, Success: false, Backend: NewBackend()}
 }
 
+// NewSynchronizerWithInput is creating a new synchronizer with input.
 func NewSynchronizerWithInput(input string) *Synchronizer {
 	quietSync := false
 	if input == "sync -q" {
@@ -29,6 +28,7 @@ func NewSynchronizerWithInput(input string) *Synchronizer {
 	return &Synchronizer{QuietSync: quietSync, Success: false, Backend: NewBackend()}
 }
 
+// ExecSyncInBackground is starting a new sync process with the ultralist API in the background.
 func (s *Synchronizer) ExecSyncInBackground() {
 	binary, lookErr := exec.LookPath("ultralist")
 	if lookErr != nil {
@@ -49,6 +49,7 @@ func (s *Synchronizer) ExecSyncInBackground() {
 	}
 }
 
+// Sync is synchronizing the todos with the ultralist API.
 func (s *Synchronizer) Sync(todolist *TodoList, syncedList *SyncedList) {
 
 	if s.Backend.CredsFileExists() == false {
@@ -64,6 +65,7 @@ func (s *Synchronizer) Sync(todolist *TodoList, syncedList *SyncedList) {
 	s.doSync(todolist, syncedList)
 }
 
+// CheckAuth is checking the authentication status against the ultralist API.
 func (s *Synchronizer) CheckAuth() {
 	if s.Backend.CredsFileExists() == false {
 		fmt.Println("It looks like you are not authenticated with ultralist.io.")
@@ -87,21 +89,25 @@ func (s *Synchronizer) CheckAuth() {
 	}
 }
 
+// WasSuccessful is checking if a sync process was successful.
 func (s *Synchronizer) WasSuccessful() bool {
 	return s.Success
 }
 
+// UserRequest is the struct for a user request.
 type UserRequest struct {
 	UUID string `json:"uuid"`
 	Name string `json:"name"`
 }
 
+// TodolistRequest is the struct for a todolist request.
 type TodolistRequest struct {
 	UUID                string  `json:"uuid"`
 	Name                string  `json:"name"`
 	TodoItemsAttributes []*Todo `json:"todo_items_attributes"`
 }
 
+// Request is the struct for a request.
 type Request struct {
 	Events   []*EventLog      `json:"events"`
 	Todolist *TodolistRequest `json:"todolist"`

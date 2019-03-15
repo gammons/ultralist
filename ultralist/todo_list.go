@@ -2,6 +2,7 @@ package ultralist
 
 import "sort"
 
+// TodoList is the struct of a list with several todos.
 type TodoList struct {
 	Name     string `json:"name"`
 	UUID     string `json:"uuid"`
@@ -9,24 +10,27 @@ type TodoList struct {
 	Data     []*Todo `json:"todo_items_attributes"`
 }
 
+// Load is loading a list with several todos.
 func (t *TodoList) Load(todos []*Todo) {
 	t.Data = todos
 }
 
+// Add is adding a single todo to a todo list.
 func (t *TodoList) Add(todo *Todo) {
-	todo.Id = t.NextId()
+	todo.ID = t.NextID()
 	t.Data = append(t.Data, todo)
 }
 
+// Delete is deleting multiple todos from a todo list.
 func (t *TodoList) Delete(ids ...int) {
 	for _, id := range ids {
-		todo := t.FindById(id)
+		todo := t.FindByID(id)
 		if todo == nil {
 			continue
 		}
 		i := -1
 		for index, todo := range t.Data {
-			if todo.Id == id {
+			if todo.ID == id {
 				i = index
 			}
 		}
@@ -35,9 +39,10 @@ func (t *TodoList) Delete(ids ...int) {
 	}
 }
 
+// Complete is completing multiple todos in a todo list.
 func (t *TodoList) Complete(ids ...int) {
 	for _, id := range ids {
-		todo := t.FindById(id)
+		todo := t.FindByID(id)
 		if todo == nil {
 			continue
 		}
@@ -47,9 +52,10 @@ func (t *TodoList) Complete(ids ...int) {
 	}
 }
 
+// Uncomplete is uncompleting multiple todos from a todo list.
 func (t *TodoList) Uncomplete(ids ...int) {
 	for _, id := range ids {
-		todo := t.FindById(id)
+		todo := t.FindByID(id)
 		if todo == nil {
 			continue
 		}
@@ -59,9 +65,10 @@ func (t *TodoList) Uncomplete(ids ...int) {
 	}
 }
 
+// Archive is archiving multiple todos from a todo list.
 func (t *TodoList) Archive(ids ...int) {
 	for _, id := range ids {
-		todo := t.FindById(id)
+		todo := t.FindByID(id)
 		if todo == nil {
 			continue
 		}
@@ -71,9 +78,10 @@ func (t *TodoList) Archive(ids ...int) {
 	}
 }
 
+// Unarchive is unarchiving multiple todos from a todo list.
 func (t *TodoList) Unarchive(ids ...int) {
 	for _, id := range ids {
-		todo := t.FindById(id)
+		todo := t.FindByID(id)
 		if todo == nil {
 			continue
 		}
@@ -83,9 +91,10 @@ func (t *TodoList) Unarchive(ids ...int) {
 	}
 }
 
+// Prioritize is prioritizing multiple todos from a todo list.
 func (t *TodoList) Prioritize(ids ...int) {
 	for _, id := range ids {
-		todo := t.FindById(id)
+		todo := t.FindByID(id)
 		if todo == nil {
 			continue
 		}
@@ -95,9 +104,10 @@ func (t *TodoList) Prioritize(ids ...int) {
 	}
 }
 
+// Unprioritize is unprioritizing multiple todos from a todo list.
 func (t *TodoList) Unprioritize(ids ...int) {
 	for _, id := range ids {
-		todo := t.FindById(id)
+		todo := t.FindByID(id)
 		if todo == nil {
 			continue
 		}
@@ -107,15 +117,17 @@ func (t *TodoList) Unprioritize(ids ...int) {
 	}
 }
 
+// IndexOf finds the index of a todo.
 func (t *TodoList) IndexOf(todoToFind *Todo) int {
 	for i, todo := range t.Data {
-		if todo.Id == todoToFind.Id {
+		if todo.ID == todoToFind.ID {
 			return i
 		}
 	}
 	return -1
 }
 
+// ByDate is the by date struct of a todo.
 type ByDate []*Todo
 
 func (a ByDate) Len() int      { return len(a) }
@@ -126,28 +138,31 @@ func (a ByDate) Less(i, j int) bool {
 	return t1Due.Before(t2Due)
 }
 
+// Todos is a sorted list of todos.
 func (t *TodoList) Todos() []*Todo {
 	sort.Sort(ByDate(t.Data))
 	return t.Data
 }
 
-func (t *TodoList) MaxId() int {
-	maxId := 0
+// MaxID returns the maximum human readable ID of all todo items.
+func (t *TodoList) MaxID() int {
+	maxID := 0
 	for _, todo := range t.Data {
-		if todo.Id > maxId {
-			maxId = todo.Id
+		if todo.ID > maxID {
+			maxID = todo.ID
 		}
 	}
-	return maxId
+	return maxID
 }
 
-func (t *TodoList) NextId() int {
+// NextID returns the next human readable ID.
+func (t *TodoList) NextID() int {
 	var found bool
-	maxID := t.MaxId()
+	maxID := t.MaxID()
 	for i := 1; i <= maxID; i++ {
 		found = false
 		for _, todo := range t.Data {
-			if todo.Id == i {
+			if todo.ID == i {
 				found = true
 				break
 			}
@@ -159,15 +174,17 @@ func (t *TodoList) NextId() int {
 	return maxID + 1
 }
 
-func (t *TodoList) FindById(id int) *Todo {
+// FindByID finds a todo by ID.
+func (t *TodoList) FindByID(id int) *Todo {
 	for _, todo := range t.Data {
-		if todo.Id == id {
+		if todo.ID == id {
 			return todo
 		}
 	}
 	return nil
 }
 
+// GarbageCollect deletes todos which are archived.
 func (t *TodoList) GarbageCollect() {
 	var toDelete []*Todo
 	for _, todo := range t.Data {
@@ -176,6 +193,6 @@ func (t *TodoList) GarbageCollect() {
 		}
 	}
 	for _, todo := range toDelete {
-		t.Delete(todo.Id)
+		t.Delete(todo.ID)
 	}
 }

@@ -6,16 +6,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNextId(t *testing.T) {
+func TestNextID(t *testing.T) {
 	assert := assert.New(t)
 	todo := &Todo{Subject: "testing", Completed: false, Archived: false}
 	list := &TodoList{}
-	assert.Equal(1, list.NextId())
+	assert.Equal(1, list.NextID())
 	list.Add(todo)
-	assert.Equal(2, list.NextId())
+	assert.Equal(2, list.NextID())
 }
 
-func TestNextIdWhenTodoDeleted(t *testing.T) {
+func TestNextIDWhenTodoDeleted(t *testing.T) {
 	assert := assert.New(t)
 	todo := &Todo{Subject: "testing", Completed: false, Archived: false}
 	todo2 := &Todo{Subject: "testing2", Completed: false, Archived: false}
@@ -27,23 +27,23 @@ func TestNextIdWhenTodoDeleted(t *testing.T) {
 	list.Add(todo3)
 
 	list.Delete(2)
-	assert.Equal(2, list.NextId())
+	assert.Equal(2, list.NextID())
 	list.Add(todo2)
-	assert.Equal(4, list.NextId())
+	assert.Equal(4, list.NextID())
 	list.Delete(1)
-	assert.Equal(1, list.NextId())
+	assert.Equal(1, list.NextID())
 }
 
-func TestMaxId(t *testing.T) {
+func TestMaxID(t *testing.T) {
 	assert := assert.New(t)
 	todo := &Todo{Subject: "testing", Completed: false, Archived: false}
 	todo2 := &Todo{Subject: "testing 2", Completed: false, Archived: false}
 	list := &TodoList{}
-	assert.Equal(0, list.MaxId())
+	assert.Equal(0, list.MaxID())
 	list.Add(todo)
-	assert.Equal(1, list.MaxId())
+	assert.Equal(1, list.MaxID())
 	list.Add(todo2)
-	assert.Equal(2, list.MaxId())
+	assert.Equal(2, list.MaxID())
 }
 
 func TestIndexOf(t *testing.T) {
@@ -65,32 +65,32 @@ func TestDelete(t *testing.T) {
 func TestComplete(t *testing.T) {
 	assert := assert.New(t)
 	list := SetUpTestMemoryTodoList()
-	assert.Equal(false, list.FindById(1).Completed)
+	assert.Equal(false, list.FindByID(1).Completed)
 	list.Complete(1)
-	assert.Equal(true, list.FindById(1).Completed)
+	assert.Equal(true, list.FindByID(1).Completed)
 }
 
 func TestArchive(t *testing.T) {
 	assert := assert.New(t)
 	list := SetUpTestMemoryTodoList()
-	assert.Equal(false, list.FindById(2).Archived)
+	assert.Equal(false, list.FindByID(2).Archived)
 	list.Archive(2)
-	assert.Equal(true, list.FindById(2).Archived)
+	assert.Equal(true, list.FindByID(2).Archived)
 }
 func TestUnarchive(t *testing.T) {
 	assert := assert.New(t)
 	list := SetUpTestMemoryTodoList()
-	assert.Equal(true, list.FindById(1).Archived)
+	assert.Equal(true, list.FindByID(1).Archived)
 	list.Unarchive(1)
-	assert.Equal(false, list.FindById(1).Archived)
+	assert.Equal(false, list.FindByID(1).Archived)
 }
 
 func TestUncomplete(t *testing.T) {
 	assert := assert.New(t)
 	list := SetUpTestMemoryTodoList()
-	assert.Equal(true, list.FindById(2).Completed)
+	assert.Equal(true, list.FindByID(2).Completed)
 	list.Uncomplete(2)
-	assert.Equal(false, list.FindById(2).Completed)
+	assert.Equal(false, list.FindByID(2).Completed)
 }
 
 func TestGarbageCollect(t *testing.T) {
@@ -106,14 +106,14 @@ func TestGarbageCollect(t *testing.T) {
 	list.GarbageCollect()
 
 	assert.Equal(len(list.Data), 1)
-	assert.Equal(1, list.NextId())
-	assert.Equal(2, list.MaxId())
+	assert.Equal(1, list.NextID())
+	assert.Equal(2, list.MaxID())
 }
 
 func TestPrioritizeNotInTodosJson(t *testing.T) {
 	assert := assert.New(t)
 	list := SetUpTestMemoryTodoList()
-	assert.Equal(false, list.FindById(2).IsPriority)
+	assert.Equal(false, list.FindByID(2).IsPriority)
 }
 
 func TestPrioritizeTodo(t *testing.T) {
@@ -122,7 +122,7 @@ func TestPrioritizeTodo(t *testing.T) {
 	todo := &Todo{Archived: false, Completed: false, Subject: "testing", IsPriority: false}
 	list.Add(todo)
 	list.Prioritize(1)
-	assert.Equal(true, list.FindById(1).IsPriority)
+	assert.Equal(true, list.FindByID(1).IsPriority)
 	list.Unprioritize(1)
-	assert.Equal(false, list.FindById(1).IsPriority)
+	assert.Equal(false, list.FindByID(1).IsPriority)
 }
