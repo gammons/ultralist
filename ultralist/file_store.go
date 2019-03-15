@@ -8,15 +8,18 @@ import (
 	"os/user"
 )
 
+// FileStore is the main struct of this file.
 type FileStore struct {
 	FileLocation string
 	Loaded       bool
 }
 
+// NewFileStore is creating a new file store.
 func NewFileStore() *FileStore {
 	return &FileStore{FileLocation: "", Loaded: false}
 }
 
+// Initialize is initializing a new .todos.json file.
 func (f *FileStore) Initialize() {
 	if f.FileLocation == "" {
 		f.FileLocation = ".todos.json"
@@ -33,6 +36,7 @@ func (f *FileStore) Initialize() {
 	}
 }
 
+// Load is loading a .todos.json file.
 func (f *FileStore) Load() ([]*Todo, error) {
 	if f.FileLocation == "" {
 		f.FileLocation = f.GetLocation()
@@ -58,6 +62,7 @@ func (f *FileStore) Load() ([]*Todo, error) {
 	return todos, nil
 }
 
+// Save is saving a .todos.json file.
 func (f *FileStore) Save(todos []*Todo) {
 	// ensure UUID is set for todos at save time
 	for _, todo := range todos {
@@ -72,6 +77,7 @@ func (f *FileStore) Save(todos []*Todo) {
 	}
 }
 
+// GetLocation is returning the location of the .todos.json file.
 func (f *FileStore) GetLocation() string {
 	dir, _ := os.Getwd()
 	localrepo := fmt.Sprintf("%s/.todos.json", dir)
@@ -80,10 +86,9 @@ func (f *FileStore) GetLocation() string {
 	homerepo := fmt.Sprintf("%s/.todos.json", usr.HomeDir)
 
 	_, ferr := os.Stat(localrepo)
-
 	if ferr == nil {
 		return localrepo
-	} else {
-		return homerepo
 	}
+
+	return homerepo
 }

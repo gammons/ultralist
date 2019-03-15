@@ -2,14 +2,17 @@ package ultralist
 
 import "regexp"
 
+// TodoFilter filters todos based on patterns.
 type TodoFilter struct {
 	Todos []*Todo
 }
 
+// NewFilter starts a todo filter and filters todos based on patterns.
 func NewFilter(todos []*Todo) *TodoFilter {
 	return &TodoFilter{Todos: todos}
 }
 
+// Filter filters todos based on patterns.
 func (f *TodoFilter) Filter(input string) []*Todo {
 	f.Todos = f.filterArchived(input)
 	f.Todos = f.filterPrioritized(input)
@@ -20,12 +23,12 @@ func (f *TodoFilter) Filter(input string) []*Todo {
 	return f.Todos
 }
 
-func (t *TodoFilter) isFilteringByProjects(input string) bool {
+func (f *TodoFilter) isFilteringByProjects(input string) bool {
 	parser := &Parser{}
 	return len(parser.Projects(input)) > 0
 }
 
-func (t *TodoFilter) isFilteringByContexts(input string) bool {
+func (f *TodoFilter) isFilteringByContexts(input string) bool {
 	parser := &Parser{}
 	return len(parser.Contexts(input)) > 0
 }
@@ -41,18 +44,18 @@ func (f *TodoFilter) filterArchived(input string) []*Todo {
 	r, _ := regexp.Compile(`ln? archived$`)
 	if r.MatchString(input) {
 		return f.getArchived()
-	} else {
-		return f.getUnarchived()
 	}
+
+	return f.getUnarchived()
 }
 
 func (f *TodoFilter) filterPrioritized(input string) []*Todo {
 	r, _ := regexp.Compile(`ln? p`)
 	if r.MatchString(input) {
 		return f.getPrioritized()
-	} else {
-		return f.Todos
 	}
+
+	return f.Todos
 }
 
 func (f *TodoFilter) filterProjects(input string) []*Todo {

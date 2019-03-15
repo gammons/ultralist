@@ -23,10 +23,12 @@ var (
 	yellow  = color.New(color.FgYellow)
 )
 
+// ScreenPrinter is the default struct of this file
 type ScreenPrinter struct {
 	Writer *tabwriter.Writer
 }
 
+// NewScreenPrinter creates a new screeen printer.
 func NewScreenPrinter() *ScreenPrinter {
 	w := new(tabwriter.Writer)
 	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
@@ -34,6 +36,7 @@ func NewScreenPrinter() *ScreenPrinter {
 	return formatter
 }
 
+// Print prints the output of ultralist to the terminal screen.
 func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 	var keys []string
 	for key := range groupedTodos.Groups {
@@ -61,7 +64,7 @@ func (f *ScreenPrinter) printTodo(todo *Todo) {
 		yellow.Add(color.Bold, color.Italic)
 	}
 	fmt.Fprintf(f.Writer, " %s\t%s\t%s\t%s\t\n",
-		yellow.Sprint(strconv.Itoa(todo.Id)),
+		yellow.Sprint(strconv.Itoa(todo.ID)),
 		f.formatCompleted(todo.Completed),
 		f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
 		f.formatSubject(todo.Subject, todo.IsPriority))
@@ -124,7 +127,6 @@ func (f *ScreenPrinter) formatSubject(subject string, isPriority bool) string {
 func (f *ScreenPrinter) formatCompleted(completed bool) string {
 	if completed {
 		return "[x]"
-	} else {
-		return "[ ]"
 	}
+	return "[ ]"
 }
