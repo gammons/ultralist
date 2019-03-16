@@ -13,6 +13,16 @@ import (
 	"github.com/fatih/color"
 )
 
+var (
+	blue    = color.New(color.FgBlue)
+	cyan    = color.New(color.FgCyan)
+	magenta = color.New(color.FgMagenta)
+	nocolor = color.New()
+	red     = color.New(color.FgRed)
+	white   = color.New(color.FgWhite)
+	yellow  = color.New(color.FgYellow)
+)
+
 // ScreenPrinter is the default struct of this file
 type ScreenPrinter struct {
 	Writer *tabwriter.Writer
@@ -28,8 +38,6 @@ func NewScreenPrinter() *ScreenPrinter {
 
 // Print prints the output of ultralist to the terminal screen.
 func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
-	cyan := color.New(color.FgCyan).SprintFunc()
-
 	var keys []string
 	for key := range groupedTodos.Groups {
 		keys = append(keys, key)
@@ -37,13 +45,13 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 	sort.Strings(keys)
 
 	for _, key := range keys {
-		fmt.Fprintf(f.Writer, "\n %s\n", cyan(key))
+		fmt.Fprintf(f.Writer, "\n %s\n", cyan.Sprint(key))
 		for _, todo := range groupedTodos.Groups[key] {
 			f.printTodo(todo)
 			if printNotes {
 				for nid, note := range todo.Notes {
 					fmt.Fprintf(f.Writer, "   %s\t\t\t%s\t\n",
-						cyan(strconv.Itoa(nid)), note)
+						cyan.Sprint(strconv.Itoa(nid)), white.Sprint(note))
 				}
 			}
 		}
@@ -52,28 +60,24 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 }
 
 func (f *ScreenPrinter) printTodo(todo *Todo) {
-	yellow := color.New(color.FgYellow)
 	if todo.IsPriority {
 		yellow.Add(color.Bold, color.Italic)
 	}
 	fmt.Fprintf(f.Writer, " %s\t%s\t%s\t%s\t\n",
-		yellow.SprintFunc()(strconv.Itoa(todo.ID)),
+		yellow.Sprint(strconv.Itoa(todo.ID)),
 		f.formatCompleted(todo.Completed),
 		f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
 		f.formatSubject(todo.Subject, todo.IsPriority))
 }
 
 func (f *ScreenPrinter) formatDue(due string, isPriority bool, completed bool) string {
-	blue := color.New(color.FgBlue)
-	red := color.New(color.FgRed)
-
 	if isPriority {
 		blue.Add(color.Bold, color.Italic)
 		red.Add(color.Bold, color.Italic)
 	}
 
 	if due == "" {
-		return color.New().SprintFunc()("          ")
+		return nocolor.Sprint("          ")
 	}
 	dueTime, err := time.Parse("2006-01-02", due)
 
@@ -84,22 +88,16 @@ func (f *ScreenPrinter) formatDue(due string, isPriority bool, completed bool) s
 	}
 
 	if isToday(dueTime) {
-		return blue.SprintFunc()("today     ")
+		return blue.Sprint("today     ")
 	} else if isTomorrow(dueTime) {
-		return blue.SprintFunc()("tomorrow  ")
+		return blue.Sprint("tomorrow  ")
 	} else if isPastDue(dueTime) && !completed {
-		return red.SprintFunc()(dueTime.Format("Mon Jan 02"))
-	} else {
-		return blue.SprintFunc()(dueTime.Format("Mon Jan 02"))
+		return red.Sprint(dueTime.Format("Mon Jan 02"))
 	}
+	return blue.Sprint(dueTime.Format("Mon Jan 02"))
 }
 
 func (f *ScreenPrinter) formatSubject(subject string, isPriority bool) string {
-
-	red := color.New(color.FgRed)
-	magenta := color.New(color.FgMagenta)
-	white := color.New(color.FgWhite)
-
 	if isPriority {
 		red.Add(color.Bold, color.Italic)
 		magenta.Add(color.Bold, color.Italic)
@@ -114,15 +112,14 @@ func (f *ScreenPrinter) formatSubject(subject string, isPriority bool) string {
 
 	for _, word := range splitted {
 		if projectRegex.MatchString(word) {
-			coloredWords = append(coloredWords, magenta.SprintFunc()(word))
+			coloredWords = append(coloredWords, magenta.Sprint(word))
 		} else if contextRegex.MatchString(word) {
-			coloredWords = append(coloredWords, red.SprintFunc()(word))
+			coloredWords = append(coloredWords, red.Sprint(word))
 		} else {
-			coloredWords = append(coloredWords, white.SprintFunc()(word))
+			coloredWords = append(coloredWords, white.Sprint(word))
 		}
 	}
 	return strings.Join(coloredWords, " ")
-
 }
 
 func (f *ScreenPrinter) formatCompleted(completed bool) string {
