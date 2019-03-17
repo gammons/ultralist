@@ -1,5 +1,9 @@
 package ultralist
 
+import (
+	"sort"
+)
+
 // Grouper is the group struct.
 type Grouper struct{}
 
@@ -27,6 +31,11 @@ func (g *Grouper) GroupByContext(todos []*Todo) *GroupedTodos {
 		}
 	}
 
+	// finally, sort the todos
+	for groupName, todos := range groups {
+		groups[groupName] = g.sort(todos)
+	}
+
 	return &GroupedTodos{Groups: groups}
 }
 
@@ -48,12 +57,52 @@ func (g *Grouper) GroupByProject(todos []*Todo) *GroupedTodos {
 			groups["No projects"] = append(groups["No projects"], todo)
 		}
 	}
+
+	// finally, sort the todos
+	for groupName, todos := range groups {
+		groups[groupName] = g.sort(todos)
+	}
+
 	return &GroupedTodos{Groups: groups}
 }
 
 // GroupByNothing is the default result if todos are not grouped by context project.
 func (g *Grouper) GroupByNothing(todos []*Todo) *GroupedTodos {
 	groups := map[string][]*Todo{}
-	groups["all"] = todos
+	groups["all"] = g.sort(todos)
+
 	return &GroupedTodos{Groups: groups}
+}
+
+func (g *Grouper) sort(todos []*Todo) []*Todo {
+	sort.Slice(todos, func(i, j int) bool {
+		// always favor unarchived todos over archived ones
+		if todos[i].Archived || todos[j].Archived {
+			return !todos[i].Archived || todos[j].Archived
+		}
+
+		// always favor un-completed todos over completed ones
+		if todos[i].Completed || todos[j].Completed {
+			return !todos[i].Completed || todos[j].Completed
+		}
+
+		// always favor prioritized todos
+		if todos[i].IsPriority || todos[j].IsPriority {
+			return todos[i].IsPriority || !todos[j].IsPriority
+		}
+
+		// always prefer a todo with a due date
+		if todos[i].Due != "" && todos[j].Due == "" {
+			return true
+		}
+
+		// un-favor todos without a due date
+		if todos[i].Due == "" {
+			return false
+		}
+
+		return todos[i].CalculateDueTime().Before(todos[j].CalculateDueTime())
+	})
+
+	return todos
 }
