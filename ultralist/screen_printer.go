@@ -79,13 +79,7 @@ func (f *ScreenPrinter) formatDue(due string, isPriority bool, completed bool) s
 	if due == "" {
 		return nocolor.Sprint("          ")
 	}
-	dueTime, err := time.Parse("2006-01-02", due)
-
-	if err != nil {
-		fmt.Println(err)
-		fmt.Println("This may due to the corruption of .todos.json file.")
-		os.Exit(-1)
-	}
+	dueTime, _ := time.Parse("2006-01-02", due)
 
 	if isToday(dueTime) {
 		return blue.Sprint("today     ")
