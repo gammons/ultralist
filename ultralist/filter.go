@@ -15,6 +15,7 @@ func NewFilter(todos []*Todo) *TodoFilter {
 // Filter filters todos based on patterns.
 func (f *TodoFilter) Filter(input string) []*Todo {
 	f.Todos = f.filterArchived(input)
+	f.Todos = f.filterCompleted(input)
 	f.Todos = f.filterPrioritized(input)
 	f.Todos = f.filterProjects(input)
 	f.Todos = f.filterContexts(input)
@@ -35,13 +36,7 @@ func (f *TodoFilter) isFilteringByContexts(input string) bool {
 
 func (f *TodoFilter) filterArchived(input string) []*Todo {
 
-	// do not filter archived if want completed items
-	completedRegex, _ := regexp.Compile(`completed`)
-	if completedRegex.MatchString(input) {
-		return f.Todos
-	}
-
-	r, _ := regexp.Compile(`ln? archived$`)
+	r, _ := regexp.Compile(`archived.*$`)
 	if r.MatchString(input) {
 		return f.getArchived()
 	}
@@ -49,8 +44,18 @@ func (f *TodoFilter) filterArchived(input string) []*Todo {
 	return f.getUnarchived()
 }
 
+func (f *TodoFilter) filterCompleted(input string) []*Todo {
+
+	completedRegex, _ := regexp.Compile(`completed.*$`)
+	if completedRegex.MatchString(input) {
+		return f.getCompleted()
+	}
+
+	return f.Todos
+}
+
 func (f *TodoFilter) filterPrioritized(input string) []*Todo {
-	r, _ := regexp.Compile(`ln? p`)
+	r, _ := regexp.Compile(`prioritized.*$`)
 	if r.MatchString(input) {
 		return f.getPrioritized()
 	}
@@ -102,6 +107,16 @@ func (f *TodoFilter) getArchived() []*Todo {
 	var ret []*Todo
 	for _, todo := range f.Todos {
 		if todo.Archived {
+			ret = append(ret, todo)
+		}
+	}
+	return ret
+}
+
+func (f *TodoFilter) getCompleted() []*Todo {
+	var ret []*Todo
+	for _, todo := range f.Todos {
+		if todo.Completed {
 			ret = append(ret, todo)
 		}
 	}
