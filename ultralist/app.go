@@ -232,7 +232,7 @@ func (a *App) ExpandTodo(input string) {
 	newTodos := strings.Split(input[todos+1:], ",")
 
 	for _, todo := range newTodos {
-		args := []string{"add ", fmt.Sprintf("+%s", commonProject), todo}
+		args := []string{"add ", commonProject, " ", todo}
 		a.AddTodo(strings.Join(args, ""))
 	}
 
