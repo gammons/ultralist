@@ -188,11 +188,9 @@ func (f *DateFilter) filterOverdue(pivot time.Time) []*Todo {
 	pivotDate := pivot.Format("2006-01-02")
 
 	for _, todo := range f.Todos {
-		if todo.Due != "" {
-			dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
-			if dueTime.Before(pivot) && pivotDate != todo.Due {
-				ret = append(ret, todo)
-			}
+		dueTime, _ := time.ParseInLocation("2006-01-02", todo.Due, f.Location)
+		if todo.Due != "" && dueTime.Before(pivot) && pivotDate != todo.Due {
+			ret = append(ret, todo)
 		}
 	}
 	return ret
