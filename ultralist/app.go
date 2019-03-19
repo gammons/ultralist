@@ -236,6 +236,7 @@ func (a *App) ExpandTodo(input string) {
 		a.AddTodo(strings.Join(args, ""))
 	}
 
+	a.TodoList.Delete(id)
 	a.save()
 	fmt.Println("Todo expanded.")
 }
