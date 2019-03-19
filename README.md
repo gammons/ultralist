@@ -34,6 +34,16 @@ Then, follow the [quick start](https://docs.ultralist.io/quickstart.html) in the
 * `ultralist` is this tool.
 * [ultralist.io](https://ultralist.io) is an enhancement service to the `ultralist` tool.  It allows for synchronization between computers, a great web view of your todolists, and (eventual) phone apps.  Ultralist.io is currently in a free public beta.
 
+
+## How is this different from todo.txt?
+
+[todo.txt](http://todotxt.org/) is great.  But it didn't work well for my needs.
+
+Here's how ultralist compares specifically to todo.txt:
+1. **Due dates.** they are a core concept of ultralist but not todo.txt.
+1. **Synchronizing.** Syncing is built into the CLI using the [ultralist.io](https://ultralist.iod) service.
+1. **Active development.** the ultralist CLI is under active development, whereas todo.txt's CLI is not.
+
 ## Author
 
 Please send complaints, complements, rants, etc to [Grant Ammons][ga]
