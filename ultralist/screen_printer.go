@@ -84,9 +84,9 @@ func (f *ScreenPrinter) formatID(ID int, isPriority bool) string {
 
 func (f *ScreenPrinter) formatCompleted(completed bool) string {
 	if completed {
-		return "[x]"
+		return white.Sprint("[x]")
 	}
-	return "[ ]"
+	return white.Sprint("[ ]")
 }
 
 func (f *ScreenPrinter) formatDue(due string, isPriority bool, completed bool) string {
@@ -114,7 +114,7 @@ func (f *ScreenPrinter) formatInformation(todo *Todo) string {
 	} else {
 		information = append(information, " ")
 	}
-	return strings.Join(information, " ")
+	return white.Sprint(strings.Join(information, " "))
 }
 
 func (f *ScreenPrinter) printDue(due time.Time, completed bool) string {
