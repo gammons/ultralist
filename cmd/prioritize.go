@@ -15,7 +15,9 @@ var (
 
   ultralist prioritize 33 --revert
   Unprioritizes todo with id 33.`
-	prioritizeCmdLongDesc = "Todos with a priority flag will be bold when listed."
+	prioritizeCmdLongDesc = `Prioritize and unprioritize todos.
+
+Todos with a priority flag will be highlighted on top of a list.`
 )
 
 var prioritizeCmd = &cobra.Command{
@@ -35,7 +37,7 @@ var prioritizeCmd = &cobra.Command{
 
 var (
 	prioritizeListCmdDesc     = "Lists all prioritized todos"
-	prioritizeListCmdLongDesc = prioritizeListCmdDesc
+	prioritizeListCmdLongDesc = prioritizeListCmdDesc + "."
 )
 
 var prioritizeListCmd = &cobra.Command{
@@ -50,6 +52,6 @@ var prioritizeListCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(prioritizeCmd)
-	prioritizeCmd.Flags().BoolVarP(&revertArchivedTodo, "revert", "", false, "Unprioritizes an prioritized todo.")
+	prioritizeCmd.Flags().BoolVarP(&revertArchivedTodo, "revert", "", false, "Unprioritizes an prioritized todo")
 	prioritizeCmd.AddCommand(prioritizeListCmd)
 }

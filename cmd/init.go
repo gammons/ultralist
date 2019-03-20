@@ -7,7 +7,7 @@ import (
 
 var (
 	initCmdDesc     = "Initializes a new todo list in the current directory"
-	initCmdLongDesc = initCmdDesc
+	initCmdLongDesc = initCmdDesc + "."
 )
 
 var initCmd = &cobra.Command{

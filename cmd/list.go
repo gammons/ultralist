@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	listCmdDesc    = "Listing todos including filtering and grouping of the output"
+	listCmdDesc    = "Listing todos including filtering and grouping"
 	listCmdExample = `Filtering by date:
 
   ulralist list due (tod|today|tom|tomorrow|overdue|this week|next week|last week|mon|tue|wed|thu|fri|sat|sun|none)
@@ -43,7 +43,7 @@ Of course, you can combine grouping and filtering to get a nice formatted list.
 
   ulralist list @frank due tom by p
   Lists all todos due tomorrow concerining @frank for +project, grouped by project.`
-	listCmdLongDesc = listCmdDesc
+	listCmdLongDesc = listCmdDesc + "."
 )
 
 var listCmd = &cobra.Command{
@@ -59,12 +59,12 @@ var listCmd = &cobra.Command{
 
 var (
 	listArchivedCmdDesc     = "Lists all archived todos"
-	listArchivedCmdLongDesc = listArchivedCmdDesc
+	listArchivedCmdLongDesc = listArchivedCmdDesc + "."
 )
 
 var listArchivedCmd = &cobra.Command{
 	Use:     "archived",
-	Aliases: []string{"a"},
+	Aliases: []string{"a", "ar"},
 	Long:    listArchivedCmdLongDesc,
 	Short:   listArchivedCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -79,7 +79,7 @@ var (
 
   ulralist list completed this week
   Lists all todos that were completed this week.`
-	listCompletedCmdLongDesc = listArchivedCmdDesc
+	listCompletedCmdLongDesc = listArchivedCmdDesc + "."
 )
 
 var listCompletedCmd = &cobra.Command{
@@ -99,7 +99,7 @@ var (
 
   ultralist list notes 33
   Lists todo 33 including its notes.`
-	listNotesCmdLongDesc = listNotesCmdDesc
+	listNotesCmdLongDesc = listNotesCmdDesc + "."
 )
 
 var listNotesCmd = &cobra.Command{
@@ -124,7 +124,7 @@ var listNotesCmd = &cobra.Command{
 
 var (
 	listPrioritizeCmdDesc     = "Lists all prioritized todos"
-	listPrioritizeCmdLongDesc = listPrioritizeCmdDesc
+	listPrioritizeCmdLongDesc = listPrioritizeCmdDesc + "."
 )
 
 var listPrioritizeCmd = &cobra.Command{
@@ -139,7 +139,7 @@ var listPrioritizeCmd = &cobra.Command{
 
 var (
 	listOverdueCmdDesc     = "Lists all todos where the due date is in the past"
-	listOverdueCmdLongDesc = listOverdueCmdDesc
+	listOverdueCmdLongDesc = listOverdueCmdDesc + "."
 )
 
 var listOverdueCmd = &cobra.Command{

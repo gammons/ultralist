@@ -9,7 +9,7 @@ import (
 
 var (
 	agendaCmdDesc     = "Lists all todos where the due date is today or in the past"
-	agendaCmdLongDesc = agendaCmdDesc
+	agendaCmdLongDesc = agendaCmdDesc + "."
 )
 
 var agendaCmd = &cobra.Command{

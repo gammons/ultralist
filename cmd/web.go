@@ -9,7 +9,7 @@ import (
 
 var (
 	webCmdDesc     = "Authenticate and synchronize against ultralist.io"
-	webCmdLongDesc = webCmdDesc
+	webCmdLongDesc = webCmdDesc + "."
 )
 
 var webCmd = &cobra.Command{
@@ -23,7 +23,7 @@ var webCmd = &cobra.Command{
 
 var (
 	webAuthCmdDesc     = "Authenticates you against ultralist.io"
-	webAuthCmdLongDesc = webAuthCmdDesc
+	webAuthCmdLongDesc = webAuthCmdDesc + "."
 )
 
 var webAuthCmd = &cobra.Command{
@@ -37,7 +37,7 @@ var webAuthCmd = &cobra.Command{
 
 var (
 	webAuthCheckCmdDesc     = "Checks your authentication status against ultralist.io"
-	webAuthCheckCmdLongDesc = webAuthCheckCmdDesc
+	webAuthCheckCmdLongDesc = webAuthCheckCmdDesc + "."
 )
 
 var webAuthCheckCmd = &cobra.Command{
@@ -51,7 +51,7 @@ var webAuthCheckCmd = &cobra.Command{
 
 var (
 	webSyncCmdDesc     = "Syncs todos with ultralist.io"
-	webSyncCmdLongDesc = webSyncCmdDesc
+	webSyncCmdLongDesc = webSyncCmdDesc + "."
 )
 
 var webSyncCmd = &cobra.Command{

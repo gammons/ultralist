@@ -9,7 +9,7 @@ import (
 
 var (
 	versionCmdDesc     = "Displays the version of ultralist"
-	versionCmdLongDesc = versionCmdDesc
+	versionCmdLongDesc = versionCmdDesc + "."
 )
 
 var versionCmd = &cobra.Command{

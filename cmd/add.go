@@ -13,7 +13,7 @@ var (
 	addCmdExample   = `  ultralist add Prepare meeting notes about +importantProject for the meeting with @bob due today --done
   ultralist add Meeting with @bob about +importantProject due today
   ultralist add +work +verify did @john fix the build?`
-	addCmdLongDesc = `Adds a new todo.
+	addCmdLongDesc = `Adds todos and notes.
 
 You can optionally specify a due date.
 This can be done by by putting 'due <date>' at the end, where <date> is in (tod|today|tom|tomorrow|mon|tue|wed|thu|fri|sat|sun).
@@ -56,6 +56,6 @@ var addNoteCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(addCmd)
-	addCmd.Flags().BoolVarP(&addFinishedTodo, "done", "", false, "Marks the todo as done.")
+	addCmd.Flags().BoolVarP(&addFinishedTodo, "done", "", false, "Marks the todo as done")
 	addCmd.AddCommand(addNoteCmd)
 }

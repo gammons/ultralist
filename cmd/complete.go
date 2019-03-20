@@ -15,7 +15,7 @@ var (
 
   ultralist complete 33 --revert
   Uncompletes todo with id 33.`
-	completeCmdLongDesc = completeCmdDesc
+	completeCmdLongDesc = completeCmdDesc + "."
 )
 
 var completeCmd = &cobra.Command{

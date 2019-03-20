@@ -11,7 +11,7 @@ var (
 	deleteCmdDesc    = "Deletes todos and notes"
 	deleteCmdExample = `  ultralist delete 33
   Deletes todo with id 33.`
-	deleteCmdLongDesc = deleteCmdDesc
+	deleteCmdLongDesc = deleteCmdDesc + "."
 )
 
 var deleteCmd = &cobra.Command{
@@ -28,8 +28,8 @@ var deleteCmd = &cobra.Command{
 var (
 	deleteNoteCmdDesc    = "Deletes a note from a todo"
 	deleteNoteCmdExample = `  ultralist delete note 33 3
-  Deletes the 3rd note of the todo with id 33.`
-	deleteNoteCmdLongDesc = addNoteCmdDesc
+  Deletes the 3rd note of todo with id 33.`
+	deleteNoteCmdLongDesc = deleteNoteCmdDesc + "."
 )
 
 var deleteNoteCmd = &cobra.Command{

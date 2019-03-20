@@ -9,8 +9,8 @@ import (
 
 var (
 	expandCmdDesc     = "Expands a project with todos"
-	expandCmdExample  = "  ultralist expand <todo_id> +<project>: <todo1>, <todo2>, <todo3>, ..."
-	expandCmdLongDesc = expandCmdDesc
+	expandCmdExample  = "  ultralist expand 33 +importantProject: Get, Things, Done, ..."
+	expandCmdLongDesc = expandCmdDesc + "."
 )
 
 var expandCmd = &cobra.Command{

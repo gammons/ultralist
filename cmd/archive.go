@@ -9,13 +9,13 @@ import (
 
 var (
 	revertArchivedTodo bool
-	archiveCmdDesc     = "Archive operations"
+	archiveCmdDesc     = "Archives todos"
 	archiveCmdExample  = `  ultralist archive 33
   Archives todo with id 33.
 
   ultralist archive 33 --revert
   Unarchives todo with id 33.`
-	archiveCmdLongDesc = archiveCmdDesc
+	archiveCmdLongDesc = archiveCmdDesc + "."
 )
 
 var archiveCmd = &cobra.Command{
@@ -35,7 +35,7 @@ var archiveCmd = &cobra.Command{
 
 var (
 	archiveCompletedCmdDesc     = "Archives all completed todos"
-	archiveCompletedCmdLongDesc = archiveCompletedCmdDesc
+	archiveCompletedCmdLongDesc = archiveCompletedCmdDesc + "."
 )
 
 var archiveCompletedCmd = &cobra.Command{
@@ -50,12 +50,12 @@ var archiveCompletedCmd = &cobra.Command{
 
 var (
 	archiveGarbageCollectCmdDesc     = "Deletes all archived todos"
-	archiveGarbageCollectCmdLongDesc = archiveGarbageCollectCmdDesc
+	archiveGarbageCollectCmdLongDesc = archiveGarbageCollectCmdDesc + "."
 )
 
 var archiveGarbageCollectCmd = &cobra.Command{
 	Use:     "garbage-collect",
-	Aliases: []string{"gc"},
+	Aliases: []string{"gc", "rm"},
 	Long:    archiveGarbageCollectCmdLongDesc,
 	Short:   archiveGarbageCollectCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -65,12 +65,12 @@ var archiveGarbageCollectCmd = &cobra.Command{
 
 var (
 	archiveListCmdDesc     = "Lists all archived todos"
-	archiveListCmdLongDesc = archiveListCmdDesc
+	archiveListCmdLongDesc = archiveListCmdDesc + "."
 )
 
 var archiveListCmd = &cobra.Command{
 	Use:     "list",
-	Aliases: []string{"l"},
+	Aliases: []string{"l", "ls"},
 	Long:    archiveListCmdLongDesc,
 	Short:   archiveListCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
