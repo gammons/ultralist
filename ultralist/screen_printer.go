@@ -57,7 +57,7 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 			f.printTodo(todo)
 			if printNotes {
 				for nid, note := range todo.Notes {
-					fmt.Fprintf(f.Writer, "   %s\t\t\t%s\t\n",
+					fmt.Fprintf(f.Writer, "   %s\t\t%s\t\n",
 						cyan.Sprint(strconv.Itoa(nid)), white.Sprint(note))
 				}
 			}
@@ -67,8 +67,9 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 }
 
 func (f *ScreenPrinter) printTodo(todo *Todo) {
-	fmt.Fprintf(f.Writer, " %s\t%s\t%s\t%s\t\n",
+	fmt.Fprintf(f.Writer, " %s %s %s\t%s\t%s\t\n",
 		f.formatID(todo.ID, todo.IsPriority),
+		f.formatInformation(todo),
 		f.formatCompleted(todo.Completed),
 		f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
 		f.formatSubject(todo.Subject, todo.IsPriority))
@@ -99,6 +100,21 @@ func (f *ScreenPrinter) formatDue(due string, isPriority bool, completed bool) s
 	}
 	return f.printDue(dueTime, completed)
 
+}
+
+func (f *ScreenPrinter) formatInformation(todo *Todo) string {
+	var information []string
+	if todo.IsPriority {
+		information = append(information, "*")
+	} else {
+		information = append(information, " ")
+	}
+	if todo.HasNotes() {
+		information = append(information, "N")
+	} else {
+		information = append(information, " ")
+	}
+	return strings.Join(information, " ")
 }
 
 func (f *ScreenPrinter) printDue(due time.Time, completed bool) string {
