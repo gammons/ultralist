@@ -9,14 +9,29 @@ github.com/client9/misspell/cmd/misspell
 github.com/client9/misspell
 # github.com/davecgh/go-spew v1.1.1
 github.com/davecgh/go-spew/spew
-# github.com/fatih/color v0.0.0-20180516100307-2d684516a886
+# github.com/fatih/color v1.7.0
 github.com/fatih/color
+# github.com/fsnotify/fsnotify v1.4.7
+github.com/fsnotify/fsnotify
 # github.com/golang/lint v0.0.0-20181026193005-c67002cb31c3
 github.com/golang/lint/golint
 # github.com/google/shlex v0.0.0-20181106134648-c34317bd91bf
 github.com/google/shlex
 # github.com/gordonklaus/ineffassign v0.0.0-20180909121442-1003c8bd00dc
 github.com/gordonklaus/ineffassign
+# github.com/hashicorp/hcl v1.0.0
+github.com/hashicorp/hcl
+github.com/hashicorp/hcl/hcl/printer
+github.com/hashicorp/hcl/hcl/ast
+github.com/hashicorp/hcl/hcl/parser
+github.com/hashicorp/hcl/hcl/token
+github.com/hashicorp/hcl/json/parser
+github.com/hashicorp/hcl/hcl/scanner
+github.com/hashicorp/hcl/hcl/strconv
+github.com/hashicorp/hcl/json/scanner
+github.com/hashicorp/hcl/json/token
+# github.com/inconshreveable/mousetrap v1.0.0
+github.com/inconshreveable/mousetrap
 # github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
 github.com/jinzhu/copier
 # github.com/juju/ansiterm v0.0.0-20180109212912-720a0952cc2a
@@ -26,6 +41,8 @@ github.com/juju/ansiterm/tabwriter
 github.com/julienschmidt/httprouter
 # github.com/lunixbochs/vtclean v0.0.0-20180621232353-2d01aacdc34a
 github.com/lunixbochs/vtclean
+# github.com/magiconair/properties v1.8.0
+github.com/magiconair/properties
 # github.com/manifoldco/promptui v0.3.2
 github.com/manifoldco/promptui
 github.com/manifoldco/promptui/list
@@ -34,6 +51,8 @@ github.com/manifoldco/promptui/screenbuf
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.4
 github.com/mattn/go-isatty
+# github.com/mitchellh/mapstructure v1.1.2
+github.com/mitchellh/mapstructure
 # github.com/nicksnyder/go-i18n v1.10.0
 github.com/nicksnyder/go-i18n/i18n
 github.com/nicksnyder/go-i18n/i18n/bundle
@@ -43,9 +62,22 @@ github.com/nicksnyder/go-i18n/i18n/translation
 github.com/pelletier/go-toml
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/skratchdot/open-golang v0.0.0-20160302144031-75fb7ed4208c
+# github.com/skratchdot/open-golang v0.0.0-20190104022628-a2dfa6d0dab6
 github.com/skratchdot/open-golang/open
-# github.com/stretchr/testify v1.2.2
+# github.com/spf13/afero v1.1.2
+github.com/spf13/afero
+github.com/spf13/afero/mem
+# github.com/spf13/cast v1.3.0
+github.com/spf13/cast
+# github.com/spf13/cobra v0.0.3
+github.com/spf13/cobra
+# github.com/spf13/jwalterweatherman v1.0.0
+github.com/spf13/jwalterweatherman
+# github.com/spf13/pflag v1.0.3
+github.com/spf13/pflag
+# github.com/spf13/viper v1.3.2
+github.com/spf13/viper
+# github.com/stretchr/testify v1.3.0
 github.com/stretchr/testify/assert
 # github.com/tsenart/deadcode v0.0.0-20160724212837-210d2dc333e9
 github.com/tsenart/deadcode
@@ -53,8 +85,11 @@ github.com/tsenart/deadcode
 github.com/twinj/uuid
 # golang.org/x/lint v0.0.0-20181026193005-c67002cb31c3
 golang.org/x/lint
-# golang.org/x/sys v0.0.0-20181122145206-62eef0e2fa9b
+# golang.org/x/sys v0.0.0-20181205085412-a5c9d58dba9a
 golang.org/x/sys/unix
+# golang.org/x/text v0.3.0
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm
 # golang.org/x/tools v0.0.0-20181122213734-04b5d21e00f1
 golang.org/x/tools/go/ast/astutil
 golang.org/x/tools/go/gcexportdata
