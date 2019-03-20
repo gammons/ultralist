@@ -35,13 +35,13 @@ You can group todos by context or project.
 Grouping and filtering:
 Of course, you can combine grouping and filtering to get a nice formatted list.
 
-  ulralist list due today by c
+  ulralist list by c due today
   Lists all todos due today grouped by context.
 
-  ulralist list +project due this week by c
+  ulralist list +project by c due this week
   Lists all todos due today for +project, grouped by context.
 
-  ulralist list @frank due tom by p
+  ulralist list @frank by p due tom
   Lists all todos due tomorrow concerining @frank for +project, grouped by project.`
 	listCmdLongDesc = listCmdDesc + "."
 )
