@@ -41,6 +41,7 @@ var (
 var archiveCompletedCmd = &cobra.Command{
 	Use:     "completed",
 	Aliases: []string{"c"},
+	Example: "ultralist archive completed",
 	Long:    archiveCompletedCmdLongDesc,
 	Short:   archiveCompletedCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -50,7 +51,7 @@ var archiveCompletedCmd = &cobra.Command{
 
 var (
 	archiveGarbageCollectCmdDesc     = "Deletes all archived todos"
-	archiveGarbageCollectCmdLongDesc = archiveGarbageCollectCmdDesc + "."
+	archiveGarbageCollectCmdLongDesc = "\nDelete all archived todos, and reclaim ids"
 )
 
 var archiveGarbageCollectCmd = &cobra.Command{
