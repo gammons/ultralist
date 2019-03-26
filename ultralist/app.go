@@ -325,7 +325,7 @@ func (a *App) GarbageCollect() {
 }
 
 // Sync will sync the todolist with ultralist.io.
-func (a *App) Sync(input string) {
+func (a *App) Sync(quiet bool) {
 	a.Load()
 
 	if a.EventLogger.CurrentSyncedList.Name == "" {
@@ -337,7 +337,12 @@ func (a *App) Sync(input string) {
 		a.EventLogger.CurrentSyncedList.Name = result
 	}
 
-	synchronizer := NewSynchronizerWithInput(input)
+	var synchronizer *Synchronizer
+	if quiet {
+		synchronizer = NewQuietSynchronizer()
+	} else {
+		synchronizer = NewSynchronizer()
+	}
 	synchronizer.Sync(a.TodoList, a.EventLogger.CurrentSyncedList)
 
 	if synchronizer.WasSuccessful() {
@@ -392,7 +397,7 @@ func (a *App) save() {
 	if a.TodoList.IsSynced {
 		a.EventLogger.ProcessEvents()
 
-		synchronizer := NewSynchronizer()
+		synchronizer := NewQuietSynchronizer()
 		synchronizer.ExecSyncInBackground()
 	}
 }

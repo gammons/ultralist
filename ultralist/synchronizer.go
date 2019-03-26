@@ -16,6 +16,10 @@ type Synchronizer struct {
 
 // NewSynchronizer is creating a new synchronizer.
 func NewSynchronizer() *Synchronizer {
+	return &Synchronizer{QuietSync: false, Success: false, Backend: NewBackend()}
+}
+
+func NewQuietSynchronizer() *Synchronizer {
 	return &Synchronizer{QuietSync: true, Success: false, Backend: NewBackend()}
 }
 
