@@ -82,7 +82,9 @@ func TestListbyProject(t *testing.T) {
 	app.AddTodo("this is a test +testme")
 	app.AddTodo("this is a test +testmetoo @work")
 	app.AddTodo("this is a test with no projects")
-	app.CompleteTodo("c 1")
+	app.AddTodo("this is a test to archive completed todos automatically +testarchivecompleted")
+	app.CompleteTodo("c 1", false)
+	app.CompleteTodo("c 4", true)
 
 	// simulate listTodos
 	input := "l by p"
@@ -99,6 +101,9 @@ func TestListbyProject(t *testing.T) {
 	assert.Equal(1, len(grouped.Groups["testmetoo"]))
 	assert.Equal(1, len(grouped.Groups["testmetoo"][0].Contexts))
 	assert.Equal("work", grouped.Groups["testmetoo"][0].Contexts[0])
+
+	// testmetoo project has 0 todos
+	assert.Equal(0, len(grouped.Groups["testarchivecompleted"]))
 }
 
 func TestListbyContext(t *testing.T) {
@@ -110,7 +115,7 @@ func TestListbyContext(t *testing.T) {
 	app.AddTodo("this is a test +testme")
 	app.AddTodo("this is a test +testmetoo @work")
 	app.AddTodo("this is a test with no projects")
-	app.CompleteTodo("c 1")
+	app.CompleteTodo("c 1", false)
 
 	// simulate listTodos
 	input := "l by c"

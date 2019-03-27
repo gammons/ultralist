@@ -146,13 +146,16 @@ func (a *App) DeleteTodo(input string) {
 }
 
 // CompleteTodo completes a todo.
-func (a *App) CompleteTodo(input string) {
+func (a *App) CompleteTodo(input string, archive bool) {
 	a.Load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
 	}
 	a.TodoList.Complete(ids...)
+	if archive == true {
+		a.TodoList.Archive(ids...)
+	}
 	a.save()
 	fmt.Println("Todo completed.")
 }
