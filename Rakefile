@@ -36,7 +36,7 @@ end
 
 desc "Tests all the things"
 task :test do
-  system "go test ./..."
+  system "go test -v ./..."
 end
 
 task default: :test
