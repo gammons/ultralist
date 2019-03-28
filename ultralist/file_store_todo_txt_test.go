@@ -56,6 +56,9 @@ func TestFileStoreTodoTxtParseLineDueDate(t *testing.T) {
 	store := &FileStoreTodoTxt{}
 	todo := store.ParseLine("x 2018-05-01 this is a completed todo item due:2018-06-01")
 	assert.Equal("2018-06-01", todo.Due)
+
+	todo = store.ParseLine("this has no due date")
+	assert.Equal("", todo.Due)
 }
 
 func TestFileStoreTodoTxtParseLineID(t *testing.T) {
@@ -70,4 +73,10 @@ func TestFileStoreTodoTxtParseLineSubject(t *testing.T) {
 	store := &FileStoreTodoTxt{}
 	todo := store.ParseLine("x 2018-05-01 this is a completed todo item due:2018-06-01 id:25")
 	assert.Equal("this is a completed todo item", todo.Subject)
+
+	todo = store.ParseLine("here is a simple one")
+	assert.Equal("here is a simple one", todo.Subject)
+
+	todo = store.ParseLine("(A) prioritized todo")
+	assert.Equal("prioritized todo", todo.Subject)
 }
