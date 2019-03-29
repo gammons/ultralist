@@ -114,6 +114,11 @@ func (f *ScreenPrinter) formatInformation(todo *Todo) string {
 	} else {
 		information = append(information, " ")
 	}
+	if todo.Archived {
+		information = append(information, "A")
+	} else {
+		information = append(information, " ")
+	}
 	return white.Sprint(strings.Join(information, " "))
 }
 
