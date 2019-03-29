@@ -2,6 +2,8 @@
 github.com/alecthomas/gometalinter
 # github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf
 github.com/alecthomas/units
+# github.com/cheynewallace/tabby v1.1.0
+github.com/cheynewallace/tabby
 # github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e
 github.com/chzyer/readline
 # github.com/client9/misspell v0.3.4
