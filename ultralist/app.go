@@ -153,7 +153,7 @@ func (a *App) CompleteTodo(input string, archive bool) {
 		return
 	}
 	a.TodoList.Complete(ids...)
-	if archive == true {
+	if archive {
 		a.TodoList.Archive(ids...)
 	}
 	a.save()
