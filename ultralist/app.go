@@ -225,7 +225,7 @@ func (a *App) ExpandTodo(input string) {
 	commonProject := parser.ExpandProject(input)
 	todos := strings.LastIndex(input, ":")
 	if commonProject == "" || len(input) <= todos+1 || todos == -1 {
-		fmt.Println("I'm expecting a format like \"ultralist ex <project>: <todo1>, <todo2>, ...\"")
+		fmt.Println("I'm expecting a format like \"ultralist expand <project>: <todo1>, <todo2>, ...")
 		return
 	}
 
@@ -325,7 +325,7 @@ func (a *App) GarbageCollect() {
 }
 
 // Sync will sync the todolist with ultralist.io.
-func (a *App) Sync(input string) {
+func (a *App) Sync(quiet bool) {
 	a.Load()
 
 	if a.EventLogger.CurrentSyncedList.Name == "" {
@@ -337,7 +337,12 @@ func (a *App) Sync(input string) {
 		a.EventLogger.CurrentSyncedList.Name = result
 	}
 
-	synchronizer := NewSynchronizerWithInput(input)
+	var synchronizer *Synchronizer
+	if quiet {
+		synchronizer = NewQuietSynchronizer()
+	} else {
+		synchronizer = NewSynchronizer()
+	}
 	synchronizer.Sync(a.TodoList, a.EventLogger.CurrentSyncedList)
 
 	if synchronizer.WasSuccessful() {
@@ -392,7 +397,7 @@ func (a *App) save() {
 	if a.TodoList.IsSynced {
 		a.EventLogger.ProcessEvents()
 
-		synchronizer := NewSynchronizer()
+		synchronizer := NewQuietSynchronizer()
 		synchronizer.ExecSyncInBackground()
 	}
 }

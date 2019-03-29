@@ -28,10 +28,12 @@ func TestFilterShowArchivedWhenWeAskForCompleted(t *testing.T) {
 	assert := assert.New(t)
 	list := SetUpTestMemoryTodoList()
 	filter := NewFilter(list.Todos())
-	unarchived := filter.filterArchived("completed")
-	assert.Equal(2, len(unarchived))
-	assert.Equal(false, unarchived[0].Archived)
-	assert.Equal(true, unarchived[1].Archived)
+	archived := filter.filterArchived("archived")
+	completed := filter.filterCompleted("completed")
+	assert.Equal(1, len(archived))
+	assert.Equal(1, len(completed))
+	assert.Equal(true, archived[0].Archived)
+	assert.Equal(false, completed[0].Archived)
 }
 
 func TestGetArchived(t *testing.T) {
