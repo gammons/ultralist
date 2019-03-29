@@ -49,11 +49,13 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 	sort.Strings(keys)
 
 	tabby := tabby.New()
+	tabby.AddLine()
 	for _, key := range keys {
-		tabby.AddLine(" " + cyan.Sprint(key))
+		tabby.AddLine(cyan.Sprint(key))
 		for _, todo := range groupedTodos.Groups[key] {
 			f.printTodo(tabby, todo, printNotes)
 		}
+		tabby.AddLine()
 	}
 	tabby.Print()
 }
