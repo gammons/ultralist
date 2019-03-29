@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/user"
 
 	"github.com/jinzhu/copier"
 )
@@ -161,8 +160,8 @@ func (e *EventLogger) WriteSyncedLists() {
 }
 
 func (e *EventLogger) syncedListsConfigDir() string {
-	usr, _ := user.Current()
-	return fmt.Sprintf("%s/.config/ultralist/", usr.HomeDir)
+	home := UserHomeDir()
+	return fmt.Sprintf("%s/.config/ultralist/", home)
 }
 
 func (e *EventLogger) syncedListsFile() string {

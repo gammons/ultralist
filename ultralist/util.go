@@ -2,6 +2,7 @@ package ultralist
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/twinj/uuid"
@@ -35,6 +36,16 @@ func AddTodoIfNotThere(arr []*Todo, item *Todo) []*Todo {
 		arr = append(arr, item)
 	}
 	return arr
+}
+
+// UserHomeDir returns the home dir of the current user.
+func UserHomeDir() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return home
 }
 
 func newUUID() string {
