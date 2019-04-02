@@ -3,10 +3,10 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"os/user"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/ultralist/ultralist/ultralist"
 )
 
 var (
@@ -34,12 +34,7 @@ func initConfig() {
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
-		usr, err := user.Current()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		home := usr.HomeDir
+		home := ultralist.UserHomeDir()
 
 		viper.AddConfigPath(home)
 		viper.AddConfigPath(home + "/.config/ultralist")

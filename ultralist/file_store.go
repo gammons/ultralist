@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/user"
 )
 
 // FileStore is the main struct of this file.
@@ -81,14 +80,11 @@ func (f *FileStore) Save(todos []*Todo) {
 func (f *FileStore) GetLocation() string {
 	dir, _ := os.Getwd()
 	localrepo := fmt.Sprintf("%s/.todos.json", dir)
-
-	usr, _ := user.Current()
-	homerepo := fmt.Sprintf("%s/.todos.json", usr.HomeDir)
-
 	_, ferr := os.Stat(localrepo)
 	if ferr == nil {
 		return localrepo
 	}
 
-	return homerepo
+	home := UserHomeDir()
+	return fmt.Sprintf("%s/.todos.json", home)
 }
