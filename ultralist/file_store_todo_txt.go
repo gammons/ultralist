@@ -30,6 +30,14 @@ func (f *FileStoreTodoTxt) Initialize() {
 		fmt.Println("It looks like a todo.txt file already exists!  Doing nothing.")
 		os.Exit(0)
 	}
+
+	if err := ioutil.WriteFile(f.FileLocation, []byte("# enter your todos here"), 0644); err != nil {
+		fmt.Println("Error writing todo.txt file", err)
+	}
+}
+
+func (f *FileStoreTodoTxt) HasTodoTxtFile() bool {
+	return f.GetLocation() != ""
 }
 
 func (f *FileStoreTodoTxt) Load() ([]*Todo, error) {
@@ -37,12 +45,10 @@ func (f *FileStoreTodoTxt) Load() ([]*Todo, error) {
 		f.FileLocation = f.GetLocation()
 	}
 
-	// data, err := ioutil.ReadFile(f.FileLocation)
-	// if err != nil {
-	// 	fmt.Println("No todo.txt file found!")
-	// 	os.Exit(0)
-	// 	return nil, err
-	// }
+	if f.FileLocation == "" {
+		fmt.Println("No todo.txt file found!")
+		os.Exit(0)
+	}
 
 	var todos []*Todo
 
@@ -56,7 +62,7 @@ func (f *FileStoreTodoTxt) Load() ([]*Todo, error) {
 			continue
 		}
 		fmt.Println("line: ", line)
-		f.ParseLine(line)
+		todos = append(todos, f.ParseLine(line))
 	}
 
 	f.Loaded = true
@@ -137,10 +143,14 @@ func (f *FileStoreTodoTxt) GetLocation() string {
 	usr, _ := user.Current()
 	homerepo := fmt.Sprintf("%s/todo.txt", usr.HomeDir)
 
-	_, ferr := os.Stat(localrepo)
-	if ferr == nil {
+	_, err := os.Stat(localrepo)
+	if err == nil {
 		return localrepo
 	}
 
-	return homerepo
+	if _, err = os.Stat(localrepo); err != nil {
+		return homerepo
+	}
+
+	return ""
 }
