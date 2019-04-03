@@ -3,7 +3,7 @@ desc "Builds ultralist for release"
 Envs = [
   {goos: "darwin", arch: "386"},
   {goos: "darwin", arch: "amd64"},
-  {goos: "darwin", arch: "arm"},
+  {goos: "linux", arch: "arm"},
   {goos: "linux", arch: "386"},
   {goos: "linux", arch: "amd64"},
   {goos: "windows", arch: "386"},

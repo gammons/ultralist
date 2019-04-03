@@ -8,10 +8,14 @@ import (
 )
 
 var (
-	revertCompletedTodo bool
-	completeCmdDesc     = "Completes a todo"
-	completeCmdExample  = `  ultralist complete 33
+	archiveCompletedTodo bool
+	revertCompletedTodo  bool
+	completeCmdDesc      = "Completes a todo"
+	completeCmdExample   = `  ultralist complete 33
   Completes todo with id 33.
+
+  ultralist complete 33 --archive
+  Completes todo with id 33 and archives it.
 
   ultralist complete 33 --revert
   Uncompletes todo with id 33.`
@@ -28,12 +32,13 @@ var completeCmd = &cobra.Command{
 		if revertCompletedTodo {
 			ultralist.NewApp().UncompleteTodo(strings.Join(args, " "))
 		} else {
-			ultralist.NewApp().CompleteTodo(strings.Join(args, " "))
+			ultralist.NewApp().CompleteTodo(strings.Join(args, " "), archiveCompletedTodo)
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(completeCmd)
+	completeCmd.Flags().BoolVarP(&archiveCompletedTodo, "archive", "", false, "Archives a completed todo automatically")
 	completeCmd.Flags().BoolVarP(&revertCompletedTodo, "revert", "", false, "Uncompletes a completed todo")
 }

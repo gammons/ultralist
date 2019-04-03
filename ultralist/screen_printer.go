@@ -1,30 +1,28 @@
 package ultralist
 
 import (
-	"fmt"
-	"os"
+	"io"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
-	"text/tabwriter"
 	"time"
 
+	"github.com/cheynewallace/tabby"
 	"github.com/fatih/color"
 )
 
 var (
-	blue            = color.New(color.FgBlue)
+	blue            = color.New(color.FgBlue, 2)
 	blueBold        = color.New(color.FgBlue, color.Bold)
-	cyan            = color.New(color.FgCyan)
-	magenta         = color.New(color.FgMagenta)
+	cyan            = color.New(color.FgCyan, 2)
+	magenta         = color.New(color.FgMagenta, 2)
 	magentaBold     = color.New(color.FgMagenta, color.Bold)
-	nocolor         = color.New()
-	red             = color.New(color.FgRed)
+	red             = color.New(color.FgRed, 2)
 	redBold         = color.New(color.FgRed, color.Bold)
-	white           = color.New(color.FgWhite)
+	white           = color.New(color.FgWhite, 2)
 	whiteBold       = color.New(color.FgWhite, color.Bold)
-	yellow          = color.New(color.FgYellow)
+	yellow          = color.New(color.FgYellow, 2)
 	yellowBold      = color.New(color.FgYellow, color.Bold)
 	projectRegex, _ = regexp.Compile(`\+[\p{L}\d_]+`)
 	contextRegex, _ = regexp.Compile(`\@[\p{L}\d_]+`)
@@ -32,13 +30,12 @@ var (
 
 // ScreenPrinter is the default struct of this file
 type ScreenPrinter struct {
-	Writer *tabwriter.Writer
+	Writer *io.Writer
 }
 
 // NewScreenPrinter creates a new screeen printer.
 func NewScreenPrinter() *ScreenPrinter {
-	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
+	w := new(io.Writer)
 	formatter := &ScreenPrinter{Writer: w}
 	return formatter
 }
@@ -51,27 +48,29 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 	}
 	sort.Strings(keys)
 
+	tabby := tabby.New()
+	tabby.AddLine()
 	for _, key := range keys {
-		fmt.Fprintf(f.Writer, "\n %s\n", cyan.Sprint(key))
+		tabby.AddLine(cyan.Sprint(key))
 		for _, todo := range groupedTodos.Groups[key] {
-			f.printTodo(todo)
-			if printNotes {
-				for nid, note := range todo.Notes {
-					fmt.Fprintf(f.Writer, "   %s\t\t\t%s\t\n",
-						cyan.Sprint(strconv.Itoa(nid)), white.Sprint(note))
-				}
-			}
+			f.printTodo(tabby, todo, printNotes)
 		}
+		tabby.AddLine()
 	}
-	f.Writer.Flush()
+	tabby.Print()
 }
 
-func (f *ScreenPrinter) printTodo(todo *Todo) {
-	fmt.Fprintf(f.Writer, " %s\t%s\t%s\t%s\t\n",
+func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool) {
+	tabby.AddLine(
 		f.formatID(todo.ID, todo.IsPriority),
 		f.formatCompleted(todo.Completed),
 		f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
 		f.formatSubject(todo.Subject, todo.IsPriority))
+	if printNotes {
+		for nid, note := range todo.Notes {
+			tabby.AddLine("  "+cyan.Sprint(strconv.Itoa(nid)), white.Sprint(""), white.Sprint(""), white.Sprint(""), white.Sprint(note))
+		}
+	}
 }
 
 func (f *ScreenPrinter) formatID(ID int, isPriority bool) string {
@@ -83,14 +82,14 @@ func (f *ScreenPrinter) formatID(ID int, isPriority bool) string {
 
 func (f *ScreenPrinter) formatCompleted(completed bool) string {
 	if completed {
-		return "[x]"
+		return white.Sprint("[x]")
 	}
-	return "[ ]"
+	return white.Sprint("[ ]")
 }
 
 func (f *ScreenPrinter) formatDue(due string, isPriority bool, completed bool) string {
 	if due == "" {
-		return nocolor.Sprint("          ")
+		return white.Sprint("          ")
 	}
 	dueTime, _ := time.Parse("2006-01-02", due)
 
