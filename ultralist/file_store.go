@@ -63,15 +63,15 @@ func (f *FileStore) Load() ([]*Todo, error) {
 }
 
 // Save is saving a .todos.json file.
-func (f *FileStore) Save(todos []*Todo) {
+func (f *FileStore) Save(todoList *TodoList) {
 	// ensure UUID is set for todos at save time
-	for _, todo := range todos {
+	for _, todo := range todoList.Data {
 		if todo.UUID == "" {
 			todo.UUID = newUUID()
 		}
 	}
 
-	data, _ := json.Marshal(todos)
+	data, _ := json.Marshal(todoList.Data)
 	if err := ioutil.WriteFile(f.FileLocation, []byte(data), 0644); err != nil {
 		fmt.Println("Error writing json file", err)
 	}

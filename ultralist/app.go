@@ -26,11 +26,20 @@ type App struct {
 
 // NewApp is creating a new ultralist app.
 func NewApp() *App {
+
 	app := &App{
-		TodoList:  &TodoList{},
-		Printer:   NewScreenPrinter(),
-		TodoStore: NewFileStore(),
+		TodoList: &TodoList{},
+		Printer:  NewScreenPrinter(),
 	}
+
+	storeTodoTxt := NewFileStoreTodoTxt()
+
+	if storeTodoTxt.GetLocation() != "" {
+		app.TodoStore = storeTodoTxt
+	} else {
+		app.TodoStore = NewFileStore()
+	}
+
 	return app
 }
 
@@ -347,7 +356,7 @@ func (a *App) Sync(quiet bool) {
 
 	if synchronizer.WasSuccessful() {
 		a.EventLogger.ClearEventLogs()
-		a.TodoStore.Save(a.TodoList.Data)
+		a.TodoStore.Save(a.TodoList)
 	}
 }
 
@@ -393,7 +402,7 @@ func (a *App) OpenWeb() {
 
 // Save the todolist to the store.
 func (a *App) save() {
-	a.TodoStore.Save(a.TodoList.Data)
+	a.TodoStore.Save(a.TodoList)
 	if a.TodoList.IsSynced {
 		a.EventLogger.ProcessEvents()
 

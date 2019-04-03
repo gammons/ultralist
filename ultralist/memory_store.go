@@ -19,8 +19,8 @@ func (m *MemoryStore) Load() ([]*Todo, error) {
 }
 
 // Save is saving todos to the memory store.
-func (m *MemoryStore) Save(todos []*Todo) {
-	m.Todos = todos
+func (m *MemoryStore) Save(todoList *TodoList) {
+	m.Todos = todoList.Data
 }
 
 // GetLocation is giving the location of the memory store.
