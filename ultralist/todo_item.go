@@ -81,7 +81,7 @@ func (t Todo) CompletedDateToDate() string {
 	return parsedTime.Format("2006-01-02")
 }
 
-// set a Todo's subject and also set its projects and contexts.
+// SetSubject: set a Todo's subject and also set its projects and contexts.
 func (t *Todo) SetSubject(subject string) {
 	t.Subject = subject
 	parser := &Parser{}
