@@ -4,7 +4,7 @@ here is a thing to do with @bob due:2019-04-04 id:3 uuid:ad830ce9-bf8f-4325-869e
 here is an item with no due date due:2019-04-03 id:4 uuid:0cfc7029-5360-4326-a384-e1329b266616
 here is another due:2019-04-03 id:5 uuid:50224383-a281-459e-ba63-3ca61404000b
 third one yeah due:2019-04-03 id:6 uuid:c3143bf6-8b9c-433c-81c5-f1b8d03ed112
-(A) fourth one yeah sukka id:7 uuid:3e58b776-7a34-40c5-a1da-e8049b370dd5
+(A) fourth one id:7 uuid:3e58b776-7a34-40c5-a1da-e8049b370dd5
 x 2019-04-03 here is an archived item archived:true due:2019-04-04 id:8 uuid:7984e636-49ca-475e-9def-d4808d2c3634
 here is another due:2019-04-04 id:9 uuid:ddbc6a6d-b5f9-43d6-b7f1-9e5b9a6b9f91
 added a manual item due:2019-04-03 id:10 uuid:60a76946-7c60-4609-81d9-963a662a5ae8
