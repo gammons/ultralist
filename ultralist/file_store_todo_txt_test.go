@@ -6,17 +6,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestInitialize(t *testing.T) {
-
-}
-
-// func TestFileStoreTodoTxtLoad(t *testing.T) {
-// 	// assert := assert.New(t)
-//
-// 	store := &FileStoreTodoTxt{}
-// 	store.Load()
-// }
-
 func TestFileStoreTodoTxtParseLinePriority(t *testing.T) {
 	assert := assert.New(t)
 	store := &FileStoreTodoTxt{}
