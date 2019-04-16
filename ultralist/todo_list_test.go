@@ -17,30 +17,31 @@ func TestNextID(t *testing.T) {
 
 func TestNextIDWhenTodoDeleted(t *testing.T) {
 	assert := assert.New(t)
-	todo := &Todo{Subject: "testing", Completed: false, Archived: false}
-	todo2 := &Todo{Subject: "testing2", Completed: false, Archived: false}
-	todo3 := &Todo{Subject: "testing3", Completed: false, Archived: false}
+	todo1 := &Todo{Subject: "testing 1", Completed: false, Archived: false}
+	todo2 := &Todo{Subject: "testing 2", Completed: false, Archived: false}
+	todo3 := &Todo{Subject: "testing 3", Completed: false, Archived: false}
+	todo4 := &Todo{Subject: "testing 4", Completed: false, Archived: false}
 	list := &TodoList{}
 
-	list.Add(todo)
+	list.Add(todo1)
 	list.Add(todo2)
 	list.Add(todo3)
 
 	list.Delete(2)
-	assert.Equal(2, list.NextID())
-	list.Add(todo2)
 	assert.Equal(4, list.NextID())
+	list.Add(todo4)
+	assert.Equal(5, list.NextID())
 	list.Delete(1)
-	assert.Equal(1, list.NextID())
+	assert.Equal(5, list.NextID())
 }
 
 func TestMaxID(t *testing.T) {
 	assert := assert.New(t)
-	todo := &Todo{Subject: "testing", Completed: false, Archived: false}
+	todo1 := &Todo{Subject: "testing 1", Completed: false, Archived: false}
 	todo2 := &Todo{Subject: "testing 2", Completed: false, Archived: false}
 	list := &TodoList{}
 	assert.Equal(0, list.MaxID())
-	list.Add(todo)
+	list.Add(todo1)
 	assert.Equal(1, list.MaxID())
 	list.Add(todo2)
 	assert.Equal(2, list.MaxID())
@@ -96,18 +97,18 @@ func TestUncomplete(t *testing.T) {
 func TestGarbageCollect(t *testing.T) {
 	assert := assert.New(t)
 	list := &TodoList{}
-	todo := &Todo{Subject: "testing", Completed: false, Archived: true}
-	todo2 := &Todo{Subject: "testing2", Completed: false, Archived: false}
-	todo3 := &Todo{Subject: "testing3", Completed: false, Archived: true}
-	list.Add(todo)
+	todo1 := &Todo{Subject: "testing 1", Completed: false, Archived: true}
+	todo2 := &Todo{Subject: "testing 2", Completed: false, Archived: false}
+	todo3 := &Todo{Subject: "testing 3", Completed: false, Archived: true}
+	list.Add(todo1)
 	list.Add(todo2)
 	list.Add(todo3)
 
 	list.GarbageCollect()
 
 	assert.Equal(len(list.Data), 1)
-	assert.Equal(1, list.NextID())
 	assert.Equal(2, list.MaxID())
+	assert.Equal(3, list.NextID())
 }
 
 func TestPrioritizeNotInTodosJson(t *testing.T) {

@@ -1,6 +1,8 @@
 package ultralist
 
-import "sort"
+import (
+	"sort"
+)
 
 // TodoList is the struct of a list with several todos.
 type TodoList struct {
@@ -146,32 +148,21 @@ func (t *TodoList) Todos() []*Todo {
 
 // MaxID returns the maximum human readable ID of all todo items.
 func (t *TodoList) MaxID() int {
-	maxID := 0
+	var keys []int
 	for _, todo := range t.Data {
-		if todo.ID > maxID {
-			maxID = todo.ID
-		}
+		keys = append(keys, todo.ID)
 	}
-	return maxID
+	todos := len(keys)
+	if todos > 0 {
+		sort.Ints(keys)
+		return keys[len(keys)-1]
+	}
+	return 0
 }
 
 // NextID returns the next human readable ID.
 func (t *TodoList) NextID() int {
-	var found bool
-	maxID := t.MaxID()
-	for i := 1; i <= maxID; i++ {
-		found = false
-		for _, todo := range t.Data {
-			if todo.ID == i {
-				found = true
-				break
-			}
-		}
-		if !found {
-			return i
-		}
-	}
-	return maxID + 1
+	return t.MaxID() + 1
 }
 
 // FindByID finds a todo by ID.
