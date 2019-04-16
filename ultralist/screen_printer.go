@@ -63,7 +63,7 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 
 func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool) {
 	tabby.AddLine(
-		" "+f.formatID(todo.ID, todo.IsPriority),
+		f.formatID(todo.ID, todo.IsPriority),
 		f.formatCompleted(todo.Completed),
 		f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
 		f.formatSubject(todo.Subject, todo.IsPriority))
