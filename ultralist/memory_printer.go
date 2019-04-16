@@ -6,6 +6,6 @@ type MemoryPrinter struct {
 }
 
 // Print is printing grouped todos.
-func (m *MemoryPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
+func (m *MemoryPrinter) Print(groupedTodos *GroupedTodos, maxTodoID int, printNotes bool) {
 	m.Groups = groupedTodos
 }

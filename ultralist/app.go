@@ -267,7 +267,7 @@ func (a *App) HandleNotes(input string) {
 	} else if parser.ParseShowNote(todo, input) {
 		groups := map[string][]*Todo{}
 		groups[""] = append(groups[""], todo)
-		a.Printer.Print(&GroupedTodos{Groups: groups}, true)
+		a.Printer.Print(&GroupedTodos{Groups: groups}, a.TodoList.MaxID(), true)
 		return
 	}
 	a.save()
@@ -292,7 +292,7 @@ func (a *App) ListTodos(input string) {
 	grouped := a.getGroups(input, filtered)
 
 	re, _ := regexp.Compile(`^ln`)
-	a.Printer.Print(grouped, re.MatchString(input))
+	a.Printer.Print(grouped, a.TodoList.MaxID(), re.MatchString(input))
 }
 
 // PrioritizeTodo will prioritize a todo.
@@ -392,6 +392,12 @@ func (a *App) OpenWeb() {
 
 	fmt.Println("Opening this list on your browser...")
 	open.Start("https://app.ultralist.io/todolist/" + a.EventLogger.CurrentSyncedList.UUID)
+}
+
+// MaxID returns the maximum human readable ID of all todo items.
+func (a *App) MaxID() int {
+	a.Load()
+	return a.TodoList.MaxID()
 }
 
 // Save the todolist to the store.

@@ -41,7 +41,7 @@ func NewScreenPrinter() *ScreenPrinter {
 }
 
 // Print prints the output of ultralist to the terminal screen.
-func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
+func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, maxTodoID int, printNotes bool) {
 	var keys []string
 	for key := range groupedTodos.Groups {
 		keys = append(keys, key)
@@ -53,31 +53,38 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 	for _, key := range keys {
 		tabby.AddLine(cyan.Sprint(key))
 		for _, todo := range groupedTodos.Groups[key] {
-			f.printTodo(tabby, todo, printNotes)
+			f.printTodo(tabby, todo, maxTodoID, printNotes)
 		}
 		tabby.AddLine()
 	}
 	tabby.Print()
 }
 
-func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool) {
+func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, maxTodoID int, printNotes bool) {
 	tabby.AddLine(
-		f.formatID(todo.ID, todo.IsPriority),
+		f.formatID(todo.ID, maxTodoID, todo.IsPriority),
 		f.formatCompleted(todo.Completed),
 		f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
 		f.formatSubject(todo.Subject, todo.IsPriority))
 	if printNotes {
 		for nid, note := range todo.Notes {
-			tabby.AddLine("  "+cyan.Sprint(strconv.Itoa(nid)), white.Sprint(""), white.Sprint(""), white.Sprint(""), white.Sprint(note))
+			tabby.AddLine(f.formatIDOffset(nid, maxTodoID)+cyan.Sprint(strconv.Itoa(nid)), white.Sprint(""), white.Sprint(""), white.Sprint(""), white.Sprint(note))
 		}
 	}
 }
 
-func (f *ScreenPrinter) formatID(ID int, isPriority bool) string {
+func (f *ScreenPrinter) formatID(ID int, maxTodoID int, isPriority bool) string {
 	if isPriority {
-		return yellowBold.Sprint(strconv.Itoa(ID))
+		return f.formatIDOffset(ID, maxTodoID) + yellowBold.Sprint(strconv.Itoa(ID))
 	}
-	return yellow.Sprint(strconv.Itoa(ID))
+	return f.formatIDOffset(ID, maxTodoID) + yellow.Sprint(strconv.Itoa(ID))
+}
+
+func (f *ScreenPrinter) formatIDOffset(ID int, maxTodoID int) string {
+	offset := len(strconv.Itoa(maxTodoID)) - len(strconv.Itoa(ID))
+	spaces := " "
+	spaces += strings.Repeat(" ", offset)
+	return spaces
 }
 
 func (f *ScreenPrinter) formatCompleted(completed bool) string {
