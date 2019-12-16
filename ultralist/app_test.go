@@ -14,11 +14,11 @@ func TestAddTodo(t *testing.T) {
 	app := &App{TodoList: &TodoList{}, TodoStore: &MemoryStore{}}
 	year := strconv.Itoa(time.Now().Year())
 
-	app.AddTodo("a do some stuff due may 23")
+	app.AddTodo("a do some stuff due dec 31")
 
 	todo := app.TodoList.FindByID(1)
 	assert.Equal("do some stuff", todo.Subject)
-	assert.Equal(fmt.Sprintf("%s-05-23", year), todo.Due)
+	assert.Equal(fmt.Sprintf("%s-12-31", year), todo.Due)
 	assert.Equal(false, todo.Completed)
 	assert.Equal(false, todo.Archived)
 	assert.Equal(false, todo.IsPriority)
@@ -48,11 +48,11 @@ func TestAddTodoWithEuropeanDates(t *testing.T) {
 	app := &App{TodoList: &TodoList{}, TodoStore: &MemoryStore{}}
 	year := strconv.Itoa(time.Now().Year())
 
-	app.AddTodo("a do some stuff due 23 may")
+	app.AddTodo("a do some stuff due 31 dec")
 
 	todo := app.TodoList.FindByID(1)
 	assert.Equal("do some stuff", todo.Subject)
-	assert.Equal(fmt.Sprintf("%s-05-23", year), todo.Due)
+	assert.Equal(fmt.Sprintf("%s-12-31", year), todo.Due)
 	assert.Equal(false, todo.Completed)
 	assert.Equal(false, todo.Archived)
 	assert.Equal(false, todo.IsPriority)
