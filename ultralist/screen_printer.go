@@ -50,7 +50,6 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 	sort.Strings(keys)
 
 	tabby := tabby.NewCustom(tabwriter.NewWriter(color.Output, 0, 0, 2, ' ', 0))
-	//tabby := tabby.New()
 	tabby.AddLine()
 	for _, key := range keys {
 		tabby.AddLine(cyan.Sprint(key))
