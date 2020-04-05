@@ -14,17 +14,18 @@ import (
 )
 
 var (
-	blue            = color.New(color.FgBlue, 2)
-	blueBold        = color.New(color.FgBlue, color.Bold)
-	cyan            = color.New(color.FgCyan, 2)
-	magenta         = color.New(color.FgMagenta, 2)
-	magentaBold     = color.New(color.FgMagenta, color.Bold)
-	red             = color.New(color.FgRed, 2)
-	redBold         = color.New(color.FgRed, color.Bold)
-	white           = color.New(color.FgWhite, 2)
-	whiteBold       = color.New(color.FgWhite, color.Bold)
-	yellow          = color.New(color.FgYellow, 2)
-	yellowBold      = color.New(color.FgYellow, color.Bold)
+	blue            = color.New(0, color.FgBlue)
+	blueBold        = color.New(color.Bold, color.FgBlue)
+	cyan            = color.New(0, color.FgCyan)
+	cyanBold        = color.New(color.Bold, color.FgCyan)
+	magenta         = color.New(0, color.FgMagenta)
+	magentaBold     = color.New(color.Bold, color.FgMagenta)
+	red             = color.New(0, color.FgRed)
+	redBold         = color.New(color.Bold, color.FgRed)
+	white           = color.New(0, color.FgWhite)
+	whiteBold       = color.New(color.Bold, color.FgWhite)
+	yellow          = color.New(0, color.FgYellow)
+	yellowBold      = color.New(color.Bold, color.FgYellow)
 	projectRegex, _ = regexp.Compile(`\+[\p{L}\d_]+`)
 	contextRegex, _ = regexp.Compile(`\@[\p{L}\d_]+`)
 )
@@ -69,7 +70,12 @@ func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes boo
 		f.formatSubject(todo.Subject, todo.IsPriority))
 	if printNotes {
 		for nid, note := range todo.Notes {
-			tabby.AddLine("  "+cyan.Sprint(strconv.Itoa(nid)), white.Sprint(""), white.Sprint(""), white.Sprint(""), white.Sprint(note))
+			tabby.AddLine(
+				"  "+cyan.Sprint(strconv.Itoa(nid)),
+				white.Sprint(""),
+				white.Sprint(""),
+				white.Sprint(""),
+				white.Sprint(note))
 		}
 	}
 }
