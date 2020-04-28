@@ -25,6 +25,7 @@ Yes.  Yes it is.
 
 * **Mac OS**: Run `brew install ultralist`.
 * **Arch Linux**: May be installed from AUR [ultralist](https://aur.archlinux.org/packages/ultralist/)
+* **FreeBSD**: May be installed via pkg [ultralist](https://www.freshports.org/deskutils/ultralist/)
 * **Other systems**: Get the correct ultralist binary from the [releases page](https://github.com/ultralist/ultralist/releases).
 * If you have Golang installed: Run `go get github.com/ultralist/ultralist`.
 
