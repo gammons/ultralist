@@ -366,7 +366,8 @@ func (a *App) AuthWorkflow() {
 	backend := NewBackend()
 
 	open.Start(backend.AuthURL())
-	fmt.Println("Listening for auth response...")
+	fmt.Println("Head to your browser to complete authorization steps.")
+	fmt.Println("Listening for response...")
 	webapp.Run()
 }
 
