@@ -235,7 +235,7 @@ func (p *Parser) parseArbitraryDateWithYear(_date string, year int) time.Time {
 	}
 	fmt.Printf("Could not parse the date you gave me: %s\n", _date)
 	fmt.Println("I'm expecting a date like \"Dec 22\" or \"22 Dec\".")
-	fmt.Println("See http://todolist.site/#adding for more info.")
+	fmt.Println("See http://docs.ultralist.io/docs/managing_tasks for more info.")
 	os.Exit(-1)
 	return time.Now()
 }
