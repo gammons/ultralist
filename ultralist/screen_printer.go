@@ -2,43 +2,41 @@ package ultralist
 
 import (
 	"io"
-	"regexp"
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 	"text/tabwriter"
+	"time"
 
 	"github.com/cheynewallace/tabby"
 	"github.com/fatih/color"
 )
 
 var (
-	blue            = color.New(0, color.FgBlue)
-	blueBold        = color.New(color.Bold, color.FgBlue)
-	cyan            = color.New(0, color.FgCyan)
-	cyanBold        = color.New(color.Bold, color.FgCyan)
-	magenta         = color.New(0, color.FgMagenta)
-	magentaBold     = color.New(color.Bold, color.FgMagenta)
-	red             = color.New(0, color.FgRed)
-	redBold         = color.New(color.Bold, color.FgRed)
-	white           = color.New(0, color.FgWhite)
-	whiteBold       = color.New(color.Bold, color.FgWhite)
-	yellow          = color.New(0, color.FgYellow)
-	yellowBold      = color.New(color.Bold, color.FgYellow)
-	projectRegex, _ = regexp.Compile(`\+[\p{L}\d_]+`)
-	contextRegex, _ = regexp.Compile(`\@[\p{L}\d_]+`)
+	blue        = color.New(0, color.FgBlue)
+	blueBold    = color.New(color.Bold, color.FgBlue)
+	cyan        = color.New(0, color.FgCyan)
+	cyanBold    = color.New(color.Bold, color.FgCyan)
+	magenta     = color.New(0, color.FgMagenta)
+	magentaBold = color.New(color.Bold, color.FgMagenta)
+	red         = color.New(0, color.FgRed)
+	redBold     = color.New(color.Bold, color.FgRed)
+	white       = color.New(0, color.FgWhite)
+	whiteBold   = color.New(color.Bold, color.FgWhite)
+	yellow      = color.New(0, color.FgYellow)
+	yellowBold  = color.New(color.Bold, color.FgYellow)
 )
 
 // ScreenPrinter is the default struct of this file
 type ScreenPrinter struct {
-	Writer *io.Writer
+	Writer         *io.Writer
+	UnicodeSupport bool
 }
 
 // NewScreenPrinter creates a new screeen printer.
-func NewScreenPrinter() *ScreenPrinter {
+func NewScreenPrinter(unicodeSupport bool) *ScreenPrinter {
 	w := new(io.Writer)
-	formatter := &ScreenPrinter{Writer: w}
+	formatter := &ScreenPrinter{Writer: w, UnicodeSupport: unicodeSupport}
 	return formatter
 }
 
@@ -89,7 +87,11 @@ func (f *ScreenPrinter) formatID(ID int, isPriority bool) string {
 
 func (f *ScreenPrinter) formatCompleted(completed bool) string {
 	if completed {
-		return white.Sprint("[x]")
+		if f.UnicodeSupport {
+			return white.Sprint("[✔]")
+		} else {
+			return white.Sprint("[x]")
+		}
 	}
 	return white.Sprint("[ ]")
 }

@@ -9,6 +9,8 @@ import (
 )
 
 var (
+	unicodeSupport bool
+	colorSupport   bool
 	listCmdDesc    = "Listing todos including filtering and grouping"
 	listCmdExample = `Filtering by date:
 
@@ -53,7 +55,7 @@ var listCmd = &cobra.Command{
 	Long:    listCmdLongDesc,
 	Short:   listCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
-		ultralist.NewApp().ListTodos(strings.Join(args, " "))
+		ultralist.NewAppWithPrintOptions(unicodeSupport, colorSupport).ListTodos(strings.Join(args, " "))
 	},
 }
 
@@ -68,7 +70,7 @@ var listArchivedCmd = &cobra.Command{
 	Long:    listArchivedCmdLongDesc,
 	Short:   listArchivedCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
-		ultralist.NewApp().ListTodos("archived")
+		ultralist.NewAppWithPrintOptions(unicodeSupport, colorSupport).ListTodos("archived")
 	},
 }
 
@@ -88,7 +90,7 @@ var listCompletedCmd = &cobra.Command{
 	Long:    listCompletedCmdLongDesc,
 	Short:   listCompletedCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
-		ultralist.NewApp().ListTodos("completed " + strings.Join(args, " "))
+		ultralist.NewAppWithPrintOptions(unicodeSupport, colorSupport).ListTodos("completed " + strings.Join(args, " "))
 	},
 }
 
@@ -112,12 +114,12 @@ var listNotesCmd = &cobra.Command{
 		if len(args) > 0 {
 			i, err := strconv.Atoi(args[0])
 			if err == nil {
-				ultralist.NewApp().HandleNotes("n " + strconv.Itoa(i))
+				ultralist.NewAppWithPrintOptions(unicodeSupport, colorSupport).HandleNotes("n " + strconv.Itoa(i))
 			} else {
-				ultralist.NewApp().ListTodos("ln " + strings.Join(args, " "))
+				ultralist.NewAppWithPrintOptions(unicodeSupport, colorSupport).ListTodos("ln " + strings.Join(args, " "))
 			}
 		} else {
-			ultralist.NewApp().ListTodos("ln " + strings.Join(args, " "))
+			ultralist.NewAppWithPrintOptions(unicodeSupport, colorSupport).ListTodos("ln " + strings.Join(args, " "))
 		}
 	},
 }
@@ -133,7 +135,7 @@ var listPrioritizeCmd = &cobra.Command{
 	Long:    listPrioritizeCmdLongDesc,
 	Short:   listPrioritizeCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
-		ultralist.NewApp().ListTodos("prioritized " + strings.Join(args, " "))
+		ultralist.NewAppWithPrintOptions(unicodeSupport, colorSupport).ListTodos("prioritized " + strings.Join(args, " "))
 	},
 }
 
@@ -148,12 +150,14 @@ var listOverdueCmd = &cobra.Command{
 	Long:    listOverdueCmdLongDesc,
 	Short:   listOverdueCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
-		ultralist.NewApp().ListTodos("overdue " + strings.Join(args, " "))
+		ultralist.NewAppWithPrintOptions(unicodeSupport, colorSupport).ListTodos("overdue " + strings.Join(args, " "))
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(listCmd)
+	listCmd.Flags().BoolVarP(&unicodeSupport, "unicode", "", true, "Allows unicode support in Ultralist output")
+	listCmd.Flags().BoolVarP(&colorSupport, "color", "", true, "Allows color in Ultralist output")
 	listCmd.AddCommand(listArchivedCmd)
 	listCmd.AddCommand(listCompletedCmd)
 	listCmd.AddCommand(listNotesCmd)

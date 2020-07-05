@@ -28,7 +28,24 @@ type App struct {
 func NewApp() *App {
 	app := &App{
 		TodoList:  &TodoList{},
-		Printer:   NewScreenPrinter(),
+		Printer:   NewScreenPrinter(true),
+		TodoStore: NewFileStore(),
+	}
+	return app
+}
+
+// NewAppWithPrintOptions creates a new app with options for printing on screen.
+func NewAppWithPrintOptions(unicodeSupport bool, colorSupport bool) *App {
+	var printer Printer
+	if colorSupport {
+		printer = NewScreenPrinter(unicodeSupport)
+	} else {
+		printer = NewSimpleScreenPrinter(unicodeSupport)
+	}
+
+	app := &App{
+		TodoList:  &TodoList{},
+		Printer:   printer,
 		TodoStore: NewFileStore(),
 	}
 	return app
