@@ -1,16 +1,16 @@
 desc "Builds ultralist for release"
 
 Envs = [
-  {goos: "darwin", arch: "386"},
-  {goos: "darwin", arch: "amd64"},
-  {goos: "linux", arch: "arm"},
-  {goos: "linux", arch: "386"},
-  {goos: "linux", arch: "amd64"},
-  {goos: "windows", arch: "386"},
-  {goos: "windows", arch: "amd64"}
-]
+  { goos: "darwin", arch: "386" },
+  { goos: "darwin", arch: "amd64" },
+  { goos: "linux", arch: "arm" },
+  { goos: "linux", arch: "386" },
+  { goos: "linux", arch: "amd64" },
+  { goos: "windows", arch: "386" },
+  { goos: "windows", arch: "amd64" }
+].freeze
 
-Version = "0.9.6"
+Version = "0.9.7".freeze
 
 task :build do
   `rm -rf dist/#{Version}`
