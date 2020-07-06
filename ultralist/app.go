@@ -336,7 +336,11 @@ func (a *App) Sync(quiet bool) {
 			Label: "Give this list a name",
 		}
 
-		result, _ := prompt.Run()
+		result, err := prompt.Run()
+		if err != nil {
+			fmt.Println("A name is required to sync a list.")
+			return
+		}
 		a.EventLogger.CurrentSyncedList.Name = result
 	}
 
