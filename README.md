@@ -10,7 +10,7 @@ Ultralist is based off of the [Getting Things Done](gtd) system. It has a concep
 
 [![asciicast](https://asciinema.org/a/226005.svg)](https://asciinema.org/a/226005)
 
-Combined with [ultralist.io](https://ultralist.io), Ultralist provides a superior task management experience to Wunderlist, Todoist, etc.  The command-line will app _always_ be first and foremost.
+Combined with [Ultralist Pro](https://ultralist.io), Ultralist provides a superior task management experience to Todoist, Any.do etc.  The command-line will app _always_ be first and foremost.
 
 **See the [ultralist docs][tdl] for the all documentation.**
 
