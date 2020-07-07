@@ -15,7 +15,7 @@ Combined with [ultralist.io](https://ultralist.io), Ultralist provides a superio
 **See the [ultralist docs][tdl] for the all documentation.**
 
 [gtd]: http://lifehacker.com/productivity-101-a-primer-to-the-getting-things-done-1551880955
-[tdl]: https://docs.ultralist.io
+[tdl]: https://ultralist.io/docs
 
 ## Is it good?
 
@@ -31,11 +31,10 @@ Yes.  Yes it is.
 
 Then, follow the [quick start](https://docs.ultralist.io/quickstart.html) in the docs to quickly get up and running.
 
-## How does Ultralist relate to ultralist.io?
+## How does Ultralist relate to Ultralist Pro?
 
 * `ultralist` is this tool.
-* [ultralist.io](https://ultralist.io) is an enhancement service to the `ultralist` tool.  It allows for synchronization between computers, a great web view of your todolists, and (eventual) phone apps.  Ultralist.io is currently in a free public beta.
-
+* [Ultralist Pro](https://ultralist.io) is an enhancement service to the `ultralist` tool.  It allows for synchronization between computers, management of your task lists on the web + mobile, integrations with tools you already use, teams, and more.
 
 ## How is this different from todo.txt?
 
