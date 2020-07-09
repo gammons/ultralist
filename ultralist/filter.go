@@ -60,12 +60,12 @@ func (f *TodoFilter) filterCompleted(input string) []*Todo {
 }
 
 func (f *TodoFilter) filterPrioritized(input string) []*Todo {
-	prioritizedRegex, _ := regexp.Compile(`is:prioritized`)
+	prioritizedRegex, _ := regexp.Compile(`is:priority`)
 	if prioritizedRegex.MatchString(input) {
 		return f.getPrioritized()
 	}
 
-	notPrioritizedRegex, _ := regexp.Compile(`not:prioritized`)
+	notPrioritizedRegex, _ := regexp.Compile(`not:priority`)
 	if notPrioritizedRegex.MatchString(input) {
 		return f.getNotPrioritized()
 	}

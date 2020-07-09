@@ -303,13 +303,12 @@ func (a *App) ArchiveCompleted() {
 }
 
 // ListTodos will list all todos.
-func (a *App) ListTodos(input string) {
+func (a *App) ListTodos(input string, showNotes bool) {
 	a.Load()
 	filtered := NewFilter(a.TodoList.Todos()).Filter(input)
 	grouped := a.getGroups(input, filtered)
 
-	re, _ := regexp.Compile(`^ln`)
-	a.Printer.Print(grouped, re.MatchString(input))
+	a.Printer.Print(grouped, showNotes)
 }
 
 // PrioritizeTodo will prioritize a todo.
