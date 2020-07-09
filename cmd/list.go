@@ -72,7 +72,10 @@ Combining filters:
     ultralist list --notes is:priority not:completed due:overdue
 
   Lists all todos due tomorrow concerining @frank for +project, grouped by project:
-    ultralist list @frank group:p due:tom`
+    ultralist list @frank group:p due:tom
+
+For complete documentation, see https://ultralist.io/docs/cli/showing_tasks
+`
 	listCmdLongDesc = listCmdDesc + "."
 )
 

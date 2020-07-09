@@ -25,11 +25,6 @@ func Execute() {
 	}
 }
 
-func init() {
-	// cobra.OnInitialize(initConfig)
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", cfgFile, "Config file (default \"$HOME/.ultralist.yaml\")")
-}
-
 func initConfig() {
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
