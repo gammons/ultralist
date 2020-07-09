@@ -473,8 +473,8 @@ func (a *App) parseRangedIds(input string) (ids []int, err error) {
 
 func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 	grouper := &Grouper{}
-	contextRegex, _ := regexp.Compile(`by c.*$`)
-	projectRegex, _ := regexp.Compile(`by p.*$`)
+	contextRegex, _ := regexp.Compile(`group:c.*$`)
+	projectRegex, _ := regexp.Compile(`group:p.*$`)
 
 	var grouped *GroupedTodos
 
