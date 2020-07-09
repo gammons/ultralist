@@ -12,53 +12,67 @@ var (
 	colorSupport   bool
 	listNotes      bool
 	listCmdDesc    = "Listing todos including filtering and grouping"
-	listCmdExample = `Filtering by date:
+	listCmdExample = `
+Filtering by date:
+------------------
 
   ultralist list due:(tod|today|tom|tomorrow|overdue|thisweek|nextweek|lastweek|mon|tue|wed|thu|fri|sat|sun|none)
 
-  ultralist list due:tod
-  Lists all todos due today.
+  List all todos due today:
+    ultralist list due:tod
 
-  ultralist list due:tom
-  Lists all todos due tomorrow.
+  Lists all todos due tomorrow:
+    ultralist list due:tom
 
-  ultralist list due:mon
-  Lists all todos due monday.
+  Lists all todos due monday:
+    ultralist list due:mon
 
-	ultralist list due:overdue
-	Lists all overdue todos.
+  Lists all overdue todos:
+    ultralist list due:overdue
 
 Filtering by priority, completed, etc:
+--------------------------------------
 
-	ultralist list is:priority
-	ultralist list not:priority
+  You can filter todos on their priority or completed status:
+    ultralist list is:priority
+    ultralist list not:priority
 
-	ultralist list is:completed
-	ultralist list not:completted
+    ultralist list is:completed
+    ultralist list not:completed
+
+  There are additional filters for showing completed todos:
+    ultralist list completed:today
+    ultralist list completed:thisweek
+
+  By default, ultralist will not show archived todos. To show archived todos:
+    ultralist list is:archived
 
 Grouping:
-You can group todos by context or project.
+---------
+  You can group todos by context or project.
 
-	ultralist list group:c
-  Lists all todos grouped by context.
+  Lists all todos grouped by context:
+    ultralist list group:c
 
-	ultralist list by group:p
-  Lists all todos grouped by project.
+  Lists all todos grouped by project:
+    ultralist list by group:p
 
-Grouping and filtering:
-Of course, you can combine grouping and filtering to get a nice formatted list.
+Combining filters:
+-----------------------
 
-	ultralist list group:c due:today
-  Lists all todos due today grouped by context.
+  Of course, you can combine grouping and filtering to get a nice formatted list.
 
-	ultralist list +project group:c due:thisweek
-  Lists all todos due today for +project, grouped by context.
+  Lists all todos due today grouped by context:
+    ultralist list group:c due:today
 
-	ultralist list --notes is:priority not:completed due:overdue
-  Lists all prioritized todos that are not completed and are overdue.  Include a todo's notes when listing.
+  Lists all todos due today for +project, grouped by context:
+    ultralist list +project group:c due:thisweek
 
-	ultralist list @frank group:p due:tom
-  Lists all todos due tomorrow concerining @frank for +project, grouped by project.`
+  Lists all prioritized todos that are not completed and are overdue.  Include a todo's notes when listing:
+    ultralist list --notes is:priority not:completed due:overdue
+
+  Lists all todos due tomorrow concerining @frank for +project, grouped by project:
+    ultralist list @frank group:p due:tom`
 	listCmdLongDesc = listCmdDesc + "."
 )
 
