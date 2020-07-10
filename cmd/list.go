@@ -16,7 +16,7 @@ var (
 Filtering by date:
 ------------------
 
-  ultralist list due:(tod|today|tom|tomorrow|overdue|thisweek|nextweek|lastweek|mon|tue|wed|thu|fri|sat|sun|none)
+  ultralist list due:(tod|today|tom|tomorrow|agenda|overdue|thisweek|nextweek|lastweek|mon|tue|wed|thu|fri|sat|sun|none)
 
   List all todos due today:
     ultralist list due:tod
@@ -29,6 +29,9 @@ Filtering by date:
 
   Lists all overdue todos:
     ultralist list due:overdue
+
+  Lists all todos whose due date is today or earlier:
+    ultralist list due:agenda
 
 Filtering by priority, completed, etc:
 --------------------------------------
@@ -55,7 +58,7 @@ Grouping:
     ultralist list group:c
 
   Lists all todos grouped by project:
-    ultralist list by group:p
+    ultralist list group:p
 
 Combining filters:
 -----------------------
