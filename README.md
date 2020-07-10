@@ -12,7 +12,7 @@ Ultralist is based off of the [Getting Things Done](gtd) system. It has a concep
 
 Combined with [Ultralist Pro](https://ultralist.io), Ultralist provides a superior task management experience to Todoist, Any.do etc.  The command-line will app _always_ be first and foremost.
 
-**See the [ultralist docs][tdl] for the all documentation.**
+**See the [ultralist docs][tdl] for complete documentation.**
 
 [gtd]: http://lifehacker.com/productivity-101-a-primer-to-the-getting-things-done-1551880955
 [tdl]: https://ultralist.io/docs
@@ -36,7 +36,7 @@ Then, follow the [quick start](https://ultralist.io/docs/cli/quickstart/) in the
 * `ultralist` is this tool.
 * [Ultralist Pro](https://ultralist.io) is an enhancement service to the `ultralist` tool.  It allows for synchronization between computers, management of your task lists on the web + mobile, integrations with tools you already use, teams, and more.
 
-## How is this different from todo.txt?
+## How is this different from todo.txt, Taskwarrior, etc?
 
 [todo.txt](http://todotxt.org/) is great.  But it didn't work well for my needs.
 

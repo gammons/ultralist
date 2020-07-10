@@ -303,13 +303,12 @@ func (a *App) ArchiveCompleted() {
 }
 
 // ListTodos will list all todos.
-func (a *App) ListTodos(input string) {
+func (a *App) ListTodos(input string, showNotes bool) {
 	a.Load()
 	filtered := NewFilter(a.TodoList.Todos()).Filter(input)
 	grouped := a.getGroups(input, filtered)
 
-	re, _ := regexp.Compile(`^ln`)
-	a.Printer.Print(grouped, re.MatchString(input))
+	a.Printer.Print(grouped, showNotes)
 }
 
 // PrioritizeTodo will prioritize a todo.
@@ -473,8 +472,8 @@ func (a *App) parseRangedIds(input string) (ids []int, err error) {
 
 func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 	grouper := &Grouper{}
-	contextRegex, _ := regexp.Compile(`by c.*$`)
-	projectRegex, _ := regexp.Compile(`by p.*$`)
+	contextRegex, _ := regexp.Compile(`group:c.*$`)
+	projectRegex, _ := regexp.Compile(`group:p.*$`)
 
 	var grouped *GroupedTodos
 

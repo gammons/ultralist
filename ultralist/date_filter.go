@@ -26,53 +26,53 @@ func filterOnCompletedDate(todo *Todo) string {
 
 // FilterDate filters a todo based on a input string.
 func (f *DateFilter) FilterDate(input string) []*Todo {
-	agendaRegex, _ := regexp.Compile(`agenda.*$`)
+	agendaRegex, _ := regexp.Compile(`due:agenda`)
 	if agendaRegex.MatchString(input) {
 		return f.filterAgenda(bod(time.Now()))
 	}
 
-	overdueRegex, _ := regexp.Compile(`overdue.*$`)
+	overdueRegex, _ := regexp.Compile(`due:overdue`)
 	if overdueRegex.MatchString(input) {
 		return f.filterOverdue(bod(time.Now()))
 	}
 
 	// filter due items
-	r, _ := regexp.Compile(`due .*$`)
+	r, _ := regexp.Compile(`due:.*$`)
 	match := r.FindString(input)
 	switch {
-	case match == "due tod" || match == "due today":
+	case match == "due:tod" || match == "due today":
 		return f.filterDueToday(bod(time.Now()))
-	case match == "due tom" || match == "due tomorrow":
+	case match == "due:tom" || match == "due:tomorrow":
 		return f.filterDueTomorrow(bod(time.Now()))
-	case match == "due sun" || match == "due sunday":
+	case match == "due:sun" || match == "due:sunday":
 		return f.filterDueDay(bod(time.Now()), time.Sunday)
-	case match == "due mon" || match == "due monday":
+	case match == "due:mon" || match == "due:monday":
 		return f.filterDueDay(bod(time.Now()), time.Monday)
-	case match == "due tue" || match == "due tuesday":
+	case match == "due:tue" || match == "due:tuesday":
 		return f.filterDueDay(bod(time.Now()), time.Tuesday)
-	case match == "due wed" || match == "due wednesday":
+	case match == "due:wed" || match == "due:wednesday":
 		return f.filterDueDay(bod(time.Now()), time.Wednesday)
-	case match == "due thu" || match == "due thursday":
+	case match == "due:thu" || match == "due:thursday":
 		return f.filterDueDay(bod(time.Now()), time.Thursday)
-	case match == "due fri" || match == "due friday":
+	case match == "due:fri" || match == "due:friday":
 		return f.filterDueDay(bod(time.Now()), time.Friday)
-	case match == "due sat" || match == "due saturday":
+	case match == "due:sat" || match == "due:saturday":
 		return f.filterDueDay(bod(time.Now()), time.Saturday)
-	case match == "due this week":
+	case match == "due:thisweek":
 		return f.filterThisWeek(bod(time.Now()))
-	case match == "due next week":
+	case match == "due:nextweek":
 		return f.filterNextWeek(bod(time.Now()))
-	case match == "due last week":
+	case match == "due:lastweek":
 		return f.filterLastWeek(bod(time.Now()))
 	}
 
 	// filter completed items
-	r, _ = regexp.Compile(`completed .*$`)
+	r, _ = regexp.Compile(`completed:.*$`)
 	match = r.FindString(input)
 	switch {
-	case match == "completed tod" || match == "completed today":
+	case match == "completed:tod" || match == "completed:today":
 		return f.filterCompletedToday(bod(time.Now()))
-	case match == "completed this week":
+	case match == "completed:thisweek":
 		return f.filterCompletedThisWeek(bod(time.Now()))
 	}
 

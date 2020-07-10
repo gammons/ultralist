@@ -17,7 +17,7 @@ func TestFilterDateOverdue(t *testing.T) {
 	todos = append(todos, yesterdayTodo)
 
 	filter := NewDateFilter(todos)
-	filtered := filter.FilterDate("overdue")
+	filtered := filter.FilterDate("due:overdue")
 
 	assert.Equal(1, len(filtered))
 	assert.Equal(filtered[0].ID, yesterdayTodo.ID)

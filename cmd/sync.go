@@ -17,7 +17,7 @@ The sync command has a few uses:
 
 Local changes to a synced list automatically get pushed to ultralist.io.
 
-See https://docs.ultralist.io/service.html#sync for more info.
+See https://ultralist.io/docs/cli/pro_integration for more info.
 `
 )
 

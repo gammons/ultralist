@@ -64,25 +64,9 @@ var archiveGarbageCollectCmd = &cobra.Command{
 	},
 }
 
-var (
-	archiveListCmdDesc     = "Lists all archived todos"
-	archiveListCmdLongDesc = archiveListCmdDesc + "."
-)
-
-var archiveListCmd = &cobra.Command{
-	Use:     "list",
-	Aliases: []string{"l", "ls"},
-	Long:    archiveListCmdLongDesc,
-	Short:   archiveListCmdDesc,
-	Run: func(cmd *cobra.Command, args []string) {
-		ultralist.NewApp().ListTodos("archived" + strings.Join(args, " "))
-	},
-}
-
 func init() {
 	rootCmd.AddCommand(archiveCmd)
 	archiveCmd.Flags().BoolVarP(&revertArchivedTodo, "revert", "", false, "Unarchives an archived todo")
 	archiveCmd.AddCommand(archiveCompletedCmd)
 	archiveCmd.AddCommand(archiveGarbageCollectCmd)
-	archiveCmd.AddCommand(archiveListCmd)
 }

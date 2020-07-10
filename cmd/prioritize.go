@@ -35,23 +35,7 @@ var prioritizeCmd = &cobra.Command{
 	},
 }
 
-var (
-	prioritizeListCmdDesc     = "Lists all prioritized todos"
-	prioritizeListCmdLongDesc = prioritizeListCmdDesc + "."
-)
-
-var prioritizeListCmd = &cobra.Command{
-	Use:     "list",
-	Aliases: []string{"l"},
-	Long:    prioritizeListCmdLongDesc,
-	Short:   prioritizeListCmdDesc,
-	Run: func(cmd *cobra.Command, args []string) {
-		ultralist.NewApp().ListTodos("prioritized")
-	},
-}
-
 func init() {
 	rootCmd.AddCommand(prioritizeCmd)
 	prioritizeCmd.Flags().BoolVarP(&revertArchivedTodo, "revert", "", false, "Unprioritizes an prioritized todo")
-	prioritizeCmd.AddCommand(prioritizeListCmd)
 }

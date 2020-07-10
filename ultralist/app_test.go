@@ -87,7 +87,7 @@ func TestListbyProject(t *testing.T) {
 	app.CompleteTodo("c 4", true)
 
 	// simulate listTodos
-	input := "l by p"
+	input := "l group:p"
 	filtered := NewFilter(app.TodoList.Todos()).Filter(input)
 	grouped := app.getGroups(input, filtered)
 
@@ -118,7 +118,7 @@ func TestListbyContext(t *testing.T) {
 	app.CompleteTodo("c 1", false)
 
 	// simulate listTodos
-	input := "l by c"
+	input := "l group:c"
 	filtered := NewFilter(app.TodoList.Todos()).Filter(input)
 	grouped := app.getGroups(input, filtered)
 

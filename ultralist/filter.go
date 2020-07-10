@@ -36,7 +36,7 @@ func (f *TodoFilter) isFilteringByContexts(input string) bool {
 
 func (f *TodoFilter) filterArchived(input string) []*Todo {
 
-	r, _ := regexp.Compile(`archived.*$`)
+	r, _ := regexp.Compile(`is:archived`)
 	if r.MatchString(input) {
 		return f.getArchived()
 	}
@@ -46,18 +46,28 @@ func (f *TodoFilter) filterArchived(input string) []*Todo {
 
 func (f *TodoFilter) filterCompleted(input string) []*Todo {
 
-	completedRegex, _ := regexp.Compile(`completed.*$`)
+	completedRegex, _ := regexp.Compile(`is:completed`)
 	if completedRegex.MatchString(input) {
 		return f.getCompleted()
+	}
+
+	notCompletedRegex, _ := regexp.Compile(`not:completed`)
+	if notCompletedRegex.MatchString(input) {
+		return f.getNotCompleted()
 	}
 
 	return f.Todos
 }
 
 func (f *TodoFilter) filterPrioritized(input string) []*Todo {
-	r, _ := regexp.Compile(`prioritized.*$`)
-	if r.MatchString(input) {
+	prioritizedRegex, _ := regexp.Compile(`is:priority`)
+	if prioritizedRegex.MatchString(input) {
 		return f.getPrioritized()
+	}
+
+	notPrioritizedRegex, _ := regexp.Compile(`not:priority`)
+	if notPrioritizedRegex.MatchString(input) {
+		return f.getNotPrioritized()
 	}
 
 	return f.Todos
@@ -123,10 +133,30 @@ func (f *TodoFilter) getCompleted() []*Todo {
 	return ret
 }
 
+func (f *TodoFilter) getNotCompleted() []*Todo {
+	var ret []*Todo
+	for _, todo := range f.Todos {
+		if !todo.Completed {
+			ret = append(ret, todo)
+		}
+	}
+	return ret
+}
+
 func (f *TodoFilter) getPrioritized() []*Todo {
 	var ret []*Todo
 	for _, todo := range f.Todos {
 		if todo.IsPriority {
+			ret = append(ret, todo)
+		}
+	}
+	return ret
+}
+
+func (f *TodoFilter) getNotPrioritized() []*Todo {
+	var ret []*Todo
+	for _, todo := range f.Todos {
+		if !todo.IsPriority {
 			ret = append(ret, todo)
 		}
 	}
