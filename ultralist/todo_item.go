@@ -81,6 +81,14 @@ func (t Todo) CompletedDateToDate() string {
 	return parsedTime.Format("2006-01-02")
 }
 
+// HasNotes is showing if an todo has notes.
+func (t Todo) HasNotes() bool {
+	if len(t.Notes) > 0 {
+		return true
+	}
+	return false
+}
+
 // Equals compares 2 todos for equality.
 func (t Todo) Equals(other *Todo) bool {
 	if t.ID != other.ID ||
