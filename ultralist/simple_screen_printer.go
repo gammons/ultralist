@@ -50,6 +50,7 @@ func (f *SimpleScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNot
 	tabby.AddLine(
 		f.formatID(todo.ID, todo.IsPriority),
 		f.formatCompleted(todo.Completed),
+		f.formatInformation(todo),
 		f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
 		f.formatSubject(todo.Subject, todo.IsPriority))
 	if printNotes {
@@ -92,7 +93,26 @@ func (f *SimpleScreenPrinter) formatDue(due string, isPriority bool, completed b
 		return f.printPriorityDue(dueTime, completed)
 	}
 	return f.printDue(dueTime, completed)
+}
 
+func (f *SimpleScreenPrinter) formatInformation(todo *Todo) string {
+	var information []string
+	if todo.IsPriority {
+		information = append(information, "*")
+	} else {
+		information = append(information, " ")
+	}
+	if todo.HasNotes() {
+		information = append(information, "N")
+	} else {
+		information = append(information, " ")
+	}
+	if todo.Archived {
+		information = append(information, "A")
+	} else {
+		information = append(information, " ")
+	}
+	return fmt.Sprint(strings.Join(information, " "))
 }
 
 func (f *SimpleScreenPrinter) printDue(due time.Time, completed bool) string {
