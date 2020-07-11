@@ -4,6 +4,7 @@ Envs = [
   { goos: "darwin", arch: "386" },
   { goos: "darwin", arch: "amd64" },
   { goos: "linux", arch: "arm" },
+  { goos: "linux", arch: "arm64" },
   { goos: "linux", arch: "386" },
   { goos: "linux", arch: "amd64" },
   { goos: "windows", arch: "386" },
