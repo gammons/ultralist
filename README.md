@@ -23,7 +23,7 @@ Yes.  Yes it is.
 
 ## Installation
 
-* **Mac OS**: Run `brew install ultralist`.
+* **Mac OS**: Run `brew install ultralist`. (Or `port install ultralist` if you are using [MacPorts](https://www.macports.org).)
 * **Arch Linux**: May be installed from AUR [ultralist](https://aur.archlinux.org/packages/ultralist/)
 * **FreeBSD**: Run `pkg install ultralist` or `cd /usr/ports/deskutils/ultralist && make install clean`
 * **Other systems**: Get the correct ultralist binary from the [releases page](https://github.com/ultralist/ultralist/releases).
