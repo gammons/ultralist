@@ -117,6 +117,32 @@ func (t *TodoList) Unprioritize(ids ...int) {
 	}
 }
 
+// Start starts multiple ids from a todo list.
+func (t *TodoList) Start(ids ...int) {
+	for _, id := range ids {
+		todo := t.FindByID(id)
+		if todo == nil {
+			continue
+		}
+		todo.Start()
+		t.Delete(id)
+		t.Data = append(t.Data, todo)
+	}
+}
+
+// Unprioritize is unprioritizing multiple todos from a todo list.
+func (t *TodoList) Stop(ids ...int) {
+	for _, id := range ids {
+		todo := t.FindByID(id)
+		if todo == nil {
+			continue
+		}
+		todo.Stop()
+		t.Delete(id)
+		t.Data = append(t.Data, todo)
+	}
+}
+
 // IndexOf finds the index of a todo.
 func (t *TodoList) IndexOf(todoToFind *Todo) int {
 	for i, todo := range t.Data {

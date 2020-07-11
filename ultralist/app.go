@@ -335,6 +335,30 @@ func (a *App) UnprioritizeTodo(input string) {
 	fmt.Println("Todo un-prioritized.")
 }
 
+// StartTodo will start a todo.
+func (a *App) StartTodo(input string) {
+	a.Load()
+	ids := a.getIDs(input)
+	if len(ids) == 0 {
+		return
+	}
+	a.TodoList.Start(ids...)
+	a.save()
+	fmt.Println("Todo started.")
+}
+
+// UnprioritizeTodo unprioritizes a todo.
+func (a *App) StopTodo(input string) {
+	a.Load()
+	ids := a.getIDs(input)
+	if len(ids) == 0 {
+		return
+	}
+	a.TodoList.Stop(ids...)
+	a.save()
+	fmt.Println("Todo stopped.")
+}
+
 // GarbageCollect will delete all archived todos.
 func (a *App) GarbageCollect() {
 	a.Load()
