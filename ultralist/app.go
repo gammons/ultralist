@@ -57,7 +57,7 @@ func (a *App) InitializeRepo() {
 	fmt.Println("Repo initialized.")
 
 	backend := NewBackend()
-	eventLogger := &EventLogger{Store: a.TodoStore}
+	eventLogger := &EventLogger{Store: a.TodoStore, CurrentTodoList: a.TodoList}
 	eventLogger.LoadSyncedLists()
 
 	if !backend.CredsFileExists() {
