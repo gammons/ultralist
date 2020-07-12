@@ -415,6 +415,13 @@ func (a *App) OpenWeb() {
 	open.Start("https://app.ultralist.io/todolist/" + a.EventLogger.CurrentSyncedList.UUID)
 }
 
+// OpenManager opens the terminal UI to manage a list
+func (a *App) OpenManager() {
+	a.Load()
+	manager := &Manager{}
+	manager.RunManager(a.TodoList)
+}
+
 // Save the todolist to the store.
 func (a *App) save() {
 	a.TodoStore.Save(a.TodoList.Data)

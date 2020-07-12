@@ -9,6 +9,7 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/manifoldco/promptui v0.7.0
 	github.com/myesui/uuid v1.0.0 // indirect
+	github.com/rivo/tview v0.0.0-20200712113419-c65badfc3d92
 	github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.0
