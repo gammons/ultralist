@@ -17,6 +17,7 @@ func (f *TodoFilter) Filter(input string) []*Todo {
 	f.Todos = f.filterArchived(input)
 	f.Todos = f.filterCompleted(input)
 	f.Todos = f.filterPrioritized(input)
+	f.Todos = f.filterStarted(input)
 	f.Todos = f.filterProjects(input)
 	f.Todos = f.filterContexts(input)
 	f.Todos = NewDateFilter(f.Todos).FilterDate(input)
@@ -68,6 +69,20 @@ func (f *TodoFilter) filterPrioritized(input string) []*Todo {
 	notPrioritizedRegex, _ := regexp.Compile(`not:priority`)
 	if notPrioritizedRegex.MatchString(input) {
 		return f.getNotPrioritized()
+	}
+
+	return f.Todos
+}
+
+func (f *TodoFilter) filterStarted(input string) []*Todo {
+	prioritizedRegex, _ := regexp.Compile(`is:started`)
+	if prioritizedRegex.MatchString(input) {
+		return f.getStarted()
+	}
+
+	notPrioritizedRegex, _ := regexp.Compile(`not:started`)
+	if notPrioritizedRegex.MatchString(input) {
+		return f.getNotStarted()
 	}
 
 	return f.Todos
@@ -157,6 +172,26 @@ func (f *TodoFilter) getNotPrioritized() []*Todo {
 	var ret []*Todo
 	for _, todo := range f.Todos {
 		if !todo.IsPriority {
+			ret = append(ret, todo)
+		}
+	}
+	return ret
+}
+
+func (f *TodoFilter) getStarted() []*Todo {
+	var ret []*Todo
+	for _, todo := range f.Todos {
+		if todo.StartedDate != "" {
+			ret = append(ret, todo)
+		}
+	}
+	return ret
+}
+
+func (f *TodoFilter) getNotStarted() []*Todo {
+	var ret []*Todo
+	for _, todo := range f.Todos {
+		if todo.StartedDate == "" {
 			ret = append(ret, todo)
 		}
 	}
