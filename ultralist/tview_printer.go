@@ -1,6 +1,7 @@
 package ultralist
 
 import (
+	"fmt"
 	"io"
 	"sort"
 	"strconv"
@@ -13,20 +14,20 @@ import (
 )
 
 // ScreenPrinter is the default struct of this file
-type ScreenPrinter struct {
+type TviewPrinter struct {
 	Writer         *io.Writer
 	UnicodeSupport bool
 }
 
 // NewScreenPrinter creates a new screeen printer.
-func NewScreenPrinter(unicodeSupport bool) *ScreenPrinter {
+func NewTviewPrinter(unicodeSupport bool) *TviewPrinter {
 	w := new(io.Writer)
-	formatter := &ScreenPrinter{Writer: w, UnicodeSupport: unicodeSupport}
+	formatter := &TviewPrinter{Writer: w, UnicodeSupport: unicodeSupport}
 	return formatter
 }
 
 // Print prints the output of ultralist to the terminal screen.
-func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
+func (f *TviewPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 	var keys []string
 	for key := range groupedTodos.Groups {
 		keys = append(keys, key)
@@ -45,7 +46,7 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 	tabby.Print()
 }
 
-func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool) {
+func (f *TviewPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool) {
 	tabby.AddLine(
 		f.FormatID(todo.ID, todo.IsPriority),
 		f.FormatCompleted(todo.Completed),
@@ -63,27 +64,27 @@ func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes boo
 	}
 }
 
-func (f *ScreenPrinter) FormatID(ID int, isPriority bool) string {
+func (f *TviewPrinter) FormatID(ID int, isPriority bool) string {
 	if isPriority {
-		return yellowBold.Sprint(strconv.Itoa(ID))
+		return fmt.Sprintf("[yellow]%s[white]", strconv.Itoa(ID))
 	}
-	return yellow.Sprint(strconv.Itoa(ID))
+	return fmt.Sprintf("[yellow]%s[white]", strconv.Itoa(ID))
 }
 
-func (f *ScreenPrinter) FormatCompleted(completed bool) string {
+func (f *TviewPrinter) FormatCompleted(completed bool) string {
 	if completed {
 		if f.UnicodeSupport {
-			return white.Sprint("[✔]")
+			return fmt.Sprint("[white][✔]")
 		} else {
-			return white.Sprint("[x]")
+			return fmt.Sprint("[white][x]")
 		}
 	}
-	return white.Sprint("[ ]")
+	return fmt.Sprint("[white][ ]")
 }
 
-func (f *ScreenPrinter) FormatDue(due string, isPriority bool, completed bool) string {
+func (f *TviewPrinter) FormatDue(due string, isPriority bool, completed bool) string {
 	if due == "" {
-		return white.Sprint("          ")
+		return fmt.Sprint("          ")
 	}
 	dueTime, _ := time.Parse("2006-01-02", due)
 
@@ -94,29 +95,29 @@ func (f *ScreenPrinter) FormatDue(due string, isPriority bool, completed bool) s
 
 }
 
-func (f *ScreenPrinter) printDue(due time.Time, completed bool) string {
+func (f *TviewPrinter) printDue(due time.Time, completed bool) string {
 	if isToday(due) {
-		return blue.Sprint("today     ")
+		return fmt.Sprint("[blue]today[white]     ")
 	} else if isTomorrow(due) {
-		return blue.Sprint("tomorrow  ")
+		return fmt.Sprint("[blue]tomorrow[white]  ")
 	} else if isPastDue(due) && !completed {
-		return red.Sprint(due.Format("Mon Jan 02"))
+		return fmt.Sprint(due.Format("[red]Mon Jan 02[white]"))
 	}
-	return blue.Sprint(due.Format("Mon Jan 02"))
+	return fmt.Sprint(due.Format("[blue]Mon Jan 02[white]"))
 }
 
-func (f *ScreenPrinter) printPriorityDue(due time.Time, completed bool) string {
+func (f *TviewPrinter) printPriorityDue(due time.Time, completed bool) string {
 	if isToday(due) {
-		return blueBold.Sprint("today     ")
+		return fmt.Sprint("[blue]today[white]     ")
 	} else if isTomorrow(due) {
-		return blueBold.Sprint("tomorrow  ")
+		return fmt.Sprint("[blue]tomorrow[white]  ")
 	} else if isPastDue(due) && !completed {
-		return redBold.Sprint(due.Format("Mon Jan 02"))
+		return fmt.Sprint(due.Format("[red]Mon Jan 02[white]"))
 	}
-	return blueBold.Sprint(due.Format("Mon Jan 02"))
+	return blueBold.Sprint(due.Format("[red]Mon Jan 02[white]"))
 }
 
-func (f *ScreenPrinter) FormatSubject(subject string, isPriority bool) string {
+func (f *TviewPrinter) FormatSubject(subject string, isPriority bool) string {
 	splitted := strings.Split(subject, " ")
 
 	if isPriority {
@@ -125,30 +126,31 @@ func (f *ScreenPrinter) FormatSubject(subject string, isPriority bool) string {
 	return f.printSubject(splitted)
 }
 
-func (f *ScreenPrinter) printPrioritySubject(splitted []string) string {
+func (f *TviewPrinter) printPrioritySubject(splitted []string) string {
 	coloredWords := []string{}
 	for _, word := range splitted {
 		if projectRegex.MatchString(word) {
-			coloredWords = append(coloredWords, magentaBold.Sprint(word))
+			coloredWords = append(coloredWords, fmt.Sprintf("[purple]%s[white]", word))
 		} else if contextRegex.MatchString(word) {
-			coloredWords = append(coloredWords, redBold.Sprint(word))
+			coloredWords = append(coloredWords, fmt.Sprintf("[red]%s[white]", word))
 		} else {
-			coloredWords = append(coloredWords, whiteBold.Sprint(word))
+			coloredWords = append(coloredWords, fmt.Sprint(word))
 		}
 	}
 	return strings.Join(coloredWords, " ")
 }
 
-func (f *ScreenPrinter) printSubject(splitted []string) string {
+func (f *TviewPrinter) printSubject(splitted []string) string {
 	coloredWords := []string{}
 	for _, word := range splitted {
 		if projectRegex.MatchString(word) {
-			coloredWords = append(coloredWords, magenta.Sprint(word))
+			coloredWords = append(coloredWords, fmt.Sprintf("[purple]%s[white]", word))
 		} else if contextRegex.MatchString(word) {
-			coloredWords = append(coloredWords, red.Sprint(word))
+			coloredWords = append(coloredWords, fmt.Sprintf("[red]%s[white]", word))
 		} else {
-			coloredWords = append(coloredWords, white.Sprint(word))
+			coloredWords = append(coloredWords, fmt.Sprintf(word))
 		}
 	}
+	fmt.Println("coloredWords = ", strings.Join(coloredWords, " "))
 	return strings.Join(coloredWords, " ")
 }
