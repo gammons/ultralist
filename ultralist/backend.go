@@ -76,7 +76,7 @@ func (b *Backend) PerformRequest(method string, path string, data []byte) []byte
 func (b *Backend) CanConnect() bool {
 	timeout := time.Duration(2 * time.Second)
 	client := http.Client{Timeout: timeout}
-	if _, err := client.Get(b.apiURL("/api/v1/hb")); err != nil {
+	if _, err := client.Get(b.apiURL("/hb")); err != nil {
 		return false
 	}
 	return true
