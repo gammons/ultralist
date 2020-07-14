@@ -13,7 +13,7 @@ import (
 
 // Current version of ultralist.
 const (
-	VERSION string = "1.0"
+	VERSION string = "1.1"
 )
 
 // App is the giving you the structure of the ultralist app.
