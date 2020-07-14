@@ -11,7 +11,7 @@ Envs = [
   { goos: "windows", arch: "amd64" }
 ].freeze
 
-Version = "1.0".freeze
+Version = "1.1".freeze
 
 task :build do
   `rm -rf dist/#{Version}`
