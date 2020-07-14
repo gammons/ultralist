@@ -60,6 +60,7 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool, showS
 	tabby.Print()
 }
 
+<<<<<<< HEAD
 func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool, showStatus bool) {
 	if showStatus {
 		tabby.AddLine(
@@ -76,6 +77,15 @@ func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes boo
 			f.formatSubject(todo.Subject, todo.IsPriority))
 	}
 
+=======
+func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool) {
+	tabby.AddLine(
+		f.formatID(todo.ID, todo.IsPriority),
+		f.formatCompleted(todo.Completed),
+		f.formatInformation(todo),
+		f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
+		f.formatSubject(todo.Subject, todo.IsPriority))
+>>>>>>> eea610d... add to simple screen printer
 	if printNotes {
 		for nid, note := range todo.Notes {
 			tabby.AddLine(
