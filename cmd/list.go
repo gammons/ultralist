@@ -11,6 +11,7 @@ var (
 	unicodeSupport bool
 	colorSupport   bool
 	listNotes      bool
+	showStatus     bool
 	listCmdDesc    = "Listing todos including filtering and grouping"
 	listCmdExample = `
 Filtering by date:
@@ -61,7 +62,7 @@ Grouping:
     ultralist list group:p
 
 Combining filters:
------------------------
+------------------
 
   Of course, you can combine grouping and filtering to get a nice formatted list.
 
@@ -77,6 +78,15 @@ Combining filters:
   Lists all todos due tomorrow concerining @frank for +project, grouped by project:
     ultralist list @frank group:p due:tom
 
+Indicator flags
+---------------
+
+If you pass --status=true as a flag, you'll see an extra column when listing todos.
+
+* = Todo is prioritized
+N = Todo has notes attached
+A = Todo is archived
+
 For complete documentation, see https://ultralist.io/docs/cli/showing_tasks
 `
 	listCmdLongDesc = listCmdDesc + "."
@@ -89,7 +99,7 @@ var listCmd = &cobra.Command{
 	Long:    listCmdLongDesc,
 	Short:   listCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
-		ultralist.NewAppWithPrintOptions(unicodeSupport, colorSupport).ListTodos(strings.Join(args, " "), listNotes)
+		ultralist.NewAppWithPrintOptions(unicodeSupport, colorSupport).ListTodos(strings.Join(args, " "), listNotes, showStatus)
 	},
 }
 
@@ -98,4 +108,5 @@ func init() {
 	listCmd.Flags().BoolVarP(&unicodeSupport, "unicode", "", true, "Allows unicode support in Ultralist output")
 	listCmd.Flags().BoolVarP(&colorSupport, "color", "", true, "Allows color in Ultralist output")
 	listCmd.Flags().BoolVarP(&listNotes, "notes", "", false, "Show a todo's notes when listing. ")
+	listCmd.Flags().BoolVarP(&showStatus, "status", "", false, "Show a todo's status")
 }

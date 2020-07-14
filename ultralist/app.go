@@ -284,7 +284,7 @@ func (a *App) HandleNotes(input string) {
 	} else if parser.ParseShowNote(todo, input) {
 		groups := map[string][]*Todo{}
 		groups[""] = append(groups[""], todo)
-		a.Printer.Print(&GroupedTodos{Groups: groups}, true)
+		a.Printer.Print(&GroupedTodos{Groups: groups}, true, true)
 		return
 	}
 	a.save()
@@ -303,12 +303,12 @@ func (a *App) ArchiveCompleted() {
 }
 
 // ListTodos will list all todos.
-func (a *App) ListTodos(input string, showNotes bool) {
+func (a *App) ListTodos(input string, showNotes bool, showStatus bool) {
 	a.Load()
 	filtered := NewFilter(a.TodoList.Todos()).Filter(input)
 	grouped := a.getGroups(input, filtered)
 
-	a.Printer.Print(grouped, showNotes)
+	a.Printer.Print(grouped, showNotes, showStatus)
 }
 
 // PrioritizeTodo will prioritize a todo.
