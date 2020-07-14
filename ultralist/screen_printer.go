@@ -82,8 +82,8 @@ func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes boo
 	tabby.AddLine(
 		f.formatID(todo.ID, todo.IsPriority),
 		f.formatCompleted(todo.Completed),
-		f.formatInformation(todo),
 		f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
+		f.formatInformation(todo),
 		f.formatSubject(todo.Subject, todo.IsPriority))
 >>>>>>> eea610d... add to simple screen printer
 	if printNotes {
@@ -142,6 +142,12 @@ func (f *ScreenPrinter) formatInformation(todo *Todo) string {
 	}
 	if todo.Archived {
 		information = append(information, "A")
+	} else {
+		information = append(information, " ")
+	}
+
+	if todo.StartedDate != "" {
+		information = append(information, "S")
 	} else {
 		information = append(information, " ")
 	}
