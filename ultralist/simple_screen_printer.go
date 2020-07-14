@@ -125,7 +125,7 @@ func (f *SimpleScreenPrinter) formatInformation(todo *Todo) string {
 	} else {
 		information = append(information, " ")
 	}
-	return fmt.Sprint(strings.Join(information, " "))
+	return fmt.Sprint(strings.Join(information, ""))
 }
 
 func (f *SimpleScreenPrinter) printDue(due time.Time, completed bool) string {
