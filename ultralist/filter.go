@@ -1,6 +1,9 @@
 package ultralist
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 // TodoFilter filters todos based on patterns.
 type TodoFilter struct {
@@ -17,9 +20,9 @@ func (f *TodoFilter) Filter(input string) []*Todo {
 	f.Todos = f.filterArchived(input)
 	f.Todos = f.filterCompleted(input)
 	f.Todos = f.filterPrioritized(input)
-	f.Todos = f.filterStarted(input)
 	f.Todos = f.filterProjects(input)
 	f.Todos = f.filterContexts(input)
+	f.Todos = f.filterStatus(input)
 	f.Todos = NewDateFilter(f.Todos).FilterDate(input)
 
 	return f.Todos
@@ -74,18 +77,24 @@ func (f *TodoFilter) filterPrioritized(input string) []*Todo {
 	return f.Todos
 }
 
-func (f *TodoFilter) filterStarted(input string) []*Todo {
-	prioritizedRegex, _ := regexp.Compile(`is:started`)
-	if prioritizedRegex.MatchString(input) {
-		return f.getStarted()
+func (f *TodoFilter) filterStatus(input string) []*Todo {
+
+	r, _ := regexp.Compile(`status:\w+`)
+	if !r.MatchString(input) {
+		return f.Todos
 	}
 
-	notPrioritizedRegex, _ := regexp.Compile(`not:started`)
-	if notPrioritizedRegex.MatchString(input) {
-		return f.getNotStarted()
+	statusString := strings.Split(r.FindString(input), ":")[1]
+
+	var ret []*Todo
+
+	for _, todo := range f.Todos {
+		if todo.Status == statusString {
+			ret = append(ret, todo)
+		}
 	}
 
-	return f.Todos
+	return ret
 }
 
 func (f *TodoFilter) filterProjects(input string) []*Todo {
@@ -172,26 +181,6 @@ func (f *TodoFilter) getNotPrioritized() []*Todo {
 	var ret []*Todo
 	for _, todo := range f.Todos {
 		if !todo.IsPriority {
-			ret = append(ret, todo)
-		}
-	}
-	return ret
-}
-
-func (f *TodoFilter) getStarted() []*Todo {
-	var ret []*Todo
-	for _, todo := range f.Todos {
-		if todo.StartedDate != "" {
-			ret = append(ret, todo)
-		}
-	}
-	return ret
-}
-
-func (f *TodoFilter) getNotStarted() []*Todo {
-	var ret []*Todo
-	for _, todo := range f.Todos {
-		if todo.StartedDate == "" {
 			ret = append(ret, todo)
 		}
 	}

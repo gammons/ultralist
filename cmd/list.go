@@ -34,6 +34,12 @@ Filtering by date:
   Lists all todos whose due date is today or earlier:
     ultralist list due:agenda
 
+Filtering by status:
+------------------
+
+    List all todos with a status of "started"
+		ultralist list status:started
+
 Filtering by priority, completed, etc:
 --------------------------------------
 
@@ -60,6 +66,9 @@ Grouping:
 
   Lists all todos grouped by project:
     ultralist list group:p
+
+  Lists all todos grouped by status:
+    ultralist list group:s
 
 Combining filters:
 ------------------

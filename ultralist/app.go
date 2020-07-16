@@ -336,27 +336,18 @@ func (a *App) UnprioritizeTodo(input string) {
 }
 
 // StartTodo will start a todo.
-func (a *App) StartTodo(input string) {
+func (a *App) SetTodoStatus(input string) {
 	a.Load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
 	}
-	a.TodoList.Start(ids...)
-	a.save()
-	fmt.Println("Todo started.")
-}
 
-// UnprioritizeTodo unprioritizes a todo.
-func (a *App) StopTodo(input string) {
-	a.Load()
-	ids := a.getIDs(input)
-	if len(ids) == 0 {
-		return
-	}
-	a.TodoList.Stop(ids...)
+	splitted := strings.Split(input, " ")
+
+	a.TodoList.SetStatus(splitted[len(splitted)-1], ids...)
 	a.save()
-	fmt.Println("Todo stopped.")
+	fmt.Println("Todo status updated.")
 }
 
 // GarbageCollect will delete all archived todos.
@@ -498,6 +489,7 @@ func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 	grouper := &Grouper{}
 	contextRegex, _ := regexp.Compile(`group:c.*$`)
 	projectRegex, _ := regexp.Compile(`group:p.*$`)
+	statusRegex, _ := regexp.Compile(`group:s.*$`)
 
 	var grouped *GroupedTodos
 
@@ -505,6 +497,9 @@ func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 		grouped = grouper.GroupByContext(todos)
 	} else if projectRegex.MatchString(input) {
 		grouped = grouper.GroupByProject(todos)
+	} else if statusRegex.MatchString(input) {
+		fmt.Println("grouping by status")
+		grouped = grouper.GroupByStatus(todos)
 	} else {
 		grouped = grouper.GroupByNothing(todos)
 	}

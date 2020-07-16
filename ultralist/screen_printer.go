@@ -15,6 +15,8 @@ import (
 var (
 	blue        = color.New(0, color.FgBlue)
 	blueBold    = color.New(color.Bold, color.FgBlue)
+	green       = color.New(0, color.FgGreen)
+	greenBold   = color.New(color.Bold, color.FgGreen)
 	cyan        = color.New(0, color.FgCyan)
 	cyanBold    = color.New(color.Bold, color.FgCyan)
 	magenta     = color.New(0, color.FgMagenta)
@@ -65,14 +67,15 @@ func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes boo
 		tabby.AddLine(
 			f.formatID(todo.ID, todo.IsPriority),
 			f.formatCompleted(todo.Completed),
-			f.formatInformation(todo),
 			f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
+			f.formatStatus(todo.Status, todo.IsPriority),
 			f.formatSubject(todo.Subject, todo.IsPriority))
 	} else {
 		tabby.AddLine(
 			f.formatID(todo.ID, todo.IsPriority),
 			f.formatCompleted(todo.Completed),
 			f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
+			f.formatStatus(todo.Status, todo.IsPriority),
 			f.formatSubject(todo.Subject, todo.IsPriority))
 	}
 
@@ -80,6 +83,7 @@ func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes boo
 		for nid, note := range todo.Notes {
 			tabby.AddLine(
 				"  "+cyan.Sprint(strconv.Itoa(nid)),
+				white.Sprint(""),
 				white.Sprint(""),
 				white.Sprint(""),
 				white.Sprint(""),
@@ -99,9 +103,8 @@ func (f *ScreenPrinter) formatCompleted(completed bool) string {
 	if completed {
 		if f.UnicodeSupport {
 			return white.Sprint("[✔]")
-		} else {
-			return white.Sprint("[x]")
 		}
+		return white.Sprint("[x]")
 	}
 	return white.Sprint("[ ]")
 }
@@ -118,6 +121,25 @@ func (f *ScreenPrinter) formatDue(due string, isPriority bool, completed bool) s
 	return f.printDue(dueTime, completed)
 }
 
+func (f *ScreenPrinter) formatStatus(status string, isPriority bool) string {
+	if status == "" {
+		return green.Sprint("          ")
+	}
+
+	if len(status) < 10 {
+		for x := len(status); x <= 10; x++ {
+			status += " "
+		}
+	}
+
+	statusRune := []rune(status)
+
+	if isPriority {
+		return greenBold.Sprintf("%-10v", string(statusRune[0:10]))
+	}
+	return green.Sprintf("%-10s", string(statusRune[0:10]))
+}
+
 func (f *ScreenPrinter) formatInformation(todo *Todo) string {
 	var information []string
 	if todo.IsPriority {
@@ -130,17 +152,7 @@ func (f *ScreenPrinter) formatInformation(todo *Todo) string {
 	} else {
 		information = append(information, " ")
 	}
-	if todo.Archived {
-		information = append(information, "A")
-	} else {
-		information = append(information, " ")
-	}
 
-	if todo.StartedDate != "" {
-		information = append(information, "S")
-	} else {
-		information = append(information, " ")
-	}
 	return white.Sprint(strings.Join(information, ""))
 }
 

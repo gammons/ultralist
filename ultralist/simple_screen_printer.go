@@ -120,11 +120,6 @@ func (f *SimpleScreenPrinter) formatInformation(todo *Todo) string {
 	} else {
 		information = append(information, " ")
 	}
-	if todo.StartedDate != "" {
-		information = append(information, "S")
-	} else {
-		information = append(information, " ")
-	}
 	return fmt.Sprint(strings.Join(information, ""))
 }
 

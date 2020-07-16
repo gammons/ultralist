@@ -18,7 +18,7 @@ type Todo struct {
 	Due           string   `json:"due"`
 	Completed     bool     `json:"completed"`
 	CompletedDate string   `json:"completedDate"`
-	StartedDate   string   `json:"startedDate"`
+	Status        string   `json:"status"`
 	Archived      bool     `json:"archived"`
 	IsPriority    bool     `json:"isPriority"`
 	Notes         []string `json:"notes"`
@@ -76,16 +76,6 @@ func (t *Todo) Unprioritize() {
 	t.IsPriority = false
 }
 
-// Start starts a todo item by setting StartedDate.
-func (t *Todo) Start() {
-	t.StartedDate = timestamp(time.Now()).Format(iso8601TimestampFormat)
-}
-
-// Stop clears the StartedDate.
-func (t *Todo) Stop() {
-	t.StartedDate = ""
-}
-
 // CompletedDateToDate is returning the date when an item was completed.
 func (t Todo) CompletedDateToDate() string {
 	parsedTime, _ := time.Parse(iso8601TimestampFormat, t.CompletedDate)
@@ -109,7 +99,7 @@ func (t Todo) Equals(other *Todo) bool {
 		!reflect.DeepEqual(t.Contexts, other.Contexts) ||
 		t.Due != other.Due ||
 		t.Completed != other.Completed ||
-		t.StartedDate != other.StartedDate ||
+		t.Status != other.Status ||
 		t.CompletedDate != other.CompletedDate ||
 		t.Archived != other.Archived ||
 		t.IsPriority != other.IsPriority ||
