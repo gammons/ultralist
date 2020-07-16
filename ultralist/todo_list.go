@@ -1,7 +1,6 @@
 package ultralist
 
 import (
-	"fmt"
 	"sort"
 )
 
@@ -122,7 +121,6 @@ func (t *TodoList) Unprioritize(ids ...int) {
 
 // SetStatus sets the status of a todo
 func (t *TodoList) SetStatus(input string, ids ...int) {
-	fmt.Println("input = ", input)
 	for _, id := range ids {
 		todo := t.FindByID(id)
 		if todo == nil {

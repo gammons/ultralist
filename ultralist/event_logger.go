@@ -46,6 +46,7 @@ type EventLog struct {
 	Completed     bool     `json:"completed"`
 	CompletedDate string   `json:"completedDate"`
 	Archived      bool     `json:"archived"`
+	Status        string   `json:"status"`
 	IsPriority    bool     `json:"isPriority"`
 	Notes         []string `json:"notes"`
 }
@@ -180,6 +181,7 @@ func (e *EventLogger) writeTodoEvent(eventType string, todo *Todo) *EventLog {
 		Completed:     todo.Completed,
 		CompletedDate: todo.CompletedDate,
 		Archived:      todo.Archived,
+		Status:        todo.Status,
 		IsPriority:    todo.IsPriority,
 		Notes:         todo.Notes,
 	}
