@@ -25,6 +25,32 @@ func TestParseSubjectWithDue(t *testing.T) {
 	}
 }
 
+func TestParseSubjectWithDueNextWeek(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	todo := parser.ParseNewTodo("do this thing due next week")
+	if todo.Subject != "do this thing" {
+		t.Error("Expected todo.Subject to equal 'do this thing', got ", todo.Subject)
+	}
+
+	expectedDate := parser.Due("due next week", time.Now())
+	assert.Equal(expectedDate, todo.Due)
+	assert.NotNil(todo.Due)
+}
+
+func TestParseSubjectWithDueLastWeek(t *testing.T) {
+	assert := assert.New(t)
+	parser := &Parser{}
+	todo := parser.ParseNewTodo("do this thing due last week")
+	if todo.Subject != "do this thing" {
+		t.Error("Expected todo.Subject to equal 'do this thing', got ", todo.Subject)
+	}
+
+	expectedDate := parser.Due("due last week", time.Now())
+	assert.Equal(expectedDate, todo.Due)
+	assert.NotNil(todo.Due)
+}
+
 func TestParseExpandProjects(t *testing.T) {
 	assert := assert.New(t)
 	parser := &Parser{}

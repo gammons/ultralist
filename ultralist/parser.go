@@ -168,7 +168,8 @@ func (p *Parser) hasDue(input string) bool {
 	r1, _ := regexp.Compile(`due \w+$`)
 	r2, _ := regexp.Compile(`due \w+ \d+$`)
 	r3, _ := regexp.Compile(`due \d+ \w+$`)
-	return (r1.MatchString(input) || r2.MatchString(input) || r3.MatchString(input))
+	r4, _ := regexp.Compile(`due (last|next) week$`)
+	return (r1.MatchString(input) || r2.MatchString(input) || r3.MatchString(input) || r4.MatchString(input))
 }
 
 // Due is returning the the due date of a todo.
