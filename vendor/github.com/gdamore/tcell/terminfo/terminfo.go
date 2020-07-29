@@ -58,6 +58,7 @@ type Terminfo struct {
 	Blink        string // blink
 	Reverse      string // rev
 	Dim          string // dim
+	Italic       string // sitm
 	EnterKeypad  string // smkx
 	ExitKeypad   string // rmkx
 	SetFg        string // setaf
@@ -170,6 +171,8 @@ type Terminfo struct {
 	SetBgRGB        string // setbrgb
 	KeyShfUp        string // shift-up
 	KeyShfDown      string // shift-down
+	KeyShfPgUp      string // shift-kpp
+	KeyShfPgDn      string // shift-knp
 	KeyCtrlUp       string // ctrl-up
 	KeyCtrlDown     string // ctrl-left
 	KeyCtrlRight    string // ctrl-right

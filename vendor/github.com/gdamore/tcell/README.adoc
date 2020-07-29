@@ -4,11 +4,10 @@
 image:https://img.shields.io/travis/gdamore/tcell.svg?label=linux[Linux Status,link="https://travis-ci.org/gdamore/tcell"]
 image:https://img.shields.io/appveyor/ci/gdamore/tcell.svg?label=windows[Windows Status,link="https://ci.appveyor.com/project/gdamore/tcell"]
 image:https://img.shields.io/badge/license-APACHE2-blue.svg[Apache License,link="https://github.com/gdamore/tcell/blob/master/LICENSE"]
-image:https://img.shields.io/badge/gitter-join-brightgreen.svg[Gitter,link="https://gitter.im/gdamore/tcell"]
 image:https://img.shields.io/badge/godoc-reference-blue.svg[GoDoc,link="https://godoc.org/github.com/gdamore/tcell"]
 image:http://goreportcard.com/badge/gdamore/tcell[Go Report Card,link="http://goreportcard.com/report/gdamore/tcell"]
+image:https://img.shields.io/discord/639503822733180969?label=discord[Discord,link="https://discord.gg/urTTxDN"]
 image:https://codecov.io/gh/gdamore/tcell/branch/master/graph/badge.svg[codecov,link="https://codecov.io/gh/gdamore/tcell"]
-image:https://tidelift.com/badges/github/gdamore/tcell?style=flat[Dependencies]
 
 [cols="2",grid="none"]
 |===
@@ -27,13 +26,17 @@ image::logos/tcell.png[float="right"]
 * https://github.com/zyedidia/micro/[micro] - lightweight text editor with syntax-highlighting and themes
 * https://github.com/viktomas/godu[godu] - simple golang utility helping to discover large files/folders.
 * https://github.com/rivo/tview[tview] - rich interactive widgets for terminal UIs
-* https://github.com/marcusolsson/tui-go[tui-go] - UI library for terminal apps
+* https://github.com/marcusolsson/tui-go[tui-go] - UI library for terminal apps (_deprecated_)
 * https://github.com/rgm3/gomandelbrot[gomandelbrot] - Mandelbrot!
 * https://github.com/senorprogrammer/wtf[WTF]- Personal information dashboard for your terminal
 * https://github.com/browsh-org/browsh[browsh] - A fully-modern text-based browser, rendering to TTY and browsers (https://www.youtube.com/watch?v=HZq86XfBoRo[video])
 * https://github.com/sachaos/go-life[go-life] - Conway's Game of Life.
 * https://github.com/gcla/gowid[gowid] - compositional widgets for terminal UIs, inspired by urwid
 * https://termshark.io[termshark] - a terminal UI for tshark, inspired by Wireshark, built on gowid
+* https://github.com/MichaelS11/go-tetris[go-tetris] - Go Tetris with AI option
+* https://github.com/junegunn/fzf[fzf] - A command-line fuzzy finder
+* https://github.com/esimov/ascii-fluid[ascii-fluid] - A terminal based ASCII fluid simulation controlled by webcam
+* https://gitlab.com/tslocum/cbind[cbind] - Provides key event encoding, decoding and handling
 
 ## Pure Go Terminfo Database
 

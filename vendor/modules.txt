@@ -12,8 +12,10 @@ github.com/fatih/color
 github.com/fsnotify/fsnotify
 # github.com/gdamore/encoding v1.0.0
 github.com/gdamore/encoding
-# github.com/gdamore/tcell v1.3.0
+# github.com/gdamore/tcell v1.3.1-0.20200620214305-79a04f102133
+## explicit
 github.com/gdamore/tcell
+github.com/gdamore/tcell/encoding
 github.com/gdamore/tcell/terminfo
 github.com/gdamore/tcell/terminfo/a/adm3a
 github.com/gdamore/tcell/terminfo/a/aixterm
@@ -100,21 +102,41 @@ github.com/manifoldco/promptui/screenbuf
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.11
 github.com/mattn/go-isatty
-# github.com/mattn/go-runewidth v0.0.8
+# github.com/mattn/go-runewidth v0.0.9
 github.com/mattn/go-runewidth
 # github.com/mitchellh/mapstructure v1.1.2
 github.com/mitchellh/mapstructure
+# github.com/mum4k/termdash v0.12.1
+## explicit
+github.com/mum4k/termdash
+github.com/mum4k/termdash/align
+github.com/mum4k/termdash/cell
+github.com/mum4k/termdash/container
+github.com/mum4k/termdash/keyboard
+github.com/mum4k/termdash/linestyle
+github.com/mum4k/termdash/mouse
+github.com/mum4k/termdash/private/alignfor
+github.com/mum4k/termdash/private/area
+github.com/mum4k/termdash/private/button
+github.com/mum4k/termdash/private/canvas
+github.com/mum4k/termdash/private/canvas/braille
+github.com/mum4k/termdash/private/canvas/buffer
+github.com/mum4k/termdash/private/draw
+github.com/mum4k/termdash/private/event
+github.com/mum4k/termdash/private/event/eventqueue
+github.com/mum4k/termdash/private/numbers
+github.com/mum4k/termdash/private/numbers/trig
+github.com/mum4k/termdash/private/runewidth
+github.com/mum4k/termdash/private/wrap
+github.com/mum4k/termdash/terminal/tcell
+github.com/mum4k/termdash/terminal/terminalapi
+github.com/mum4k/termdash/widgetapi
 # github.com/myesui/uuid v1.0.0
 ## explicit
 # github.com/pelletier/go-toml v1.2.0
 github.com/pelletier/go-toml
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
-# github.com/rivo/tview v0.0.0-20200712113419-c65badfc3d92
-## explicit
-github.com/rivo/tview
-# github.com/rivo/uniseg v0.1.0
-github.com/rivo/uniseg
 # github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 ## explicit
 github.com/skratchdot/open-golang/open
@@ -142,10 +164,17 @@ github.com/subosito/gotenv
 ## explicit
 github.com/twinj/uuid
 # golang.org/x/sys v0.0.0-20200212091648-12a6c2dcc1e4
+## explicit
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.2
 golang.org/x/text/encoding
+golang.org/x/text/encoding/charmap
+golang.org/x/text/encoding/internal
 golang.org/x/text/encoding/internal/identifier
+golang.org/x/text/encoding/japanese
+golang.org/x/text/encoding/korean
+golang.org/x/text/encoding/simplifiedchinese
+golang.org/x/text/encoding/traditionalchinese
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
 # gopkg.in/ini.v1 v1.51.0

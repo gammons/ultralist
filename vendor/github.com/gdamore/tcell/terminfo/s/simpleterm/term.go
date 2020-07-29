@@ -23,6 +23,7 @@ func init() {
 		Underline:       "\x1b[4m",
 		Bold:            "\x1b[1m",
 		Dim:             "\x1b[2m",
+		Italic:          "\x1b[3m",
 		Blink:           "\x1b[5m",
 		Reverse:         "\x1b[7m",
 		EnterKeypad:     "\x1b[?1h\x1b=",
@@ -45,7 +46,7 @@ func init() {
 		KeyLeft:         "\x1bOD",
 		KeyInsert:       "\x1b[2~",
 		KeyDelete:       "\x1b[3~",
-		KeyBackspace:    "\xff",
+		KeyBackspace:    "\u007f",
 		KeyHome:         "\x1b[1~",
 		KeyEnd:          "\x1b[4~",
 		KeyPgUp:         "\x1b[5~",
@@ -154,6 +155,8 @@ func init() {
 		KeyMetaShfEnd:   "\x1b[1;10F",
 		KeyAltShfHome:   "\x1b[1;4H",
 		KeyAltShfEnd:    "\x1b[1;4F",
+		KeyShfPgUp:      "\x1b[5;2~",
+		KeyShfPgDn:      "\x1b[6;2~",
 	})
 
 	// simpleterm with 256 colors
@@ -173,6 +176,7 @@ func init() {
 		Underline:       "\x1b[4m",
 		Bold:            "\x1b[1m",
 		Dim:             "\x1b[2m",
+		Italic:          "\x1b[3m",
 		Blink:           "\x1b[5m",
 		Reverse:         "\x1b[7m",
 		EnterKeypad:     "\x1b[?1h\x1b=",
@@ -195,7 +199,7 @@ func init() {
 		KeyLeft:         "\x1bOD",
 		KeyInsert:       "\x1b[2~",
 		KeyDelete:       "\x1b[3~",
-		KeyBackspace:    "\xff",
+		KeyBackspace:    "\u007f",
 		KeyHome:         "\x1b[1~",
 		KeyEnd:          "\x1b[4~",
 		KeyPgUp:         "\x1b[5~",
@@ -304,5 +308,7 @@ func init() {
 		KeyMetaShfEnd:   "\x1b[1;10F",
 		KeyAltShfHome:   "\x1b[1;4H",
 		KeyAltShfEnd:    "\x1b[1;4F",
+		KeyShfPgUp:      "\x1b[5;2~",
+		KeyShfPgDn:      "\x1b[6;2~",
 	})
 }
