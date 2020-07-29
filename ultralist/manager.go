@@ -1,62 +1,54 @@
 package ultralist
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/rivo/tview"
+	"github.com/mum4k/termdash"
+	"github.com/mum4k/termdash/container"
+	"github.com/mum4k/termdash/keyboard"
+	"github.com/mum4k/termdash/linestyle"
+	"github.com/mum4k/termdash/terminal/tcell"
+	"github.com/mum4k/termdash/terminal/terminalapi"
 )
 
 type Manager struct{}
 
 func (m *Manager) RunManager(todoList *TodoList) {
+	fmt.Println("Manager")
 
-	// var buf bytes.Buffer
-	// printer := &ScreenPrinter{Writer: &buf}
-	// grouper := &Grouper{}
-	// printer.Print(grouper.GroupByNothing(todoList.Todos()), false)
-	//
-	// textView := tview.NewTextView().SetText(buf.String())
+	ctx, cancel := context.WithCancel(context.Background())
 
-	header := tview.NewTextView().SetTextAlign(tview.AlignCenter).SetText("\n\nUltralist")
-
-	todoListHolder := tview.NewFlex().SetDirection(tview.FlexRow)
-	todoListHolder.SetBorder(false)
-
-	printer := NewTviewPrinter(true)
-
-	for _, todo := range todoList.Todos() {
-		todoHolder := tview.NewFlex().SetDirection(tview.FlexColumn).
-			AddItem(tview.NewTextView().SetDynamicColors(true).SetText(printer.FormatID(todo.ID, todo.IsPriority)), 0, 1, false).
-			AddItem(tview.NewTextView().SetText(todo.Due), 0, 1, false).
-			AddItem(tview.NewTextView().SetDynamicColors(true).SetText(printer.FormatSubject(todo.Subject, todo.IsPriority)), 0, 10, false)
-
-		todoHolder.SetBorder(true)
-		todoListHolder.AddItem(todoHolder, 0, 1, false)
-		// 	table.SetCell(todoRow, 0, tview.NewTableCell(strconv.Itoa(todo.ID)))
-		// 	table.SetCell(todoRow, 2, tview.NewTableCell("[ ]"))
-		// 	table.SetCell(todoRow, 3, tview.NewTableCell(todo.Due))
-		// 	table.SetCell(todoRow, 4, tview.NewTableCell(todo.Subject))
+	quitter := func(k *terminalapi.Keyboard) {
+		if k.Key == keyboard.KeyEsc || k.Key == keyboard.KeyCtrlC {
+			cancel()
+		}
 	}
 
-	todoListArea := tview.NewFrame(todoListHolder).SetBorders(2, 2, 2, 2, 20, 20) //.AddItem(table, 0, 1, false)
+	t, err := tcell.New(tcell.ColorMode(terminalapi.ColorMode256))
+	if err != nil {
+		panic(err)
+	}
+	defer t.Close()
 
-	// tableGrid := tview.NewGrid().
-	// 	SetRows(1,0,1).
+	c, err := container.New(
+		t,
+		container.SplitVertical(
+			container.Left(
+				container.Border(linestyle.Light),
+			),
+			container.Right(
+				container.Border(linestyle.Double),
+			),
+		),
+	)
+	if err != nil {
+		fmt.Errorf("container.New => %v", err)
+		return
+	}
 
-	mainGrid := tview.NewFlex().
-		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(header, 0, 1, false).
-			AddItem(todoListArea, 0, 5, false), 0, 1, false)
-
-		// SetRows(3, 0, 3).
-		// SetColumns(30, 0, 30).
-		// SetBorders(false).
-
-	windowApp := tview.NewApplication().SetRoot(mainGrid, true).EnableMouse(true)
-
-	if err := windowApp.Run(); err != nil {
+	if err := termdash.Run(ctx, t, c, termdash.KeyboardSubscriber(quitter)); err != nil {
 		panic(err)
 	}
 
-	fmt.Println("manager")
 }
