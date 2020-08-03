@@ -18,6 +18,7 @@ type Todo struct {
 	Due           string   `json:"due"`
 	Completed     bool     `json:"completed"`
 	CompletedDate string   `json:"completedDate"`
+	Status        string   `json:"status"`
 	Archived      bool     `json:"archived"`
 	IsPriority    bool     `json:"isPriority"`
 	Notes         []string `json:"notes"`
@@ -98,6 +99,7 @@ func (t Todo) Equals(other *Todo) bool {
 		!reflect.DeepEqual(t.Contexts, other.Contexts) ||
 		t.Due != other.Due ||
 		t.Completed != other.Completed ||
+		t.Status != other.Status ||
 		t.CompletedDate != other.CompletedDate ||
 		t.Archived != other.Archived ||
 		t.IsPriority != other.IsPriority ||

@@ -1,6 +1,9 @@
 package ultralist
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 // TodoFilter filters todos based on patterns.
 type TodoFilter struct {
@@ -19,6 +22,7 @@ func (f *TodoFilter) Filter(input string) []*Todo {
 	f.Todos = f.filterPrioritized(input)
 	f.Todos = f.filterProjects(input)
 	f.Todos = f.filterContexts(input)
+	f.Todos = f.filterStatus(input)
 	f.Todos = NewDateFilter(f.Todos).FilterDate(input)
 
 	return f.Todos
@@ -71,6 +75,26 @@ func (f *TodoFilter) filterPrioritized(input string) []*Todo {
 	}
 
 	return f.Todos
+}
+
+func (f *TodoFilter) filterStatus(input string) []*Todo {
+
+	r, _ := regexp.Compile(`status:\w+`)
+	if !r.MatchString(input) {
+		return f.Todos
+	}
+
+	statusString := strings.Split(r.FindString(input), ":")[1]
+
+	var ret []*Todo
+
+	for _, todo := range f.Todos {
+		if todo.Status == statusString {
+			ret = append(ret, todo)
+		}
+	}
+
+	return ret
 }
 
 func (f *TodoFilter) filterProjects(input string) []*Todo {
