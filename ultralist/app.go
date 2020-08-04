@@ -350,6 +350,18 @@ func (a *App) SetTodoStatus(input string) {
 	fmt.Println("Todo status updated.")
 }
 
+func (a *App) RemoveTodoStatus(input string) {
+	a.Load()
+	ids := a.getIDs(input)
+	if len(ids) == 0 {
+		return
+	}
+
+	a.TodoList.SetStatus("", ids...)
+	a.save()
+	fmt.Println("Todo status removed.")
+}
+
 // GarbageCollect will delete all archived todos.
 func (a *App) GarbageCollect() {
 	a.Load()
