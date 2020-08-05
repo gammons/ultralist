@@ -84,7 +84,7 @@ Combining filters:
   Lists all prioritized todos that are not completed and are overdue.  Include a todo's notes when listing:
     ultralist list --notes is:priority not:completed due:overdue
 
-  Lists all todos due tomorrow concerining @frank for +project, grouped by project:
+  Lists all todos due tomorrow concerning @frank for +project, grouped by project:
     ultralist list @frank group:p due:tom
 
 Indicator flags
