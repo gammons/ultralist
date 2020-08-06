@@ -20,10 +20,13 @@ func (m *Manager) RunManager(todoList *TodoList) {
 	header := tview.NewTextView().SetTextAlign(tview.AlignCenter).SetText("\n\nUltralist").SetTitle("Header").SetBorder(true)
 
 	//todoListHolder := tview.NewFlex().SetDirection(tview.FlexRow)
-	todoListHolder := tview.NewGrid().
-		SetSize(len(todoList.Todos()), 0, 7, 60)
+	todoListHolder := tview.NewGrid()
+	todoListHolder.SetSize(len(todoList.Todos()), 1, 4, 62)
+	// todoListHolder.SetMinSize(1, 60)
+	// todoListHolder.SetRows(4, 4)
+	//todoListHolder.SetColumns(62)
 	todoListHolder.SetBorder(true)
-	todoListHolder.SetTitle("Holder")
+	todoListHolder.SetTitle("TodoListHolder")
 
 	//printer := NewTviewPrinter(true)
 
@@ -35,30 +38,31 @@ func (m *Manager) RunManager(todoList *TodoList) {
 		// 		return x, y, width, height
 		// 	})
 
-		// todoHolder := tview.NewGrid()
-		// todoHolder.SetTitle("TodoHolder")
-		// todoHolder.SetSize(2, 2, 5, 60).SetBorder(true)
-		// //subjectView := tview.NewTextView().SetDynamicColors(true).SetTextAlign(tview.AlignCenter).SetText(printer.FormatSubject(todo.Subject, todo.IsPriority))
-		// subjectView := tview.NewTextView().SetDynamicColors(true).SetTextAlign(tview.AlignCenter)
-		// subjectView.SetText(todo.Subject)
-		// //subjectView.SetBorder(true)
-		// todoHolder.AddItem(subjectView, 0, 1, 1, 1, 0, 0, true)
+		todoHolder := tview.NewGrid()
+		todoHolder.SetTitle("TodoHolder").SetBorder(true)
+		todoHolder.SetColumns(5, 55)
+		todoHolder.SetRows(1, 1)
+		//todoHolder.SetSize(2, 2, 3, 60).SetBorder(true)
+		//subjectView := tview.NewTextView().SetDynamicColors(true).SetTextAlign(tview.AlignCenter).SetText(printer.FormatSubject(todo.Subject, todo.IsPriority))
+		subjectView := tview.NewTextView().SetDynamicColors(true)
+		subjectView.SetText(todo.Subject)
+		//subjectView.SetBorder(true)
+		todoHolder.AddItem(subjectView, 0, 1, 1, 1, 0, 0, true)
+
+		dueView := tview.NewTextView().SetDynamicColors(true)
+		dueView.SetText("[ ]")
+		todoHolder.AddItem(dueView, 0, 0, 1, 1, 0, 0, true)
+
+		// todoHolder := tview.NewFlex()
+		// todoHolder.SetTitle("TodoHolder").SetBorder(true)
 		//
 		// dueView := tview.NewTextView().SetDynamicColors(true).SetTextAlign(tview.AlignLeft)
 		// dueView.SetText("[ ]")
-		// todoHolder.AddItem(dueView, 0, 1, 1, 1, 0, 0, true)
+		// todoHolder.AddItem(dueView, 5, 0, true)
 		//
-
-		todoHolder := tview.NewFlex()
-		todoHolder.SetTitle("TodoHolder").SetBorder(true)
-
-		dueView := tview.NewTextView().SetDynamicColors(true).SetTextAlign(tview.AlignLeft)
-		dueView.SetText("[ ]")
-		todoHolder.AddItem(dueView, 5, 0, true)
-
-		subjectView := tview.NewTextView().SetDynamicColors(true).SetTextAlign(tview.AlignCenter)
-		subjectView.SetText(todo.Subject)
-		todoHolder.AddItem(subjectView, 55, 0, true)
+		// subjectView := tview.NewTextView().SetDynamicColors(true).SetTextAlign(tview.AlignCenter)
+		// subjectView.SetText(todo.Subject)
+		// todoHolder.AddItem(subjectView, 55, 0, true)
 
 		todoListHolder.AddItem(todoHolder, idx, 0, 1, 1, 0, 0, true)
 	}
@@ -80,17 +84,25 @@ func (m *Manager) RunManager(todoList *TodoList) {
 	// tableGrid := tview.NewGrid().
 	// 	SetRows(1,0,1).
 
-	mainGrid := tview.NewFlex()
-	mainGrid.SetBorder(true).SetTitle("MainGrid")
-	mainGrid.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(header, 5, 0, false).
-		AddItem(todoListArea, 60, 0, false), 0, 1, false)
+	mainArea := tview.NewFlex()
+	mainArea.SetBorder(true).SetTitle("MainArea")
+	mainArea.SetDirection(tview.FlexRow)
+
+	gridArea := tview.NewGrid().SetRows(1, 0, 1)
+	gridArea.SetBorders(true).SetTitle("GridArea")
+
+	mainArea.AddItem(header, 5, 0, false)
+	mainArea.AddItem(todoListHolder, 60, 0, false)
+
+	// mainArea.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+	// 	AddItem(header, 5, 0, false).
+	// 	AddItem(todoListArea, 60, 0, false), 0, 1, false)
 
 	// SetRows(3, 0, 3).
 	// SetColumns(30, 0, 30).
 	// SetBorders(false).
 
-	windowApp := tview.NewApplication().SetRoot(mainGrid, true).EnableMouse(true)
+	windowApp := tview.NewApplication().SetRoot(mainArea, true).EnableMouse(true)
 
 	if err := windowApp.Run(); err != nil {
 		panic(err)

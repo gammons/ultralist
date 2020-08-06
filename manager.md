@@ -1,0 +1,5 @@
+## Unicode stars
+★
+☆
+
+
