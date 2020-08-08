@@ -55,63 +55,6 @@ func NewAppWithPrintOptions(unicodeSupport bool, colorSupport bool) *App {
 func (a *App) InitializeRepo() {
 	a.TodoStore.Initialize()
 	fmt.Println("Repo initialized.")
-
-	backend := NewBackend()
-	eventLogger := &EventLogger{Store: a.TodoStore, CurrentTodoList: a.TodoList}
-	eventLogger.LoadSyncedLists()
-
-	if !backend.CredsFileExists() {
-		return
-	}
-
-	prompt := promptui.Prompt{
-		Label:     "Do you wish to sync this list with ultralist.io",
-		IsConfirm: true,
-	}
-
-	result, _ := prompt.Run()
-	if result != "y" {
-		return
-	}
-
-	if !backend.CanConnect() {
-		fmt.Println("I cannot connect to ultralist.io right now.")
-		return
-	}
-
-	// fetch lists from ultralist.io, or allow user to create a new list
-	// use the "select_add" example in promptui as a way to do this
-	type Response struct {
-		Todolists []TodoList `json:"todolists"`
-	}
-
-	var response *Response
-
-	resp := backend.PerformRequest("GET", "/api/v1/todo_lists", []byte{})
-	json.Unmarshal(resp, &response)
-
-	var todolistNames []string
-	for _, todolist := range response.Todolists {
-		todolistNames = append(todolistNames, todolist.Name)
-	}
-
-	prompt2 := promptui.SelectWithAdd{
-		Label:    "You can sync with an existing list on ultralist, or create a new list.",
-		Items:    todolistNames,
-		AddLabel: "New list...",
-	}
-
-	idx, name, _ := prompt2.Run()
-	if idx == -1 {
-		eventLogger.CurrentSyncedList.Name = name
-	} else {
-		eventLogger.CurrentSyncedList.Name = response.Todolists[idx].Name
-		eventLogger.CurrentSyncedList.UUID = response.Todolists[idx].UUID
-		a.TodoList = &response.Todolists[idx]
-		a.save()
-	}
-
-	eventLogger.WriteSyncedLists()
 }
 
 // AddTodo is adding a new todo.
@@ -360,19 +303,16 @@ func (a *App) GarbageCollect() {
 
 // Sync will sync the todolist with ultralist.io.
 func (a *App) Sync(quiet bool) {
+	backend := NewBackend()
+	if !backend.CredsFileExists() {
+		fmt.Println("You're not authenticated with ultralist.io yet.  Please run `ultralist auth` first.")
+		return
+	}
+
 	a.Load()
-
-	if a.EventLogger.CurrentSyncedList.Name == "" {
-		prompt := promptui.Prompt{
-			Label: "Give this list a name",
-		}
-
-		result, err := prompt.Run()
-		if err != nil {
-			fmt.Println("A name is required to sync a list.")
-			return
-		}
-		a.EventLogger.CurrentSyncedList.Name = result
+	if !a.TodoList.IsSynced {
+		fmt.Println("This list isn't currently syncing with ultralist.io.  Please run `ultralist sync --setup` to set up syncing.")
+		return
 	}
 
 	var synchronizer *Synchronizer
@@ -387,6 +327,94 @@ func (a *App) Sync(quiet bool) {
 		a.EventLogger.ClearEventLogs()
 		a.TodoStore.Save(a.TodoList.Data)
 	}
+}
+
+// SetupSync sets up a todolist to sync with ultralist.io.
+func (a *App) SetupSync() {
+	backend := NewBackend()
+	if !backend.CredsFileExists() {
+		fmt.Println("You're not authenticated with ultralist.io yet.  Please run `ultralist auth` first.")
+		return
+	}
+
+	a.Load()
+
+	if a.TodoList.IsSynced {
+		fmt.Println("This list is already sycned with ultralist.io. Use the --unsync flag to stop syncing this list.")
+		return
+	}
+
+	if a.TodoStore.LocalTodosFileExists() {
+		prompt := promptui.Select{
+			Label: "You have a todos list in this directory.  What would you like to do?",
+			Items: []string{"Sync my list to ultralist.io", "Pull a list from ultralist.io, replacing the list that's here"},
+		}
+		_, result, err := prompt.Run()
+		if err != nil {
+			return
+		}
+		if strings.HasPrefix(result, "Sync my list") {
+			prompt := promptui.Prompt{
+				Label: "Give this list a name",
+			}
+
+			result, err := prompt.Run()
+			if err != nil {
+				fmt.Println("A name is required to sync a list.")
+				return
+			}
+			a.EventLogger.CurrentSyncedList.Name = result
+			a.TodoList.IsSynced = true
+			a.EventLogger.WriteSyncedLists()
+			a.Sync(false)
+			return
+		}
+	}
+	// pull a list from ultralist.io
+	type Response struct {
+		Todolists []TodoList `json:"todolists"`
+	}
+
+	var response *Response
+
+	resp := backend.PerformRequest("GET", "/api/v1/todo_lists", []byte{})
+	json.Unmarshal(resp, &response)
+
+	var todolistNames []string
+	for _, todolist := range response.Todolists {
+		todolistNames = append(todolistNames, todolist.Name)
+	}
+	prompt2 := promptui.Select{
+		Label: "Choose a list to import",
+		Items: todolistNames,
+	}
+
+	idx, _, _ := prompt2.Run()
+	a.EventLogger.CurrentSyncedList.Name = response.Todolists[idx].Name
+	a.EventLogger.CurrentSyncedList.UUID = response.Todolists[idx].UUID
+	a.TodoList = &response.Todolists[idx]
+	a.save()
+	a.EventLogger.WriteSyncedLists()
+}
+
+// Unsync stops a list from syncing with Ultralist.io.
+func (a *App) Unsync() {
+	backend := NewBackend()
+	if !backend.CredsFileExists() {
+		fmt.Println("You're not authenticated with ultralist.io yet.  Please run `ultralist auth` first.")
+		return
+	}
+
+	a.Load()
+
+	if !a.TodoList.IsSynced {
+		fmt.Println("This list isn't currently syncing with ultralist.io.")
+		return
+	}
+
+	a.EventLogger.DeleteCurrentSyncedList()
+	a.EventLogger.WriteSyncedLists()
+	fmt.Println("This list will no longer sync with ultralist.io.  To set up syncing again, run `ultralist sync --setup`.")
 }
 
 // CheckAuth is checking the authentication against ultralist.io.

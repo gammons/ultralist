@@ -18,6 +18,10 @@ func (m *MemoryStore) Load() ([]*Todo, error) {
 	return m.Todos, nil
 }
 
+func (m *MemoryStore) LocalTodosFileExists() bool {
+	return false
+}
+
 // Save is saving todos to the memory store.
 func (m *MemoryStore) Save(todos []*Todo) {
 	m.Todos = todos

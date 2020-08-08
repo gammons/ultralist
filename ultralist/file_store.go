@@ -35,6 +35,17 @@ func (f *FileStore) Initialize() {
 	}
 }
 
+// Returns if a local .todos.json file exists in the current dir.
+func (f *FileStore) LocalTodosFileExists() bool {
+	dir, _ := os.Getwd()
+	localrepo := fmt.Sprintf("%s/.todos.json", dir)
+	_, err := os.Stat(localrepo)
+	if err != nil {
+		return false
+	}
+	return true
+}
+
 // Load is loading a .todos.json file.
 func (f *FileStore) Load() ([]*Todo, error) {
 	if f.FileLocation == "" {
