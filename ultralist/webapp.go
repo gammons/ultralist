@@ -45,7 +45,7 @@ func (w *Webapp) handleAuthResponse(writer http.ResponseWriter, r *http.Request)
 	// sleep 1 second before shutting server down, so we can display msg on web.
 	go func() {
 		time.Sleep(1 * time.Second)
-		w.server.Shutdown(nil)
+		os.Exit(0)
 	}()
 }
 
