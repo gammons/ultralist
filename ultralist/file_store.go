@@ -7,29 +7,26 @@ import (
 	"os"
 )
 
+// the filename to use
+const FILENAME = ".todos.json"
+
 // FileStore is the main struct of this file.
 type FileStore struct {
-	FileLocation string
-	Loaded       bool
+	Loaded bool
 }
 
 // NewFileStore is creating a new file store.
 func NewFileStore() *FileStore {
-	return &FileStore{FileLocation: "", Loaded: false}
+	return &FileStore{Loaded: false}
 }
 
 // Initialize is initializing a new .todos.json file.
 func (f *FileStore) Initialize() {
-	if f.FileLocation == "" {
-		f.FileLocation = ".todos.json"
-	}
-
-	_, err := ioutil.ReadFile(f.FileLocation)
-	if err == nil {
+	if f.LocalTodosFileExists() {
 		fmt.Println("It looks like a .todos.json file already exists!  Doing nothing.")
 		os.Exit(0)
 	}
-	if err := ioutil.WriteFile(f.FileLocation, []byte("[]"), 0644); err != nil {
+	if err := ioutil.WriteFile(FILENAME, []byte("[]"), 0644); err != nil {
 		fmt.Println("Error writing json file", err)
 		os.Exit(1)
 	}
@@ -46,13 +43,9 @@ func (f *FileStore) LocalTodosFileExists() bool {
 	return true
 }
 
-// Load is loading a .todos.json file.
+// Load is loading a .todos.json file, either from cwd, or the home directory
 func (f *FileStore) Load() ([]*Todo, error) {
-	if f.FileLocation == "" {
-		f.FileLocation = f.GetLocation()
-	}
-
-	data, err := ioutil.ReadFile(f.FileLocation)
+	data, err := ioutil.ReadFile(f.GetLocation())
 	if err != nil {
 		fmt.Println("No todo file found!")
 		fmt.Println("Initialize a new todo repo by running 'ultralist init'")
@@ -82,20 +75,15 @@ func (f *FileStore) Save(todos []*Todo) {
 	}
 
 	data, _ := json.Marshal(todos)
-	if err := ioutil.WriteFile(f.FileLocation, []byte(data), 0644); err != nil {
+	if err := ioutil.WriteFile(FILENAME, []byte(data), 0644); err != nil {
 		fmt.Println("Error writing json file", err)
 	}
 }
 
 // GetLocation is returning the location of the .todos.json file.
 func (f *FileStore) GetLocation() string {
-	dir, _ := os.Getwd()
-	localrepo := fmt.Sprintf("%s/.todos.json", dir)
-	_, ferr := os.Stat(localrepo)
-	if ferr == nil {
-		return localrepo
+	if f.LocalTodosFileExists() {
+		return FILENAME
 	}
-
-	home := UserHomeDir()
-	return fmt.Sprintf("%s/.todos.json", home)
+	return fmt.Sprintf("%s/.todos.json", UserHomeDir())
 }

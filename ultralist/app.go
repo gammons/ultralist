@@ -337,14 +337,14 @@ func (a *App) SetupSync() {
 		return
 	}
 
-	a.Load()
-
-	if a.TodoList.IsSynced {
-		fmt.Println("This list is already sycned with ultralist.io. Use the --unsync flag to stop syncing this list.")
-		return
-	}
-
 	if a.TodoStore.LocalTodosFileExists() {
+		a.Load()
+
+		if a.TodoList.IsSynced {
+			fmt.Println("This list is already sycned with ultralist.io. Use the --unsync flag to stop syncing this list.")
+			return
+		}
+
 		prompt := promptui.Select{
 			Label: "You have a todos list in this directory.  What would you like to do?",
 			Items: []string{"Sync my list to ultralist.io", "Pull a list from ultralist.io, replacing the list that's here"},
@@ -390,10 +390,12 @@ func (a *App) SetupSync() {
 	}
 
 	idx, _, _ := prompt2.Run()
-	a.EventLogger.CurrentSyncedList.Name = response.Todolists[idx].Name
-	a.EventLogger.CurrentSyncedList.UUID = response.Todolists[idx].UUID
+	// a.EventLogger.CurrentSyncedList.Name = response.Todolists[idx].Name
+	// a.EventLogger.CurrentSyncedList.UUID = response.Todolists[idx].UUID
 	a.TodoList = &response.Todolists[idx]
-	a.save()
+	a.TodoStore.Save(a.TodoList.Data)
+
+	a.EventLogger = NewEventLogger(a.TodoList, a.TodoStore)
 	a.EventLogger.WriteSyncedLists()
 }
 
