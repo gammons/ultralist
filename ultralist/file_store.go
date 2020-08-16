@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
-// the filename to use
-const FILENAME = ".todos.json"
+// TodosJSONFile is the filename to store todos in
+const TodosJSONFile = ".todos.json"
 
 // FileStore is the main struct of this file.
 type FileStore struct {
@@ -26,7 +27,7 @@ func (f *FileStore) Initialize() {
 		fmt.Println("It looks like a .todos.json file already exists!  Doing nothing.")
 		os.Exit(0)
 	}
-	if err := ioutil.WriteFile(FILENAME, []byte("[]"), 0644); err != nil {
+	if err := ioutil.WriteFile(TodosJSONFile, []byte("[]"), 0644); err != nil {
 		fmt.Println("Error writing json file", err)
 		os.Exit(1)
 	}
@@ -35,7 +36,7 @@ func (f *FileStore) Initialize() {
 // Returns if a local .todos.json file exists in the current dir.
 func (f *FileStore) LocalTodosFileExists() bool {
 	dir, _ := os.Getwd()
-	localrepo := fmt.Sprintf("%s/.todos.json", dir)
+	localrepo := filepath.Join(dir, TodosJSONFile)
 	_, err := os.Stat(localrepo)
 	if err != nil {
 		return false
@@ -75,7 +76,7 @@ func (f *FileStore) Save(todos []*Todo) {
 	}
 
 	data, _ := json.Marshal(todos)
-	if err := ioutil.WriteFile(FILENAME, []byte(data), 0644); err != nil {
+	if err := ioutil.WriteFile(TodosJSONFile, []byte(data), 0644); err != nil {
 		fmt.Println("Error writing json file", err)
 	}
 }
@@ -83,7 +84,7 @@ func (f *FileStore) Save(todos []*Todo) {
 // GetLocation is returning the location of the .todos.json file.
 func (f *FileStore) GetLocation() string {
 	if f.LocalTodosFileExists() {
-		return FILENAME
+		return TodosJSONFile
 	}
-	return fmt.Sprintf("%s/.todos.json", UserHomeDir())
+	return fmt.Sprintf("%s/%s", UserHomeDir(), TodosJSONFile)
 }
