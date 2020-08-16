@@ -145,6 +145,17 @@ func (e *EventLogger) initializeSyncedList() {
 	e.CurrentSyncedList = list
 }
 
+// DeleteCurrentSyncedList - delete a synced list from the synced_lists.json file
+func (e *EventLogger) DeleteCurrentSyncedList() {
+	var syncedListsWithoutDeleted []*SyncedList
+	for _, list := range e.SyncedLists {
+		if list.UUID != e.CurrentSyncedList.UUID {
+			syncedListsWithoutDeleted = append(syncedListsWithoutDeleted, list)
+		}
+	}
+	e.SyncedLists = syncedListsWithoutDeleted
+}
+
 // WriteSyncedLists is writing a synced list.
 func (e *EventLogger) WriteSyncedLists() {
 	data, _ := json.Marshal(e.SyncedLists)

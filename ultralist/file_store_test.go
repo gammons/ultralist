@@ -9,13 +9,12 @@ import (
 func TestFileStore(t *testing.T) {
 	assert := assert.New(t)
 	list := SetUpTestMemoryTodoList()
-	testFilename := "TestFileStore_todos.json"
-	store := &FileStore{FileLocation: testFilename}
-	defer testFileCleanUp(testFilename)
+	store := &FileStore{}
+	defer testFileCleanUp()
 	list.FindByID(2).Subject = "this is an non-fixture subject"
 	store.Save(list.Todos())
 
-	store1 := &FileStore{FileLocation: testFilename}
+	store1 := &FileStore{}
 
 	todos, _ := store1.Load()
 	assert.Equal(todos[1].Subject, "this is the first subject", "")
