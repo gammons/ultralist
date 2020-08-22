@@ -47,12 +47,14 @@ func (t Todo) CalculateDueTime() time.Time {
 // Complete is completing a todo item and sets the complete date to the current time.
 func (t *Todo) Complete() {
 	t.Completed = true
+	t.Status = "completed"
 	t.CompletedDate = timestamp(time.Now()).Format(iso8601TimestampFormat)
 }
 
 // Uncomplete is uncompleting a todo item and removes the complete date.
 func (t *Todo) Uncomplete() {
 	t.Completed = false
+	t.Status = ""
 	t.CompletedDate = ""
 }
 
