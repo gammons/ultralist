@@ -2,6 +2,7 @@ package ultralist
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -60,37 +61,24 @@ func (a *App) InitializeRepo() {
 // AddTodo is adding a new todo.
 func (a *App) AddTodo(input string) {
 	a.Load()
-	parser := &Parser{}
-	todo := parser.ParseNewTodo(input)
-	if todo == nil {
+	parser := &InputParser{}
+
+	filter, err := parser.Parse(input)
+	if err != nil {
+		fmt.Println(err.Error())
 		fmt.Println("I need more information. Try something like 'todo a chat with @bob due tom'")
 		return
 	}
 
-	id := a.TodoList.NextID()
-	a.TodoList.Add(todo)
-	a.save()
-	fmt.Printf("Todo %d added.\n", id)
-}
-
-// AddDoneTodo adds a new todo and immediately completed it.
-func (a *App) AddDoneTodo(input string) {
-	a.Load()
-
-	r, _ := regexp.Compile(`^(done)(\s*|)`)
-	input = r.ReplaceAllString(input, "")
-	parser := &Parser{}
-	todo := parser.ParseNewTodo(input)
-	if todo == nil {
-		fmt.Println("I need more information. Try something like 'todo done chating with @bob'")
+	todoItem, err := CreateTodo(filter)
+	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 
-	id := a.TodoList.NextID()
-	a.TodoList.Add(todo)
-	a.TodoList.Complete(id)
+	a.TodoList.Add(todoItem)
 	a.save()
-	fmt.Printf("Completed Todo %d added.\n", id)
+	fmt.Printf("Todo %d added.\n", todoItem.ID)
 }
 
 // DeleteTodo deletes a todo.
@@ -157,60 +145,40 @@ func (a *App) UnarchiveTodo(input string) {
 }
 
 // EditTodo edits a todo with the given input.
-func (a *App) EditTodo(input string) {
+func (a *App) EditTodo(todoID int, input string) {
 	a.Load()
-	id := a.getID(input)
-	if id == -1 {
-		return
-	}
-	todo := a.TodoList.FindByID(id)
+	todo := a.TodoList.FindByID(todoID)
 	if todo == nil {
-		fmt.Println("No such id.")
-		return
-	}
-	parser := &Parser{}
-
-	if parser.ParseEditTodo(todo, input) {
-		a.save()
-		fmt.Println("Todo updated.")
-	}
-}
-
-// ExpandTodo expands a todo.
-func (a *App) ExpandTodo(input string) {
-	a.Load()
-	id := a.getID(input)
-	parser := &Parser{}
-	if id == -1 {
+		fmt.Println("No todo with that id.")
 		return
 	}
 
-	commonProject := parser.ExpandProject(input)
-	todos := strings.LastIndex(input, ":")
-	if commonProject == "" || len(input) <= todos+1 || todos == -1 {
-		fmt.Println("I'm expecting a format like \"ultralist expand <project>: <todo1>, <todo2>, ...")
+	parser := &InputParser{}
+	filter, err := parser.Parse(input)
+	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 
-	newTodos := strings.Split(input[todos+1:], ",")
-
-	for _, todo := range newTodos {
-		args := []string{"add ", commonProject, " ", todo}
-		a.AddTodo(strings.Join(args, ""))
+	if err = EditTodo(todo, filter); err != nil {
+		fmt.Println(err.Error())
+		return
 	}
 
-	a.TodoList.Delete(id)
 	a.save()
-	fmt.Println("Todo expanded.")
+	fmt.Println("Todo updated.")
 }
 
 // HandleNotes is a sub-function that will handle notes on a todo.
 func (a *App) HandleNotes(input string) {
 	a.Load()
-	id := a.getID(input)
-	if id == -1 {
+
+	id, err := a.getID(input)
+	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
+
 	todo := a.TodoList.FindByID(id)
 	if todo == nil {
 		fmt.Println("No such id.")
@@ -471,15 +439,13 @@ func (a *App) save() {
 	}
 }
 
-func (a *App) getID(input string) int {
-	re, _ := regexp.Compile("\\d+")
-	if re.MatchString(input) {
-		id, _ := strconv.Atoi(re.FindString(input))
-		return id
+func (a *App) getID(input string) (int, error) {
+	splitted := strings.Split(input, " ")
+	id, err := strconv.Atoi(splitted[0])
+	if err != nil {
+		return -1, errors.New(fmt.Sprintf("Invalid id: '%s'", splitted[0]))
 	}
-
-	fmt.Println("Invalid id.")
-	return -1
+	return id, nil
 }
 
 func (a *App) getIDs(input string) (ids []int) {
@@ -491,7 +457,7 @@ func (a *App) getIDs(input string) (ids []int) {
 				continue
 			}
 			ids = append(ids, rangedIds...)
-		} else if id := a.getID(idGroup); id != -1 {
+		} else if id, err := a.getID(idGroup); err == nil {
 			ids = append(ids, id)
 		} else {
 			fmt.Printf("Invalid id: %s.\n", idGroup)

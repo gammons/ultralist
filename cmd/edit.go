@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -27,7 +29,12 @@ var editCmd = &cobra.Command{
 	Long:    editCmdLongDesc,
 	Short:   editCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
-		ultralist.NewApp().EditTodo("edit " + strings.Join(args, " "))
+		todoID, err := strconv.Atoi(args[0])
+		if err != nil {
+			fmt.Printf("Could not parse todo ID: '%s'\n", args[0])
+			return
+		}
+		ultralist.NewApp().EditTodo(todoID, strings.Join(args[1:], " "))
 	},
 }
 
