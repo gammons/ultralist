@@ -1,7 +1,5 @@
 package ultralist
 
-import "fmt"
-
 // TodoFilter filters todos based on patterns.
 type TodoFilter struct {
 	Filter *Filter
@@ -62,8 +60,6 @@ func (f *TodoFilter) ApplyFilter() []*Todo {
 	// the "default" filter is to filter out archived todos, if nothing is set.
 	if !f.Filter.HasArchived {
 		var ret []*Todo
-
-		fmt.Println("filtered.len = ", len(filtered))
 
 		for _, todo := range filtered {
 			if !todo.Archived {
