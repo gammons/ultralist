@@ -51,13 +51,13 @@ func TestProjectsAsFilter(t *testing.T) {
 	filter, _ := parser.Parse("subject project:project1,-project2")
 
 	assert.Equal([]string{"project1"}, filter.Projects)
-	assert.Equal([]string{"project2"}, filter.NotProjects)
+	assert.Equal([]string{"project2"}, filter.ExcludeProjects)
 
 	// assert that project filters override subject projects
 	filter, _ = parser.Parse("subject +subjectProject project:project1,-project2")
 
 	assert.Equal([]string{"project1"}, filter.Projects)
-	assert.Equal([]string{"project2"}, filter.NotProjects)
+	assert.Equal([]string{"project2"}, filter.ExcludeProjects)
 }
 
 func TestCompleted(t *testing.T) {
@@ -83,7 +83,7 @@ func TestStatus(t *testing.T) {
 
 	assert.Equal(true, filter.HasStatus)
 	assert.Equal([]string{"one"}, filter.Status)
-	assert.Equal([]string{"two"}, filter.NotStatus)
+	assert.Equal([]string{"two"}, filter.ExcludeStatus)
 
 	filter, err = parser.Parse("this is the subject")
 

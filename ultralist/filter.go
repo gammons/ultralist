@@ -16,15 +16,17 @@ type Filter struct {
 	HasProjectFilter bool
 	HasContextFilter bool
 
-	Projects    []string
-	NotProjects []string
-	Contexts    []string
-	NotContexts []string
-	Due         []string
-	NotDue      []string
+	Contexts []string
+	Due      []string
+	Projects []string
+	Status   []string
+
+	ExcludeContexts []string
+	ExcludeDue      []string
+	ExcludeProjects []string
+	ExcludeStatus   []string
+
 	CompletedAt []string
-	Status      []string
-	NotStatus   []string
 }
 
 // LastStatus returns the last status from the filter

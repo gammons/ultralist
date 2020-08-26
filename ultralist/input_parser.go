@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Parser parses text to extract a Filter struct
+// InputParser parses text to extract a Filter struct
 type InputParser struct{}
 
 /*
@@ -37,9 +37,6 @@ project:one,-two
 
 // Parse parses raw input and returns a Filter object
 func (p *InputParser) Parse(input string) (*Filter, error) {
-	// if input == "" {
-	// 	return &Filter{}, errors.New("Could not parse input")
-	// }
 
 	filter := &Filter{
 		HasStatus:        false,
@@ -84,14 +81,14 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		r4, _ := regexp.Compile(`due:.*$`)
 		if r4.MatchString(word) {
 			filter.HasDue = true
-			filter.Due, filter.NotDue = p.parseString(r4.FindString(word)[4:])
+			filter.Due, filter.ExcludeDue = p.parseString(r4.FindString(word)[4:])
 			match = true
 		}
 
 		r5, _ := regexp.Compile(`status:.*$`)
 		if r5.MatchString(word) {
 			filter.HasStatus = true
-			filter.Status, filter.NotStatus = p.parseString(r5.FindString(word)[7:])
+			filter.Status, filter.ExcludeStatus = p.parseString(r5.FindString(word)[7:])
 			match = true
 		}
 
@@ -105,13 +102,13 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		r7, _ := regexp.Compile(`project:.*$`)
 		if r7.MatchString(word) {
 			filter.HasProjectFilter = true
-			filter.Projects, filter.NotProjects = p.parseString(r7.FindString(word)[8:])
+			filter.Projects, filter.ExcludeProjects = p.parseString(r7.FindString(word)[8:])
 		}
 
 		r8, _ := regexp.Compile(`context:.*$`)
 		if r8.MatchString(word) {
 			filter.HasContextFilter = true
-			filter.Contexts, filter.NotContexts = p.parseString(r8.FindString(word)[8:])
+			filter.Contexts, filter.ExcludeContexts = p.parseString(r8.FindString(word)[8:])
 		}
 
 		if !match {

@@ -70,7 +70,7 @@ func TestFilterExclusive(t *testing.T) {
 	todoFilter := &TodoFilter{
 		Filter: &Filter{
 			HasProjectFilter: true,
-			NotProjects:      []string{"p2"},
+			ExcludeProjects:  []string{"p2"},
 		},
 		Todos: SetupTodoList(),
 	}
@@ -91,7 +91,7 @@ func TestFilterInclusveAndExclusive(t *testing.T) {
 		Filter: &Filter{
 			HasProjectFilter: true,
 			Projects:         []string{"p1"},
-			NotProjects:      []string{"p2"},
+			ExcludeProjects:  []string{"p2"},
 		},
 		Todos: SetupTodoList(),
 	}

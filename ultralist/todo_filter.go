@@ -36,21 +36,21 @@ func (f *TodoFilter) ApplyFilter() []*Todo {
 		}
 
 		if f.Filter.HasStatus {
-			if f.todoPassesFilter([]string{todo.Status}, f.Filter.Status, f.Filter.NotStatus) {
+			if f.todoPassesFilter([]string{todo.Status}, f.Filter.Status, f.Filter.ExcludeStatus) {
 				filtered = append(filtered, todo)
 			}
 			continue
 		}
 
 		if f.Filter.HasProjectFilter {
-			if f.todoPassesFilter(todo.Projects, f.Filter.Projects, f.Filter.NotProjects) {
+			if f.todoPassesFilter(todo.Projects, f.Filter.Projects, f.Filter.ExcludeProjects) {
 				filtered = append(filtered, todo)
 			}
 			continue
 		}
 
 		if f.Filter.HasContextFilter {
-			if f.todoPassesFilter(todo.Contexts, f.Filter.Contexts, f.Filter.NotContexts) {
+			if f.todoPassesFilter(todo.Contexts, f.Filter.Contexts, f.Filter.ExcludeContexts) {
 				filtered = append(filtered, todo)
 			}
 			continue
