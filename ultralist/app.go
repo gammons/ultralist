@@ -216,8 +216,17 @@ func (a *App) ArchiveCompleted() {
 // ListTodos will list all todos.
 func (a *App) ListTodos(input string, showNotes bool, showStatus bool) {
 	a.Load()
-	filtered := NewFilter(a.TodoList.Todos()).Filter(input)
-	grouped := a.getGroups(input, filtered)
+
+	parser := &InputParser{}
+
+	filter, err := parser.Parse(input)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	todoFilter := &TodoFilter{Todos: a.TodoList.Todos(), Filter: filter}
+	grouped := a.getGroups(input, todoFilter.ApplyFilter())
 
 	a.Printer.Print(grouped, showNotes, showStatus)
 }

@@ -6,50 +6,132 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFilterArchived(t *testing.T) {
+func TestNoFilterCriteriaExcludesArchived(t *testing.T) {
 	assert := assert.New(t)
-	list := SetUpTestMemoryTodoList()
-	filter := NewFilter(list.Todos())
-	archived := filter.filterArchived("is:archived")
-	assert.Equal(1, len(archived))
-	assert.Equal(true, archived[0].Archived)
+
+	todoFilter := &TodoFilter{
+		Filter: &Filter{},
+		Todos:  SetupTodoList(),
+	}
+
+	filtered := todoFilter.ApplyFilter()
+
+	assert.Equal(5, len(filtered))
+	for _, todo := range filtered {
+		assert.Equal(false, todo.Archived)
+	}
 }
 
-func TestFilterUnarchivedByDefault(t *testing.T) {
+func TestFilterPriority(t *testing.T) {
 	assert := assert.New(t)
-	list := SetUpTestMemoryTodoList()
-	filter := NewFilter(list.Todos())
-	unarchived := filter.filterArchived("l")
-	assert.Equal(1, len(unarchived))
-	assert.Equal(false, unarchived[0].Archived)
+
+	todoFilter := &TodoFilter{
+		Filter: &Filter{HasIsPriority: true, IsPriority: true},
+		Todos:  SetupTodoList(),
+	}
+
+	filtered := todoFilter.ApplyFilter()
+
+	assert.Equal(1, len(filtered))
+	assert.Equal("has priority", filtered[0].Subject)
+
+	todoFilter = &TodoFilter{
+		Filter: &Filter{HasIsPriority: true, IsPriority: false},
+		Todos:  SetupTodoList(),
+	}
+
+	filtered = todoFilter.ApplyFilter()
+
+	assert.Equal(4, len(filtered))
+	assert.Equal("not priority", filtered[0].Subject)
 }
 
-func TestFilterShowArchivedWhenWeAskForCompleted(t *testing.T) {
+func TestFilterInclusive(t *testing.T) {
 	assert := assert.New(t)
-	list := SetUpTestMemoryTodoList()
-	filter := NewFilter(list.Todos())
-	archived := filter.filterArchived("is:archived")
-	completed := filter.filterCompleted("is:completed")
-	assert.Equal(1, len(archived))
-	assert.Equal(1, len(completed))
-	assert.Equal(true, archived[0].Archived)
-	assert.Equal(false, completed[0].Archived)
+
+	todoFilter := &TodoFilter{
+		Filter: &Filter{
+			HasProjectFilter: true,
+			Projects:         []string{"p3"},
+		},
+		Todos: SetupTodoList(),
+	}
+
+	filtered := todoFilter.ApplyFilter()
+
+	assert.Equal(2, len(filtered))
+	assert.Equal("+p1 +p2 +p3", filtered[0].Subject)
+	assert.Equal("+p1 +p3", filtered[1].Subject)
 }
 
-func TestGetArchived(t *testing.T) {
+func TestFilterExclusive(t *testing.T) {
 	assert := assert.New(t)
-	list := SetUpTestMemoryTodoList()
-	filter := NewFilter(list.Todos())
-	archived := filter.getArchived()
-	assert.Equal(1, len(archived))
-	assert.Equal(true, archived[0].Archived)
+
+	todoFilter := &TodoFilter{
+		Filter: &Filter{
+			HasProjectFilter: true,
+			NotProjects:      []string{"p2"},
+		},
+		Todos: SetupTodoList(),
+	}
+
+	filtered := todoFilter.ApplyFilter()
+
+	assert.Equal(4, len(filtered))
+	assert.Equal("has priority", filtered[0].Subject)
+	assert.Equal("not priority", filtered[1].Subject)
+	assert.Equal("+p1 +p3", filtered[2].Subject)
+	assert.Equal("+p1", filtered[3].Subject)
 }
 
-func TestGetUnarchived(t *testing.T) {
+func TestFilterInclusveAndExclusive(t *testing.T) {
 	assert := assert.New(t)
-	list := SetUpTestMemoryTodoList()
-	filter := NewFilter(list.Todos())
-	unarchived := filter.getUnarchived()
-	assert.Equal(1, len(unarchived))
-	assert.Equal(false, unarchived[0].Archived)
+
+	todoFilter := &TodoFilter{
+		Filter: &Filter{
+			HasProjectFilter: true,
+			Projects:         []string{"p1"},
+			NotProjects:      []string{"p2"},
+		},
+		Todos: SetupTodoList(),
+	}
+
+	filtered := todoFilter.ApplyFilter()
+
+	assert.Equal(2, len(filtered))
+	assert.Equal("+p1 +p3", filtered[0].Subject)
+	assert.Equal("+p1", filtered[1].Subject)
+}
+
+func SetupTodoList() []*Todo {
+	var todos []*Todo
+
+	parser := &InputParser{}
+
+	filter, _ := parser.Parse("has priority priority:true")
+	todo, _ := CreateTodo(filter)
+	todos = append(todos, todo)
+
+	filter, _ = parser.Parse("not priority priority:false")
+	todo, _ = CreateTodo(filter)
+	todos = append(todos, todo)
+
+	filter, _ = parser.Parse("archived archived:true")
+	todo, _ = CreateTodo(filter)
+	todos = append(todos, todo)
+
+	filter, _ = parser.Parse("+p1 +p2 +p3")
+	todo, _ = CreateTodo(filter)
+	todos = append(todos, todo)
+
+	filter, _ = parser.Parse("+p1 +p3")
+	todo, _ = CreateTodo(filter)
+	todos = append(todos, todo)
+
+	filter, _ = parser.Parse("+p1")
+	todo, _ = CreateTodo(filter)
+	todos = append(todos, todo)
+
+	return todos
+
 }

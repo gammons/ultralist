@@ -1,7 +1,6 @@
 package ultralist
 
 import (
-	"errors"
 	"regexp"
 	"strings"
 )
@@ -38,16 +37,18 @@ project:one,-two
 
 // Parse parses raw input and returns a Filter object
 func (p *InputParser) Parse(input string) (*Filter, error) {
-	if input == "" {
-		return &Filter{}, errors.New("Could not parse input")
-	}
+	// if input == "" {
+	// 	return &Filter{}, errors.New("Could not parse input")
+	// }
 
 	filter := &Filter{
-		HasStatus:      false,
-		HasCompleted:   false,
-		HasCompletedAt: false,
-		HasIsPriority:  false,
-		HasDue:         false,
+		HasStatus:        false,
+		HasCompleted:     false,
+		HasCompletedAt:   false,
+		HasIsPriority:    false,
+		HasProjectFilter: false,
+		HasContextFilter: false,
+		HasDue:           false,
 	}
 	var subjectMatches []string
 
@@ -83,22 +84,34 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		r4, _ := regexp.Compile(`due:.*$`)
 		if r4.MatchString(word) {
 			filter.HasDue = true
-			filter.Due = p.parseString(r4.FindString(word)[4:])
+			filter.Due, filter.NotDue = p.parseString(r4.FindString(word)[4:])
 			match = true
 		}
 
 		r5, _ := regexp.Compile(`status:.*$`)
 		if r5.MatchString(word) {
 			filter.HasStatus = true
-			filter.Status = p.parseString(r5.FindString(word)[7:])
+			filter.Status, filter.NotStatus = p.parseString(r5.FindString(word)[7:])
 			match = true
 		}
 
 		r6, _ := regexp.Compile(`completedat:.*$`)
 		if r6.MatchString(word) {
 			filter.HasCompletedAt = true
-			filter.Status = p.parseString(r6.FindString(word)[7:])
+			filter.CompletedAt, _ = p.parseString(r6.FindString(word)[7:])
 			match = true
+		}
+
+		r7, _ := regexp.Compile(`project:.*$`)
+		if r7.MatchString(word) {
+			filter.HasProjectFilter = true
+			filter.Projects, filter.NotProjects = p.parseString(r7.FindString(word)[8:])
+		}
+
+		r8, _ := regexp.Compile(`context:.*$`)
+		if r8.MatchString(word) {
+			filter.HasContextFilter = true
+			filter.Contexts, filter.NotContexts = p.parseString(r8.FindString(word)[8:])
 		}
 
 		if !match {
@@ -111,8 +124,17 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 	return filter, nil
 }
 
-func (p *InputParser) parseString(input string) []string {
-	return strings.Split(input, ",")
+func (p *InputParser) parseString(input string) ([]string, []string) {
+	var positive []string
+	var negative []string
+	for _, str := range strings.Split(input, ",") {
+		if strings.HasPrefix(str, "-") {
+			negative = append(negative, str[1:])
+		} else {
+			positive = append(positive, str)
+		}
+	}
+	return positive, negative
 }
 
 func (p *InputParser) parseBool(input string) bool {

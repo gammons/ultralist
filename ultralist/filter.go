@@ -7,18 +7,24 @@ type Filter struct {
 	IsPriority bool
 	Completed  bool
 
-	HasCompleted   bool
-	HasCompletedAt bool
-	HasArchived    bool
-	HasIsPriority  bool
-	HasDue         bool
-	HasStatus      bool
+	HasCompleted     bool
+	HasCompletedAt   bool
+	HasArchived      bool
+	HasIsPriority    bool
+	HasDue           bool
+	HasStatus        bool
+	HasProjectFilter bool
+	HasContextFilter bool
 
 	Projects    []string
+	NotProjects []string
 	Contexts    []string
+	NotContexts []string
 	Due         []string
+	NotDue      []string
 	CompletedAt []string
 	Status      []string
+	NotStatus   []string
 }
 
 // LastStatus returns the last status from the filter
