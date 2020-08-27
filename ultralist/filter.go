@@ -7,26 +7,32 @@ type Filter struct {
 	IsPriority bool
 	Completed  bool
 
-	HasCompleted     bool
-	HasCompletedAt   bool
-	HasArchived      bool
-	HasIsPriority    bool
-	HasDue           bool
-	HasStatus        bool
-	HasProjectFilter bool
-	HasContextFilter bool
+	Due       string
+	DueBefore string
+	DueAfter  string
 
 	Contexts []string
-	Due      []string
 	Projects []string
 	Status   []string
 
 	ExcludeContexts []string
-	ExcludeDue      []string
 	ExcludeProjects []string
 	ExcludeStatus   []string
 
 	CompletedAt []string
+
+	HasCompleted   bool
+	HasCompletedAt bool
+	HasArchived    bool
+	HasIsPriority  bool
+
+	HasDueBefore bool
+	HasDue       bool
+	HasDueAfter  bool
+
+	HasStatus        bool
+	HasProjectFilter bool
+	HasContextFilter bool
 }
 
 // LastStatus returns the last status from the filter
@@ -35,12 +41,4 @@ func (f *Filter) LastStatus() string {
 		return ""
 	}
 	return f.Status[len(f.Status)-1]
-}
-
-// LastDue returns the last due from the filter
-func (f *Filter) LastDue() string {
-	if len(f.Due) == 0 {
-		return ""
-	}
-	return f.Due[len(f.Due)-1]
 }

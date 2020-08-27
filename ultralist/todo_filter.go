@@ -1,5 +1,9 @@
 package ultralist
 
+import (
+	"time"
+)
+
 // TodoFilter filters todos based on patterns.
 type TodoFilter struct {
 	Filter *Filter
@@ -49,6 +53,42 @@ func (f *TodoFilter) ApplyFilter() []*Todo {
 
 		if f.Filter.HasContextFilter {
 			if f.todoPassesFilter(todo.Contexts, f.Filter.Contexts, f.Filter.ExcludeContexts) {
+				filtered = append(filtered, todo)
+			}
+			continue
+		}
+
+		// has exact due date
+		if f.Filter.HasDue {
+			if todo.Due == f.Filter.Due {
+				filtered = append(filtered, todo)
+			}
+			continue
+		}
+
+		if f.Filter.HasDueBefore {
+			if todo.Due == "" {
+				continue
+			}
+
+			todoTime, _ := time.Parse("2006-01-02", todo.Due)
+			dueBeforeTime, _ := time.Parse("2006-01-02", f.Filter.DueBefore)
+
+			if todoTime.Before(dueBeforeTime) {
+				filtered = append(filtered, todo)
+			}
+			continue
+		}
+
+		if f.Filter.HasDueAfter {
+			if todo.Due == "" {
+				continue
+			}
+
+			todoTime, _ := time.Parse("2006-01-02", todo.Due)
+			dueAfterTime, _ := time.Parse("2006-01-02", f.Filter.DueAfter)
+
+			if todoTime.After(dueAfterTime) {
 				filtered = append(filtered, todo)
 			}
 			continue

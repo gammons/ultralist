@@ -1,21 +1,9 @@
 package ultralist
 
-import "time"
-
 // EditTodo edits a todo based upon a filter
 func EditTodo(todo *Todo, filter *Filter) error {
 	if filter.HasDue {
-		dateParser := &DateParser{}
-		dueDate, err := dateParser.ParseDate(filter.LastDue(), time.Now())
-		if err != nil {
-			return err
-		}
-
-		if dueDate.IsZero() {
-			todo.Due = ""
-		} else {
-			todo.Due = dueDate.Format("2006-01-02")
-		}
+		todo.Due = filter.Due
 	}
 
 	if filter.HasCompleted {

@@ -15,6 +15,8 @@ func (dp *DateParser) ParseDate(dateString string, pivotDay time.Time) (date tim
 	switch dateString {
 	case "none":
 		return time.Time{}, nil
+	case "yesterday", "yes":
+		return bod(pivotDay).AddDate(0, 0, -1), nil
 	case "today", "tod":
 		return bod(pivotDay), nil
 	case "tomorrow", "tom":

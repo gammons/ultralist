@@ -3,6 +3,7 @@ package ultralist
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -18,8 +19,8 @@ func TestInputParser(t *testing.T) {
 	assert.Equal("now", filter.Status[0])
 	assert.Equal("next", filter.Status[1])
 
-	assert.Equal(1, len(filter.Due))
-	assert.Equal("tom", filter.Due[0])
+	tomorrow := time.Now().AddDate(0, 0, 1).Format("2006-01-02")
+	assert.Equal(tomorrow, filter.Due)
 	assert.Equal("do this thing", filter.Subject)
 }
 
@@ -30,7 +31,8 @@ func TestSubject(t *testing.T) {
 	filter, _ := parser.Parse("due:tom here is the subject")
 
 	assert.Equal("here is the subject", filter.Subject)
-	assert.Equal("tom", filter.Due[0])
+	tomorrow := time.Now().AddDate(0, 0, 1).Format("2006-01-02")
+	assert.Equal(tomorrow, filter.Due)
 }
 
 func TestProjectsInSubject(t *testing.T) {

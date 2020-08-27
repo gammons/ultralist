@@ -3,6 +3,7 @@ package ultralist
 import (
 	"regexp"
 	"strings"
+	"time"
 )
 
 // InputParser parses text to extract a Filter struct
@@ -37,7 +38,6 @@ project:one,-two
 
 // Parse parses raw input and returns a Filter object
 func (p *InputParser) Parse(input string) (*Filter, error) {
-
 	filter := &Filter{
 		HasStatus:        false,
 		HasCompleted:     false,
@@ -45,8 +45,13 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		HasIsPriority:    false,
 		HasProjectFilter: false,
 		HasContextFilter: false,
+		HasDueBefore:     false,
 		HasDue:           false,
+		HasDueAfter:      false,
 	}
+
+	dateParser := &DateParser{}
+
 	var subjectMatches []string
 
 	cr, _ := regexp.Compile(`\@[\p{L}\d_-]+`)
@@ -78,10 +83,51 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			match = true
 		}
 
-		r4, _ := regexp.Compile(`due:.*$`)
-		if r4.MatchString(word) {
+		rDueBefore, _ := regexp.Compile(`duebefore:.*$`)
+		if rDueBefore.MatchString(word) {
+			filter.HasDueBefore = true
+			dueDate, err := dateParser.ParseDate(rDueBefore.FindString(word)[10:], time.Now())
+			if err != nil {
+				return filter, err
+			}
+
+			if dueDate.IsZero() {
+				filter.DueBefore = ""
+			} else {
+				filter.DueBefore = dueDate.Format("2006-01-02")
+			}
+			match = true
+		}
+
+		rDue, _ := regexp.Compile(`due:.*$`)
+		if rDue.MatchString(word) {
 			filter.HasDue = true
-			filter.Due, filter.ExcludeDue = p.parseString(r4.FindString(word)[4:])
+			dueDate, err := dateParser.ParseDate(rDue.FindString(word)[4:], time.Now())
+			if err != nil {
+				return filter, err
+			}
+
+			if dueDate.IsZero() {
+				filter.Due = ""
+			} else {
+				filter.Due = dueDate.Format("2006-01-02")
+			}
+			match = true
+		}
+
+		rDueAfter, _ := regexp.Compile(`dueafter:.*$`)
+		if rDueAfter.MatchString(word) {
+			filter.HasDueAfter = true
+			dueDate, err := dateParser.ParseDate(rDueAfter.FindString(word)[9:], time.Now())
+			if err != nil {
+				return filter, err
+			}
+
+			if dueDate.IsZero() {
+				filter.DueAfter = ""
+			} else {
+				filter.DueAfter = dueDate.Format("2006-01-02")
+			}
 			match = true
 		}
 
@@ -122,16 +168,16 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 }
 
 func (p *InputParser) parseString(input string) ([]string, []string) {
-	var positive []string
-	var negative []string
+	var include []string
+	var exclude []string
 	for _, str := range strings.Split(input, ",") {
 		if strings.HasPrefix(str, "-") {
-			negative = append(negative, str[1:])
+			exclude = append(exclude, str[1:])
 		} else {
-			positive = append(positive, str)
+			include = append(include, str)
 		}
 	}
-	return positive, negative
+	return include, exclude
 }
 
 func (p *InputParser) parseBool(input string) bool {
