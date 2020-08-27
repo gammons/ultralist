@@ -6,11 +6,11 @@ import (
 	"strconv"
 )
 
-// Parser is a legacy class that parses various
-type Parser struct{}
+// NoteParser is a legacy class that parses various
+type NoteParser struct{}
 
 // ParseAddNote is adding a note to an todo.
-func (p *Parser) ParseAddNote(todo *Todo, input string) bool {
+func (p *NoteParser) ParseAddNote(todo *Todo, input string) bool {
 	r, _ := regexp.Compile(`^an\s+\d+\s+(.*)`)
 	matches := r.FindStringSubmatch(input)
 	if len(matches) != 2 {
@@ -22,7 +22,7 @@ func (p *Parser) ParseAddNote(todo *Todo, input string) bool {
 }
 
 // ParseDeleteNote is deleting a note from an todo.
-func (p *Parser) ParseDeleteNote(todo *Todo, input string) bool {
+func (p *NoteParser) ParseDeleteNote(todo *Todo, input string) bool {
 	r, _ := regexp.Compile(`^dn\s+\d+\s+(\d+)`)
 	matches := r.FindStringSubmatch(input)
 	if len(matches) != 2 {
@@ -44,7 +44,7 @@ func (p *Parser) ParseDeleteNote(todo *Todo, input string) bool {
 }
 
 // ParseEditNote is editing a note from an todo.
-func (p *Parser) ParseEditNote(todo *Todo, input string) bool {
+func (p *NoteParser) ParseEditNote(todo *Todo, input string) bool {
 	r, _ := regexp.Compile(`^en\s+\d+\s+(\d+)\s+(.*)`)
 	matches := r.FindStringSubmatch(input)
 	if len(matches) != 3 {
@@ -66,7 +66,7 @@ func (p *Parser) ParseEditNote(todo *Todo, input string) bool {
 }
 
 // ParseShowNote is defining if notes should be shown or not.
-func (p *Parser) ParseShowNote(todo *Todo, input string) bool {
+func (p *NoteParser) ParseShowNote(todo *Todo, input string) bool {
 	r, _ := regexp.Compile(`^n\s+\d+`)
 	matches := r.FindStringSubmatch(input)
 	if len(matches) != 1 {
@@ -75,7 +75,7 @@ func (p *Parser) ParseShowNote(todo *Todo, input string) bool {
 	return true
 }
 
-func (p *Parser) getNoteID(input string) (int, error) {
+func (p *NoteParser) getNoteID(input string) (int, error) {
 	ret, err := strconv.Atoi(input)
 	if err != nil {
 		fmt.Println("wrong note id")

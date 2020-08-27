@@ -184,7 +184,7 @@ func (a *App) HandleNotes(input string) {
 		fmt.Println("No such id.")
 		return
 	}
-	parser := &Parser{}
+	parser := &NoteParser{}
 
 	if parser.ParseAddNote(todo, input) {
 		fmt.Println("Note added.")
