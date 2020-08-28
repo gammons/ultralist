@@ -367,8 +367,6 @@ func (a *App) SetupSync() {
 	}
 
 	idx, _, _ := prompt2.Run()
-	// a.EventLogger.CurrentSyncedList.Name = response.Todolists[idx].Name
-	// a.EventLogger.CurrentSyncedList.UUID = response.Todolists[idx].UUID
 	a.TodoList = &response.Todolists[idx]
 	a.TodoStore.Save(a.TodoList.Data)
 
@@ -421,7 +419,6 @@ func (a *App) load() error {
 	}
 	a.TodoList.Load(todos)
 	a.EventLogger = NewEventLogger(a.TodoList, a.TodoStore)
-	a.EventLogger.LoadSyncedLists()
 	return nil
 }
 
