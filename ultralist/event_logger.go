@@ -61,11 +61,16 @@ func NewEventLogger(todoList *TodoList, store Store) *EventLogger {
 		previousTodos = append(previousTodos, &newTodo)
 	}
 	var previousTodoList = &TodoList{Data: previousTodos}
-	return &EventLogger{
+
+	eventLogger := &EventLogger{
 		CurrentTodoList:  todoList,
 		PreviousTodoList: previousTodoList,
 		Store:            store,
 	}
+
+	eventLogger.loadSyncedLists()
+
+	return eventLogger
 }
 
 // ProcessEvents processes all events that occurred when ultralist ran and write them to a log file.
@@ -112,10 +117,12 @@ func (e *EventLogger) ClearEventLogs() {
 	e.WriteSyncedLists()
 }
 
-// LoadSyncedLists is loading a synced list.
-func (e *EventLogger) LoadSyncedLists() {
+// LoadSyncedLists - load all currently synced lists from ~/.config/ultralist/synced_lists.json
+// marshal them into SyncedList structs, and store them in []SyncedLists
+// if the current list is not in that file, then initialize a new synced list with the info we know about the current todo list.
+func (e *EventLogger) loadSyncedLists() {
 	if _, err := os.Stat(e.syncedListsFile()); os.IsNotExist(err) {
-		e.initializeSyncedList()
+		e.initializeSyncedListFromCurrentTodoList()
 		return
 	}
 
@@ -133,13 +140,20 @@ func (e *EventLogger) LoadSyncedLists() {
 		}
 	}
 
-	e.initializeSyncedList()
+	e.initializeSyncedListFromCurrentTodoList()
 }
 
-func (e *EventLogger) initializeSyncedList() {
+func (e *EventLogger) initializeSyncedListFromCurrentTodoList() {
+
+	listUUID := e.CurrentTodoList.UUID
+	if listUUID == "" {
+		listUUID = newUUID()
+	}
+
 	list := &SyncedList{
 		Filename: e.Store.GetLocation(),
-		UUID:     newUUID(),
+		Name:     e.CurrentTodoList.Name,
+		UUID:     listUUID,
 	}
 	e.SyncedLists = append(e.SyncedLists, list)
 	e.CurrentSyncedList = list
