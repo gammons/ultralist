@@ -60,7 +60,7 @@ func (a *App) InitializeRepo() {
 
 // AddTodo is adding a new todo.
 func (a *App) AddTodo(input string) {
-	a.Load()
+	a.load()
 	parser := &InputParser{}
 
 	filter, err := parser.Parse(input)
@@ -83,7 +83,7 @@ func (a *App) AddTodo(input string) {
 
 // DeleteTodo deletes a todo.
 func (a *App) DeleteTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -95,7 +95,7 @@ func (a *App) DeleteTodo(input string) {
 
 // CompleteTodo completes a todo.
 func (a *App) CompleteTodo(input string, archive bool) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -110,7 +110,7 @@ func (a *App) CompleteTodo(input string, archive bool) {
 
 // UncompleteTodo uncompletes a todo.
 func (a *App) UncompleteTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -122,7 +122,7 @@ func (a *App) UncompleteTodo(input string) {
 
 // ArchiveTodo archives a todo.
 func (a *App) ArchiveTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -134,7 +134,7 @@ func (a *App) ArchiveTodo(input string) {
 
 // UnarchiveTodo unarchives a todo.
 func (a *App) UnarchiveTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -146,7 +146,7 @@ func (a *App) UnarchiveTodo(input string) {
 
 // EditTodo edits a todo with the given input.
 func (a *App) EditTodo(todoID int, input string) {
-	a.Load()
+	a.load()
 	todo := a.TodoList.FindByID(todoID)
 	if todo == nil {
 		fmt.Println("No todo with that id.")
@@ -171,7 +171,7 @@ func (a *App) EditTodo(todoID int, input string) {
 
 // HandleNotes is a sub-function that will handle notes on a todo.
 func (a *App) HandleNotes(input string) {
-	a.Load()
+	a.load()
 
 	id, err := a.getID(input)
 	if err != nil {
@@ -203,7 +203,7 @@ func (a *App) HandleNotes(input string) {
 
 // ArchiveCompleted will archive all completed todos.
 func (a *App) ArchiveCompleted() {
-	a.Load()
+	a.load()
 	for _, todo := range a.TodoList.Todos() {
 		if todo.Completed {
 			todo.Archive()
@@ -215,7 +215,7 @@ func (a *App) ArchiveCompleted() {
 
 // ListTodos will list all todos.
 func (a *App) ListTodos(input string, showNotes bool, showStatus bool) {
-	a.Load()
+	a.load()
 
 	parser := &InputParser{}
 
@@ -233,7 +233,7 @@ func (a *App) ListTodos(input string, showNotes bool, showStatus bool) {
 
 // PrioritizeTodo will prioritize a todo.
 func (a *App) PrioritizeTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -245,7 +245,7 @@ func (a *App) PrioritizeTodo(input string) {
 
 // UnprioritizeTodo unprioritizes a todo.
 func (a *App) UnprioritizeTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -257,7 +257,7 @@ func (a *App) UnprioritizeTodo(input string) {
 
 // StartTodo will start a todo.
 func (a *App) SetTodoStatus(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -272,7 +272,7 @@ func (a *App) SetTodoStatus(input string) {
 
 // GarbageCollect will delete all archived todos.
 func (a *App) GarbageCollect() {
-	a.Load()
+	a.load()
 	a.TodoList.GarbageCollect()
 	a.save()
 	fmt.Println("Garbage collection complete.")
@@ -286,7 +286,7 @@ func (a *App) Sync(quiet bool) {
 		return
 	}
 
-	a.Load()
+	a.load()
 	if !a.TodoList.IsSynced {
 		fmt.Println("This list isn't currently syncing with ultralist.io.  Please run `ultralist sync --setup` to set up syncing.")
 		return
@@ -315,7 +315,7 @@ func (a *App) SetupSync() {
 	}
 
 	if a.TodoStore.LocalTodosFileExists() {
-		a.Load()
+		a.load()
 
 		if a.TodoList.IsSynced {
 			fmt.Println("This list is already sycned with ultralist.io. Use the --unsync flag to stop syncing this list.")
@@ -384,7 +384,7 @@ func (a *App) Unsync() {
 		return
 	}
 
-	a.Load()
+	a.load()
 
 	if !a.TodoList.IsSynced {
 		fmt.Println("This list isn't currently syncing with ultralist.io.")
@@ -413,8 +413,8 @@ func (a *App) AuthWorkflow() {
 	webapp.Run()
 }
 
-// Load the todolist from the todo store.
-func (a *App) Load() error {
+// load the todolist from the todo store.
+func (a *App) load() error {
 	todos, err := a.TodoStore.Load()
 	if err != nil {
 		return err
@@ -427,7 +427,7 @@ func (a *App) Load() error {
 
 // OpenWeb is opening the current list on ultralist.io in your browser.
 func (a *App) OpenWeb() {
-	a.Load()
+	a.load()
 	if !a.TodoList.IsSynced {
 		fmt.Println("This list isn't synced! Use 'ultralist sync' to synchronize this list with ultralist.io.")
 		return
