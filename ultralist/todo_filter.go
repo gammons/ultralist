@@ -59,10 +59,6 @@ func (f *TodoFilter) ApplyFilter() []*Todo {
 		}
 
 		if f.Filter.HasDueBefore {
-			if todo.Due == "" {
-				continue
-			}
-
 			todoTime, _ := time.Parse(DATE_FORMAT, todo.Due)
 			dueBeforeTime, _ := time.Parse(DATE_FORMAT, f.Filter.DueBefore)
 
@@ -72,10 +68,6 @@ func (f *TodoFilter) ApplyFilter() []*Todo {
 		}
 
 		if f.Filter.HasDueAfter {
-			if todo.Due == "" {
-				continue
-			}
-
 			todoTime, _ := time.Parse(DATE_FORMAT, todo.Due)
 			dueAfterTime, _ := time.Parse(DATE_FORMAT, f.Filter.DueAfter)
 
