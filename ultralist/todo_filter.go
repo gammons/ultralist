@@ -15,55 +15,47 @@ func (f *TodoFilter) ApplyFilter() []*Todo {
 	var filtered []*Todo
 
 	for _, todo := range f.Todos {
-
 		if f.Filter.HasIsPriority {
-			if todo.IsPriority == f.Filter.IsPriority {
-				filtered = append(filtered, todo)
+			if todo.IsPriority != f.Filter.IsPriority {
+				continue
 			}
-			continue
 		}
 
 		if f.Filter.HasCompleted {
-			if todo.Completed == f.Filter.Completed {
-				filtered = append(filtered, todo)
+			if todo.Completed != f.Filter.Completed {
+				continue
 			}
-			continue
 		}
 
 		if f.Filter.HasArchived {
-			if todo.Archived == f.Filter.Archived {
-				filtered = append(filtered, todo)
+			if todo.Archived != f.Filter.Archived {
+				continue
 			}
-			continue
 		}
 
 		if f.Filter.HasStatus {
-			if f.todoPassesFilter([]string{todo.Status}, f.Filter.Status, f.Filter.ExcludeStatus) {
-				filtered = append(filtered, todo)
+			if !f.todoPassesFilter([]string{todo.Status}, f.Filter.Status, f.Filter.ExcludeStatus) {
+				continue
 			}
-			continue
 		}
 
 		if f.Filter.HasProjectFilter {
-			if f.todoPassesFilter(todo.Projects, f.Filter.Projects, f.Filter.ExcludeProjects) {
-				filtered = append(filtered, todo)
+			if !f.todoPassesFilter(todo.Projects, f.Filter.Projects, f.Filter.ExcludeProjects) {
+				continue
 			}
-			continue
 		}
 
 		if f.Filter.HasContextFilter {
-			if f.todoPassesFilter(todo.Contexts, f.Filter.Contexts, f.Filter.ExcludeContexts) {
-				filtered = append(filtered, todo)
+			if !f.todoPassesFilter(todo.Contexts, f.Filter.Contexts, f.Filter.ExcludeContexts) {
+				continue
 			}
-			continue
 		}
 
 		// has exact due date
 		if f.Filter.HasDue {
-			if todo.Due == f.Filter.Due {
-				filtered = append(filtered, todo)
+			if todo.Due != f.Filter.Due {
+				continue
 			}
-			continue
 		}
 
 		if f.Filter.HasDueBefore {
@@ -74,10 +66,9 @@ func (f *TodoFilter) ApplyFilter() []*Todo {
 			todoTime, _ := time.Parse("2006-01-02", todo.Due)
 			dueBeforeTime, _ := time.Parse("2006-01-02", f.Filter.DueBefore)
 
-			if todoTime.Before(dueBeforeTime) {
-				filtered = append(filtered, todo)
+			if !todoTime.Before(dueBeforeTime) {
+				continue
 			}
-			continue
 		}
 
 		if f.Filter.HasDueAfter {
@@ -88,12 +79,12 @@ func (f *TodoFilter) ApplyFilter() []*Todo {
 			todoTime, _ := time.Parse("2006-01-02", todo.Due)
 			dueAfterTime, _ := time.Parse("2006-01-02", f.Filter.DueAfter)
 
-			if todoTime.After(dueAfterTime) {
-				filtered = append(filtered, todo)
+			if !todoTime.After(dueAfterTime) {
+				continue
 			}
-			continue
 		}
 
+		// finally, if we're still here, append the todo to the filtered list
 		filtered = append(filtered, todo)
 	}
 
