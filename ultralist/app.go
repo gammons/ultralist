@@ -501,7 +501,6 @@ func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 	} else if projectRegex.MatchString(input) {
 		grouped = grouper.GroupByProject(todos)
 	} else if statusRegex.MatchString(input) {
-		fmt.Println("grouping by status")
 		grouped = grouper.GroupByStatus(todos)
 	} else {
 		grouped = grouper.GroupByNothing(todos)
