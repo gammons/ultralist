@@ -56,28 +56,28 @@ func (dp *DateParser) tuesday(day time.Time) time.Time {
 }
 
 func (dp *DateParser) wednesday(day time.Time) time.Time {
-	tue := getNearestMonday(day).AddDate(0, 0, 2)
-	return dp.thisOrNextWeek(tue, day)
+	wed := getNearestMonday(day).AddDate(0, 0, 2)
+	return dp.thisOrNextWeek(wed, day)
 }
 
 func (dp *DateParser) thursday(day time.Time) time.Time {
-	tue := getNearestMonday(day).AddDate(0, 0, 3)
-	return dp.thisOrNextWeek(tue, day)
+	thu := getNearestMonday(day).AddDate(0, 0, 3)
+	return dp.thisOrNextWeek(thu, day)
 }
 
 func (dp *DateParser) friday(day time.Time) time.Time {
-	tue := getNearestMonday(day).AddDate(0, 0, 4)
-	return dp.thisOrNextWeek(tue, day)
+	fri := getNearestMonday(day).AddDate(0, 0, 4)
+	return dp.thisOrNextWeek(fri, day)
 }
 
 func (dp *DateParser) saturday(day time.Time) time.Time {
-	tue := getNearestMonday(day).AddDate(0, 0, 5)
-	return dp.thisOrNextWeek(tue, day)
+	sat := getNearestMonday(day).AddDate(0, 0, 5)
+	return dp.thisOrNextWeek(sat, day)
 }
 
 func (dp *DateParser) sunday(day time.Time) time.Time {
-	tue := getNearestMonday(day).AddDate(0, 0, 6)
-	return dp.thisOrNextWeek(tue, day)
+	sun := getNearestMonday(day).AddDate(0, 0, 6)
+	return dp.thisOrNextWeek(sun, day)
 }
 
 func (dp *DateParser) thisOrNextWeek(day time.Time, pivotDay time.Time) time.Time {
