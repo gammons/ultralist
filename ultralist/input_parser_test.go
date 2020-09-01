@@ -19,7 +19,7 @@ func TestInputParser(t *testing.T) {
 	assert.Equal("now", filter.Status[0])
 	assert.Equal("next", filter.Status[1])
 
-	tomorrow := time.Now().AddDate(0, 0, 1).Format("2006-01-02")
+	tomorrow := time.Now().AddDate(0, 0, 1).Format(DATE_FORMAT)
 	assert.Equal(tomorrow, filter.Due)
 	assert.Equal("do this thing", filter.Subject)
 }
@@ -31,7 +31,7 @@ func TestSubject(t *testing.T) {
 	filter, _ := parser.Parse("due:tom here is the subject")
 
 	assert.Equal("here is the subject", filter.Subject)
-	tomorrow := time.Now().AddDate(0, 0, 1).Format("2006-01-02")
+	tomorrow := time.Now().AddDate(0, 0, 1).Format(DATE_FORMAT)
 	assert.Equal(tomorrow, filter.Due)
 }
 

@@ -37,10 +37,10 @@ func (t Todo) Valid() bool {
 // CalculateDueTime is calculating the due time of the todo item.
 func (t Todo) CalculateDueTime() time.Time {
 	if t.Due != "" {
-		parsedTime, _ := time.Parse("2006-01-02", t.Due)
+		parsedTime, _ := time.Parse(DATE_FORMAT, t.Due)
 		return parsedTime
 	}
-	parsedTime, _ := time.Parse("2006-01-02", "1900-01-01")
+	parsedTime, _ := time.Parse(DATE_FORMAT, "1900-01-01")
 	return parsedTime
 }
 
@@ -81,7 +81,7 @@ func (t *Todo) Unprioritize() {
 // CompletedDateToDate is returning the date when an item was completed.
 func (t Todo) CompletedDateToDate() string {
 	parsedTime, _ := time.Parse(iso8601TimestampFormat, t.CompletedDate)
-	return parsedTime.Format("2006-01-02")
+	return parsedTime.Format(DATE_FORMAT)
 }
 
 // HasNotes is showing if an todo has notes.

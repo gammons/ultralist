@@ -34,7 +34,7 @@ func TestCreateTodoWithDue(t *testing.T) {
 
 	todo, _ := CreateTodo(filter)
 	assert.Equal("subject with a +project and @context", todo.Subject)
-	assert.Equal(tomorrow.Format("2006-01-02"), todo.Due)
+	assert.Equal(tomorrow.Format(DATE_FORMAT), todo.Due)
 	assert.Equal(false, todo.IsPriority)
 	assert.Equal(false, todo.Archived)
 	assert.Equal(false, todo.Completed)

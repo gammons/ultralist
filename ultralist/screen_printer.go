@@ -113,7 +113,7 @@ func (f *ScreenPrinter) formatDue(due string, isPriority bool, completed bool) s
 	if due == "" {
 		return white.Sprint("          ")
 	}
-	dueTime, _ := time.Parse("2006-01-02", due)
+	dueTime, _ := time.Parse(DATE_FORMAT, due)
 
 	if isPriority {
 		return f.printPriorityDue(dueTime, completed)

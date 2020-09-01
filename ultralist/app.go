@@ -14,7 +14,8 @@ import (
 
 // Current version of ultralist.
 const (
-	VERSION string = "1.5"
+	VERSION     string = "1.5"
+	DATE_FORMAT string = "2006-01-02"
 )
 
 // App is the giving you the structure of the ultralist app.

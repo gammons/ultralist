@@ -94,7 +94,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			if dueDate.IsZero() {
 				filter.DueBefore = ""
 			} else {
-				filter.DueBefore = dueDate.Format("2006-01-02")
+				filter.DueBefore = dueDate.Format(DATE_FORMAT)
 			}
 			match = true
 		}
@@ -110,7 +110,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			if dueDate.IsZero() {
 				filter.Due = ""
 			} else {
-				filter.Due = dueDate.Format("2006-01-02")
+				filter.Due = dueDate.Format(DATE_FORMAT)
 			}
 			match = true
 		}
@@ -126,7 +126,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			if dueDate.IsZero() {
 				filter.DueAfter = ""
 			} else {
-				filter.DueAfter = dueDate.Format("2006-01-02")
+				filter.DueAfter = dueDate.Format(DATE_FORMAT)
 			}
 			match = true
 		}

@@ -113,7 +113,7 @@ func TestFilterDue(t *testing.T) {
 	todoFilter := &TodoFilter{
 		Filter: &Filter{
 			HasDue: true,
-			Due:    time.Now().Format("2006-01-02"),
+			Due:    time.Now().Format(DATE_FORMAT),
 		},
 		Todos: SetupTodoList(),
 	}
@@ -130,7 +130,7 @@ func TestFilterDueBefore(t *testing.T) {
 	todoFilter := &TodoFilter{
 		Filter: &Filter{
 			HasDueBefore: true,
-			DueBefore:    time.Now().Format("2006-01-02"),
+			DueBefore:    time.Now().Format(DATE_FORMAT),
 		},
 		Todos: SetupTodoList(),
 	}
@@ -147,7 +147,7 @@ func TestFilterDueAfter(t *testing.T) {
 	todoFilter := &TodoFilter{
 		Filter: &Filter{
 			HasDueAfter: true,
-			DueAfter:    time.Now().Format("2006-01-02"),
+			DueAfter:    time.Now().Format(DATE_FORMAT),
 		},
 		Todos: SetupTodoList(),
 	}

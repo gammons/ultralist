@@ -45,8 +45,8 @@ func TestGroupByContextSortedByDueDate(t *testing.T) {
 	assert := assert.New(t)
 
 	var list []*Todo
-	list = append(list, &Todo{Subject: "a - one", IsPriority: false, Due: time.Now().Format("2006-01-02")})
-	list = append(list, &Todo{Subject: "b - two", IsPriority: false, Due: time.Now().AddDate(0, 0, -1).Format("2006-01-02")})
+	list = append(list, &Todo{Subject: "a - one", IsPriority: false, Due: time.Now().Format(DATE_FORMAT)})
+	list = append(list, &Todo{Subject: "b - two", IsPriority: false, Due: time.Now().AddDate(0, 0, -1).Format(DATE_FORMAT)})
 	list = append(list, &Todo{Subject: "c - three", IsPriority: false, Due: ""})
 
 	grouper := &Grouper{}
@@ -59,8 +59,8 @@ func TestGroupByContextSortedByDueDateWithNoDuePriority(t *testing.T) {
 	assert := assert.New(t)
 
 	var list []*Todo
-	list = append(list, &Todo{Subject: "a - one", IsPriority: false, Due: time.Now().Format("2006-01-02")})
-	list = append(list, &Todo{Subject: "b - two", IsPriority: false, Due: time.Now().AddDate(0, 0, -1).Format("2006-01-02")})
+	list = append(list, &Todo{Subject: "a - one", IsPriority: false, Due: time.Now().Format(DATE_FORMAT)})
+	list = append(list, &Todo{Subject: "b - two", IsPriority: false, Due: time.Now().AddDate(0, 0, -1).Format(DATE_FORMAT)})
 	list = append(list, &Todo{Subject: "c - three", IsPriority: true, Due: ""})
 
 	grouper := &Grouper{}
@@ -73,8 +73,8 @@ func TestGroupByContextSortedByDueDateWithPriority(t *testing.T) {
 	assert := assert.New(t)
 
 	var list []*Todo
-	list = append(list, &Todo{Subject: "a - one", IsPriority: true, Due: time.Now().Format("2006-01-02")})
-	list = append(list, &Todo{Subject: "b - two", IsPriority: false, Due: time.Now().AddDate(0, 0, -1).Format("2006-01-02")})
+	list = append(list, &Todo{Subject: "a - one", IsPriority: true, Due: time.Now().Format(DATE_FORMAT)})
+	list = append(list, &Todo{Subject: "b - two", IsPriority: false, Due: time.Now().AddDate(0, 0, -1).Format(DATE_FORMAT)})
 	list = append(list, &Todo{Subject: "c - three", IsPriority: false, Due: ""})
 
 	grouper := &Grouper{}
@@ -87,8 +87,8 @@ func TestGroupByContextSortedByDueDateWithArchived(t *testing.T) {
 	assert := assert.New(t)
 
 	var list []*Todo
-	list = append(list, &Todo{Subject: "a - one", IsPriority: true, Archived: true, Due: time.Now().Format("2006-01-02")})
-	list = append(list, &Todo{Subject: "b - two", IsPriority: false, Archived: true, Due: time.Now().AddDate(0, 0, -1).Format("2006-01-02")})
+	list = append(list, &Todo{Subject: "a - one", IsPriority: true, Archived: true, Due: time.Now().Format(DATE_FORMAT)})
+	list = append(list, &Todo{Subject: "b - two", IsPriority: false, Archived: true, Due: time.Now().AddDate(0, 0, -1).Format(DATE_FORMAT)})
 	list = append(list, &Todo{Subject: "c - three", IsPriority: false, Due: ""})
 
 	grouper := &Grouper{}
