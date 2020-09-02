@@ -62,31 +62,31 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 
 	for _, word := range strings.Split(input, " ") {
 		match := false
-		r1, _ := regexp.Compile(`archived:.*$`)
-		if r1.MatchString(word) {
+		r, _ := regexp.Compile(`archived:.*$`)
+		if r.MatchString(word) {
 			filter.HasArchived = true
-			filter.Archived = p.parseBool(r1.FindString(word)[9:])
+			filter.Archived = p.parseBoolString(r.FindString(word)[9:])
 			match = true
 		}
 
-		r2, _ := regexp.Compile(`priority:.*$`)
-		if r2.MatchString(word) {
+		r, _ = regexp.Compile(`priority:.*$`)
+		if r.MatchString(word) {
 			filter.HasIsPriority = true
-			filter.IsPriority = p.parseBool(r2.FindString(word)[9:])
+			filter.IsPriority = p.parseBoolString(r.FindString(word)[9:])
 			match = true
 		}
 
-		r3, _ := regexp.Compile(`completed:.*$`)
-		if r3.MatchString(word) {
+		r, _ = regexp.Compile(`completed:.*$`)
+		if r.MatchString(word) {
 			filter.HasCompleted = true
-			filter.Completed = p.parseBool(r3.FindString(word)[10:])
+			filter.Completed = p.parseBoolString(r.FindString(word)[10:])
 			match = true
 		}
 
-		rDueBefore, _ := regexp.Compile(`duebefore:.*$`)
-		if rDueBefore.MatchString(word) {
+		r, _ = regexp.Compile(`duebefore:.*$`)
+		if r.MatchString(word) {
 			filter.HasDueBefore = true
-			dueDate, err := dateParser.ParseDate(rDueBefore.FindString(word)[10:], time.Now())
+			dueDate, err := dateParser.ParseDate(r.FindString(word)[10:], time.Now())
 			if err != nil {
 				return filter, err
 			}
@@ -99,10 +99,10 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			match = true
 		}
 
-		rDue, _ := regexp.Compile(`due:.*$`)
-		if rDue.MatchString(word) {
+		r, _ = regexp.Compile(`due:.*$`)
+		if r.MatchString(word) {
 			filter.HasDue = true
-			dueDate, err := dateParser.ParseDate(rDue.FindString(word)[4:], time.Now())
+			dueDate, err := dateParser.ParseDate(r.FindString(word)[4:], time.Now())
 			if err != nil {
 				return filter, err
 			}
@@ -115,10 +115,10 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			match = true
 		}
 
-		rDueAfter, _ := regexp.Compile(`dueafter:.*$`)
-		if rDueAfter.MatchString(word) {
+		r, _ = regexp.Compile(`dueafter:.*$`)
+		if r.MatchString(word) {
 			filter.HasDueAfter = true
-			dueDate, err := dateParser.ParseDate(rDueAfter.FindString(word)[9:], time.Now())
+			dueDate, err := dateParser.ParseDate(r.FindString(word)[9:], time.Now())
 			if err != nil {
 				return filter, err
 			}
@@ -131,30 +131,30 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			match = true
 		}
 
-		r5, _ := regexp.Compile(`status:.*$`)
-		if r5.MatchString(word) {
+		r, _ = regexp.Compile(`status:.*$`)
+		if r.MatchString(word) {
 			filter.HasStatus = true
-			filter.Status, filter.ExcludeStatus = p.parseString(r5.FindString(word)[7:])
+			filter.Status, filter.ExcludeStatus = p.parseString(r.FindString(word)[7:])
 			match = true
 		}
 
-		r6, _ := regexp.Compile(`completedat:.*$`)
-		if r6.MatchString(word) {
+		r, _ = regexp.Compile(`completedat:.*$`)
+		if r.MatchString(word) {
 			filter.HasCompletedAt = true
-			filter.CompletedAt, _ = p.parseString(r6.FindString(word)[7:])
+			filter.CompletedAt, _ = p.parseString(r.FindString(word)[12:])
 			match = true
 		}
 
-		r7, _ := regexp.Compile(`project:.*$`)
-		if r7.MatchString(word) {
+		r, _ = regexp.Compile(`project:.*$`)
+		if r.MatchString(word) {
 			filter.HasProjectFilter = true
-			filter.Projects, filter.ExcludeProjects = p.parseString(r7.FindString(word)[8:])
+			filter.Projects, filter.ExcludeProjects = p.parseString(r.FindString(word)[8:])
 		}
 
-		r8, _ := regexp.Compile(`context:.*$`)
-		if r8.MatchString(word) {
+		r, _ = regexp.Compile(`context:.*$`)
+		if r.MatchString(word) {
 			filter.HasContextFilter = true
-			filter.Contexts, filter.ExcludeContexts = p.parseString(r8.FindString(word)[8:])
+			filter.Contexts, filter.ExcludeContexts = p.parseString(r.FindString(word)[8:])
 		}
 
 		if !match {
@@ -180,7 +180,7 @@ func (p *InputParser) parseString(input string) ([]string, []string) {
 	return include, exclude
 }
 
-func (p *InputParser) parseBool(input string) bool {
+func (p *InputParser) parseBoolString(input string) bool {
 	return input == "true"
 }
 
