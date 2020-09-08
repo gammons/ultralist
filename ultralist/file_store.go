@@ -38,10 +38,7 @@ func (f *FileStore) LocalTodosFileExists() bool {
 	dir, _ := os.Getwd()
 	localrepo := filepath.Join(dir, TodosJSONFile)
 	_, err := os.Stat(localrepo)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 // Load is loading a .todos.json file, either from cwd, or the home directory
@@ -84,7 +81,9 @@ func (f *FileStore) Save(todos []*Todo) {
 // GetLocation is returning the location of the .todos.json file.
 func (f *FileStore) GetLocation() string {
 	if f.LocalTodosFileExists() {
-		return TodosJSONFile
+		dir, _ := os.Getwd()
+		localrepo := filepath.Join(dir, TodosJSONFile)
+		return localrepo
 	}
 	return fmt.Sprintf("%s/%s", UserHomeDir(), TodosJSONFile)
 }
