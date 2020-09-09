@@ -6,7 +6,7 @@
 
 Ultralist is a task management system for technical people. It is command-line component that is very fast and stays out of the way. 
 
-Ultralist is based off of the [Getting Things Done](gtd) system. It has a concept of due dates, projects, and contexts.
+Ultralist is based off of the [Getting Things Done][gtd] system. It has a concept of due dates, projects, and contexts.
 
 [![asciicast](https://asciinema.org/a/226005.svg)](https://asciinema.org/a/226005)
 
