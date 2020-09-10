@@ -2,6 +2,7 @@ package ultralist
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -13,7 +14,8 @@ import (
 
 // Current version of ultralist.
 const (
-	VERSION string = "1.2"
+	VERSION     string = "1.5"
+	DATE_FORMAT string = "2006-01-02"
 )
 
 // App is the giving you the structure of the ultralist app.
@@ -59,43 +61,30 @@ func (a *App) InitializeRepo() {
 
 // AddTodo is adding a new todo.
 func (a *App) AddTodo(input string) {
-	a.Load()
-	parser := &Parser{}
-	todo := parser.ParseNewTodo(input)
-	if todo == nil {
+	a.load()
+	parser := &InputParser{}
+
+	filter, err := parser.Parse(input)
+	if err != nil {
+		fmt.Println(err.Error())
 		fmt.Println("I need more information. Try something like 'todo a chat with @bob due tom'")
 		return
 	}
 
-	id := a.TodoList.NextID()
-	a.TodoList.Add(todo)
-	a.save()
-	fmt.Printf("Todo %d added.\n", id)
-}
-
-// AddDoneTodo adds a new todo and immediately completed it.
-func (a *App) AddDoneTodo(input string) {
-	a.Load()
-
-	r, _ := regexp.Compile(`^(done)(\s*|)`)
-	input = r.ReplaceAllString(input, "")
-	parser := &Parser{}
-	todo := parser.ParseNewTodo(input)
-	if todo == nil {
-		fmt.Println("I need more information. Try something like 'todo done chating with @bob'")
+	todoItem, err := CreateTodo(filter)
+	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 
-	id := a.TodoList.NextID()
-	a.TodoList.Add(todo)
-	a.TodoList.Complete(id)
+	a.TodoList.Add(todoItem)
 	a.save()
-	fmt.Printf("Completed Todo %d added.\n", id)
+	fmt.Printf("Todo %d added.\n", todoItem.ID)
 }
 
 // DeleteTodo deletes a todo.
 func (a *App) DeleteTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -107,7 +96,7 @@ func (a *App) DeleteTodo(input string) {
 
 // CompleteTodo completes a todo.
 func (a *App) CompleteTodo(input string, archive bool) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -122,7 +111,7 @@ func (a *App) CompleteTodo(input string, archive bool) {
 
 // UncompleteTodo uncompletes a todo.
 func (a *App) UncompleteTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -134,7 +123,7 @@ func (a *App) UncompleteTodo(input string) {
 
 // ArchiveTodo archives a todo.
 func (a *App) ArchiveTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -146,7 +135,7 @@ func (a *App) ArchiveTodo(input string) {
 
 // UnarchiveTodo unarchives a todo.
 func (a *App) UnarchiveTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -157,66 +146,46 @@ func (a *App) UnarchiveTodo(input string) {
 }
 
 // EditTodo edits a todo with the given input.
-func (a *App) EditTodo(input string) {
-	a.Load()
-	id := a.getID(input)
-	if id == -1 {
-		return
-	}
-	todo := a.TodoList.FindByID(id)
+func (a *App) EditTodo(todoID int, input string) {
+	a.load()
+	todo := a.TodoList.FindByID(todoID)
 	if todo == nil {
-		fmt.Println("No such id.")
-		return
-	}
-	parser := &Parser{}
-
-	if parser.ParseEditTodo(todo, input) {
-		a.save()
-		fmt.Println("Todo updated.")
-	}
-}
-
-// ExpandTodo expands a todo.
-func (a *App) ExpandTodo(input string) {
-	a.Load()
-	id := a.getID(input)
-	parser := &Parser{}
-	if id == -1 {
+		fmt.Println("No todo with that id.")
 		return
 	}
 
-	commonProject := parser.ExpandProject(input)
-	todos := strings.LastIndex(input, ":")
-	if commonProject == "" || len(input) <= todos+1 || todos == -1 {
-		fmt.Println("I'm expecting a format like \"ultralist expand <project>: <todo1>, <todo2>, ...")
+	parser := &InputParser{}
+	filter, err := parser.Parse(input)
+	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 
-	newTodos := strings.Split(input[todos+1:], ",")
-
-	for _, todo := range newTodos {
-		args := []string{"add ", commonProject, " ", todo}
-		a.AddTodo(strings.Join(args, ""))
+	if err = EditTodo(todo, filter); err != nil {
+		fmt.Println(err.Error())
+		return
 	}
 
-	a.TodoList.Delete(id)
 	a.save()
-	fmt.Println("Todo expanded.")
+	fmt.Println("Todo updated.")
 }
 
 // HandleNotes is a sub-function that will handle notes on a todo.
 func (a *App) HandleNotes(input string) {
-	a.Load()
-	id := a.getID(input)
-	if id == -1 {
+	a.load()
+
+	id, err := a.getID(input)
+	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
+
 	todo := a.TodoList.FindByID(id)
 	if todo == nil {
 		fmt.Println("No such id.")
 		return
 	}
-	parser := &Parser{}
+	parser := &NoteParser{}
 
 	if parser.ParseAddNote(todo, input) {
 		fmt.Println("Note added.")
@@ -235,7 +204,7 @@ func (a *App) HandleNotes(input string) {
 
 // ArchiveCompleted will archive all completed todos.
 func (a *App) ArchiveCompleted() {
-	a.Load()
+	a.load()
 	for _, todo := range a.TodoList.Todos() {
 		if todo.Completed {
 			todo.Archive()
@@ -247,16 +216,25 @@ func (a *App) ArchiveCompleted() {
 
 // ListTodos will list all todos.
 func (a *App) ListTodos(input string, showNotes bool, showStatus bool) {
-	a.Load()
-	filtered := NewFilter(a.TodoList.Todos()).Filter(input)
-	grouped := a.getGroups(input, filtered)
+	a.load()
+
+	parser := &InputParser{}
+
+	filter, err := parser.Parse(input)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	todoFilter := &TodoFilter{Todos: a.TodoList.Todos(), Filter: filter}
+	grouped := a.getGroups(input, todoFilter.ApplyFilter())
 
 	a.Printer.Print(grouped, showNotes, showStatus)
 }
 
 // PrioritizeTodo will prioritize a todo.
 func (a *App) PrioritizeTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -268,7 +246,7 @@ func (a *App) PrioritizeTodo(input string) {
 
 // UnprioritizeTodo unprioritizes a todo.
 func (a *App) UnprioritizeTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -280,7 +258,7 @@ func (a *App) UnprioritizeTodo(input string) {
 
 // StartTodo will start a todo.
 func (a *App) SetTodoStatus(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -295,7 +273,7 @@ func (a *App) SetTodoStatus(input string) {
 
 // GarbageCollect will delete all archived todos.
 func (a *App) GarbageCollect() {
-	a.Load()
+	a.load()
 	a.TodoList.GarbageCollect()
 	a.save()
 	fmt.Println("Garbage collection complete.")
@@ -309,7 +287,7 @@ func (a *App) Sync(quiet bool) {
 		return
 	}
 
-	a.Load()
+	a.load()
 	if !a.TodoList.IsSynced {
 		fmt.Println("This list isn't currently syncing with ultralist.io.  Please run `ultralist sync --setup` to set up syncing.")
 		return
@@ -338,7 +316,7 @@ func (a *App) SetupSync() {
 	}
 
 	if a.TodoStore.LocalTodosFileExists() {
-		a.Load()
+		a.load()
 
 		if a.TodoList.IsSynced {
 			fmt.Println("This list is already sycned with ultralist.io. Use the --unsync flag to stop syncing this list.")
@@ -405,7 +383,7 @@ func (a *App) Unsync() {
 		return
 	}
 
-	a.Load()
+	a.load()
 
 	if !a.TodoList.IsSynced {
 		fmt.Println("This list isn't currently syncing with ultralist.io.")
@@ -434,8 +412,8 @@ func (a *App) AuthWorkflow() {
 	webapp.Run()
 }
 
-// Load the todolist from the todo store.
-func (a *App) Load() error {
+// load the todolist from the todo store.
+func (a *App) load() error {
 	todos, err := a.TodoStore.Load()
 	if err != nil {
 		return err
@@ -447,7 +425,7 @@ func (a *App) Load() error {
 
 // OpenWeb is opening the current list on ultralist.io in your browser.
 func (a *App) OpenWeb() {
-	a.Load()
+	a.load()
 	if !a.TodoList.IsSynced {
 		fmt.Println("This list isn't synced! Use 'ultralist sync' to synchronize this list with ultralist.io.")
 		return
@@ -468,15 +446,13 @@ func (a *App) save() {
 	}
 }
 
-func (a *App) getID(input string) int {
-	re, _ := regexp.Compile("\\d+")
-	if re.MatchString(input) {
-		id, _ := strconv.Atoi(re.FindString(input))
-		return id
+func (a *App) getID(input string) (int, error) {
+	splitted := strings.Split(input, " ")
+	id, err := strconv.Atoi(splitted[0])
+	if err != nil {
+		return -1, errors.New(fmt.Sprintf("Invalid id: '%s'", splitted[0]))
 	}
-
-	fmt.Println("Invalid id.")
-	return -1
+	return id, nil
 }
 
 func (a *App) getIDs(input string) (ids []int) {
@@ -488,7 +464,7 @@ func (a *App) getIDs(input string) (ids []int) {
 				continue
 			}
 			ids = append(ids, rangedIds...)
-		} else if id := a.getID(idGroup); id != -1 {
+		} else if id, err := a.getID(idGroup); err == nil {
 			ids = append(ids, id)
 		} else {
 			fmt.Printf("Invalid id: %s.\n", idGroup)
@@ -525,7 +501,6 @@ func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 	} else if projectRegex.MatchString(input) {
 		grouped = grouper.GroupByProject(todos)
 	} else if statusRegex.MatchString(input) {
-		fmt.Println("grouping by status")
 		grouped = grouper.GroupByStatus(todos)
 	} else {
 		grouped = grouper.GroupByNothing(todos)
