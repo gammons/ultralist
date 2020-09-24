@@ -59,7 +59,7 @@ func (a *App) InitializeRepo() {
 	fmt.Println("Repo initialized.")
 }
 
-// AddTodo is adding a new todo.
+// AddTodo adds a new todo to the current list
 func (a *App) AddTodo(input string) {
 	a.load()
 	parser := &InputParser{}

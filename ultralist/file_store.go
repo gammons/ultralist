@@ -73,7 +73,7 @@ func (f *FileStore) Save(todos []*Todo) {
 	}
 
 	data, _ := json.Marshal(todos)
-	if err := ioutil.WriteFile(TodosJSONFile, []byte(data), 0644); err != nil {
+	if err := ioutil.WriteFile(f.GetLocation(), []byte(data), 0644); err != nil {
 		fmt.Println("Error writing json file", err)
 	}
 }
