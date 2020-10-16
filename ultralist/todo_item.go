@@ -17,10 +17,10 @@ type Todo struct {
 	Contexts      []string `json:"contexts"`
 	Due           string   `json:"due"`
 	Completed     bool     `json:"completed"`
-	CompletedDate string   `json:"completedDate"`
+	CompletedDate string   `json:"completed_date"`
 	Status        string   `json:"status"`
 	Archived      bool     `json:"archived"`
-	IsPriority    bool     `json:"isPriority"`
+	IsPriority    bool     `json:"is_priority"`
 	Notes         []string `json:"notes"`
 }
 

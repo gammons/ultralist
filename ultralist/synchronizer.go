@@ -114,18 +114,23 @@ type TodolistRequest struct {
 // Request is the struct for a request.
 type Request struct {
 	Events   []*EventLog      `json:"events"`
+	From     string           `json:"from"`
 	Todolist *TodolistRequest `json:"todolist"`
 }
 
 func (s *Synchronizer) doSync(todolist *TodoList, syncedList *SyncedList) {
 	data := s.buildRequest(todolist, syncedList)
-	path := fmt.Sprintf("/api/v1/todo_lists/%s", syncedList.UUID)
+	path := "/api/v1/todo_lists/event_cache"
 
-	bodyBytes := s.Backend.PerformRequest("PUT", path, data)
+	s.Backend.PerformRequest("PUT", path, data)
 
-	// assign the local todolist data to the values that came back from the server.
+	// after performing the request, must do GET request to the todo list in question and fill it out
 	// the server will have the "correct" list, since it will have assimilated all of the change
 	// from various clients.
+
+	path = "/api/v1/todo_lists/" + syncedList.UUID
+	bodyBytes := s.Backend.PerformRequest("GET", path, data)
+
 	var response *TodolistRequest
 	if err := json.Unmarshal(bodyBytes, &response); err != nil {
 		panic(err)
@@ -138,11 +143,11 @@ func (s *Synchronizer) doSync(todolist *TodoList, syncedList *SyncedList) {
 
 func (s *Synchronizer) buildRequest(todolist *TodoList, syncedList *SyncedList) []byte {
 	requestData := &Request{
+		From:   "cli",
 		Events: syncedList.Events,
 		Todolist: &TodolistRequest{
-			UUID:                syncedList.UUID,
-			Name:                syncedList.Name,
-			TodoItemsAttributes: todolist.Data,
+			UUID: syncedList.UUID,
+			Name: syncedList.Name,
 		},
 	}
 	data, _ := json.Marshal(requestData)

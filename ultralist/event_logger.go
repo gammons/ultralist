@@ -36,19 +36,10 @@ type SyncedList struct {
 
 // EventLog is a log of events that occurred, with the todo data.
 type EventLog struct {
-	EventType     string   `json:"eventType"`
-	ID            int      `json:"id"`
-	UUID          string   `json:"uuid"`
-	Subject       string   `json:"subject"`
-	Projects      []string `json:"projects"`
-	Contexts      []string `json:"contexts"`
-	Due           string   `json:"due"`
-	Completed     bool     `json:"completed"`
-	CompletedDate string   `json:"completedDate"`
-	Archived      bool     `json:"archived"`
-	Status        string   `json:"status"`
-	IsPriority    bool     `json:"isPriority"`
-	Notes         []string `json:"notes"`
+	EventType    string `json:"event_type"`
+	ObjectType   string `json:"object_type"`
+	TodoListUUID string `json:"todo_list_uuid"`
+	Object       *Todo  `json:"object"`
 }
 
 // NewEventLogger is creating a new event logger.
@@ -87,11 +78,11 @@ func (e *EventLogger) CreateEventLogs() {
 	for _, todo := range e.CurrentTodoList.Data {
 		previousTodo := e.PreviousTodoList.FindByID(todo.ID)
 		if previousTodo != nil {
-			if todo.Equals(previousTodo) == false {
-				eventLogs = append(eventLogs, e.writeTodoEvent(UpdateEvent, todo))
+			if !todo.Equals(previousTodo) {
+				eventLogs = append(eventLogs, e.writeTodoEvent(UpdateEvent, todo, e.CurrentSyncedList.UUID))
 			}
 		} else {
-			eventLogs = append(eventLogs, e.writeTodoEvent(AddEvent, todo))
+			eventLogs = append(eventLogs, e.writeTodoEvent(AddEvent, todo, e.CurrentSyncedList.UUID))
 		}
 	}
 
@@ -99,7 +90,7 @@ func (e *EventLogger) CreateEventLogs() {
 	for _, todo := range e.PreviousTodoList.Data {
 		currentTodo := e.CurrentTodoList.FindByID(todo.ID)
 		if currentTodo == nil {
-			eventLogs = append(eventLogs, e.writeTodoEvent(DeleteEvent, todo))
+			eventLogs = append(eventLogs, e.writeTodoEvent(DeleteEvent, todo, e.CurrentSyncedList.UUID))
 		}
 	}
 	e.Events = eventLogs
@@ -194,20 +185,11 @@ func (e *EventLogger) syncedListsFile() string {
 	return e.syncedListsConfigDir() + "synced_lists.json"
 }
 
-func (e *EventLogger) writeTodoEvent(eventType string, todo *Todo) *EventLog {
+func (e *EventLogger) writeTodoEvent(eventType string, todo *Todo, todoListUUID string) *EventLog {
 	return &EventLog{
-		EventType:     eventType,
-		ID:            todo.ID,
-		UUID:          todo.UUID,
-		Subject:       todo.Subject,
-		Projects:      todo.Projects,
-		Contexts:      todo.Contexts,
-		Due:           todo.Due,
-		Completed:     todo.Completed,
-		CompletedDate: todo.CompletedDate,
-		Archived:      todo.Archived,
-		Status:        todo.Status,
-		IsPriority:    todo.IsPriority,
-		Notes:         todo.Notes,
+		EventType:    eventType,
+		ObjectType:   "TodoItem",
+		TodoListUUID: todoListUUID,
+		Object:       todo,
 	}
 }
