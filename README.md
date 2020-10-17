@@ -2,7 +2,7 @@
 ### Simple task management for tech folks.
 
 [![](https://goreportcard.com/badge/github.com/ultralist/ultralist)](https://goreportcard.com/report/github.com/ultralist/ultralist)
-[![Build Status](https://travis-ci.org/ultralist/ultralist.svg?branch=master)](https://travis-ci.org/ultralist/ultralist)
+[![Actions Status](https://github.com/ultralist/ultralist/workflows/Go/badge.svg)](https://github.com/ultralist/ultralist/actions)
 
 Ultralist is a task management system for technical people. It is command-line component that is very fast and stays out of the way. 
 
