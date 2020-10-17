@@ -12,6 +12,7 @@ func TestFileStore(t *testing.T) {
 	store := &FileStore{}
 	defer testFileCleanUp()
 	list.FindByID(2).Subject = "this is an non-fixture subject"
+	store.Initialize()
 	store.Save(list.Todos())
 
 	store1 := &FileStore{}
