@@ -35,6 +35,18 @@ func TestSubject(t *testing.T) {
 	assert.Equal(tomorrow, filter.Due)
 }
 
+func TestDueAgenda(t *testing.T) {
+	assert := assert.New(t)
+	parser := &InputParser{}
+
+	filter, _ := parser.Parse("due:agenda blah blah")
+
+	tomorrow := time.Now().AddDate(0, 0, 1).Format(DATE_FORMAT)
+	assert.Equal(tomorrow, filter.DueBefore)
+	assert.Equal(true, filter.HasDueBefore)
+	assert.Equal(false, filter.HasDue)
+}
+
 func TestProjectsInSubject(t *testing.T) {
 	assert := assert.New(t)
 	parser := &InputParser{}
