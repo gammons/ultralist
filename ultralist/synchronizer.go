@@ -129,7 +129,7 @@ func (s *Synchronizer) doSync(todolist *TodoList, syncedList *SyncedList) {
 	// from various clients.
 
 	path = "/api/v1/todo_lists/" + syncedList.UUID
-	bodyBytes := s.Backend.PerformRequest("GET", path, data)
+	bodyBytes := s.Backend.PerformRequest("GET", path, []byte{})
 
 	var response *TodolistRequest
 	if err := json.Unmarshal(bodyBytes, &response); err != nil {

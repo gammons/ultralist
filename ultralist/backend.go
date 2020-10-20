@@ -32,6 +32,17 @@ func NewBackend() *Backend {
 	return backend
 }
 
+// CreateTodoList will create a todo list on the backend
+func (b *Backend) CreateTodoList(todolist *TodoList) {
+	type Request struct {
+		Todolist *TodoList `json:"todolist"`
+	}
+
+	bodyBytes, _ := json.Marshal(&Request{Todolist: todolist})
+
+	b.PerformRequest("POST", "/api/v1/todo_lists", bodyBytes)
+}
+
 // PerformRequest is performing a request to the ultralist API backend.
 func (b *Backend) PerformRequest(method string, path string, data []byte) []byte {
 	url := b.apiURL(path)

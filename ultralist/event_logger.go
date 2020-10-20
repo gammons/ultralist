@@ -139,6 +139,7 @@ func (e *EventLogger) initializeSyncedListFromCurrentTodoList() {
 	listUUID := e.CurrentTodoList.UUID
 	if listUUID == "" {
 		listUUID = newUUID()
+		e.CurrentTodoList.UUID = listUUID
 	}
 
 	list := &SyncedList{
