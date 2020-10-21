@@ -9,36 +9,41 @@ import (
 
 var (
 	archiveCompletedTodo bool
-	revertCompletedTodo  bool
-	completeCmdDesc      = "Completes a todo"
-	completeCmdExample   = `  ultralist complete 33
-  Completes todo with id 33.
+	completeCmdExample   = `
+  ultralist complete 33
+  ultralist c 33
+    Completes todo with id 33.
 
-  ultralist complete 33 --archive
-  Completes todo with id 33 and archives it.
+  ultralist uncomplete 33 --archive
+    Completes todo with id 33 and archives it.
 
-  ultralist complete 33 --revert
-  Uncompletes todo with id 33.`
-	completeCmdLongDesc = completeCmdDesc + "."
+  ultralist uncomplete 33
+	ultralist uc 33
+    Uncompletes todo with id 33.`
 )
 
 var completeCmd = &cobra.Command{
 	Use:     "complete [id]",
 	Aliases: []string{"c"},
 	Example: completeCmdExample,
-	Long:    completeCmdLongDesc,
-	Short:   completeCmdDesc,
+	Short:   "Completes a todo.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if revertCompletedTodo {
-			ultralist.NewApp().UncompleteTodo(strings.Join(args, " "))
-		} else {
-			ultralist.NewApp().CompleteTodo(strings.Join(args, " "), archiveCompletedTodo)
-		}
+		ultralist.NewApp().CompleteTodo(strings.Join(args, " "), archiveCompletedTodo)
+	},
+}
+
+var uncompleteCmd = &cobra.Command{
+	Use:     "uncomplete [id]",
+	Aliases: []string{"uc"},
+	Example: completeCmdExample,
+	Short:   "Un-completes a todo.",
+	Run: func(cmd *cobra.Command, args []string) {
+		ultralist.NewApp().UncompleteTodo(strings.Join(args, " "))
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(completeCmd)
 	completeCmd.Flags().BoolVarP(&archiveCompletedTodo, "archive", "", false, "Archives a completed todo automatically")
-	completeCmd.Flags().BoolVarP(&revertCompletedTodo, "revert", "", false, "Uncompletes a completed todo")
+	rootCmd.AddCommand(uncompleteCmd)
 }
