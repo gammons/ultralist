@@ -19,7 +19,7 @@ func TestCreateEventLogsWithAddingTodo(t *testing.T) {
 
 	assert.Equal(1, len(logger.Events))
 	assert.Equal(AddEvent, logger.Events[0].EventType)
-	assert.Equal(todo2.ID, logger.Events[0].ID)
+	assert.Equal(todo2.ID, logger.Events[0].Object.ID)
 }
 
 func TestCreateEventLogsWithAddingMultipleTodos(t *testing.T) {
@@ -37,9 +37,9 @@ func TestCreateEventLogsWithAddingMultipleTodos(t *testing.T) {
 
 	assert.Equal(2, len(logger.Events))
 	assert.Equal(AddEvent, logger.Events[0].EventType)
-	assert.Equal(todo2.ID, logger.Events[0].ID)
+	assert.Equal(todo2.ID, logger.Events[0].Object.ID)
 	assert.Equal(AddEvent, logger.Events[1].EventType)
-	assert.Equal(todo3.ID, logger.Events[1].ID)
+	assert.Equal(todo3.ID, logger.Events[1].Object.ID)
 }
 
 func TestUpdateEvent(t *testing.T) {
@@ -54,7 +54,7 @@ func TestUpdateEvent(t *testing.T) {
 
 	assert.Equal(1, len(logger.Events))
 	assert.Equal(UpdateEvent, logger.Events[0].EventType)
-	assert.Equal(todo.ID, logger.Events[0].ID)
+	assert.Equal(todo.ID, logger.Events[0].Object.ID)
 }
 
 func TestDeleteEvent(t *testing.T) {
@@ -71,5 +71,5 @@ func TestDeleteEvent(t *testing.T) {
 
 	assert.Equal(1, len(logger.Events))
 	assert.Equal(DeleteEvent, logger.Events[0].EventType)
-	assert.Equal(todo.ID, logger.Events[0].ID)
+	assert.Equal(todo.ID, logger.Events[0].Object.ID)
 }

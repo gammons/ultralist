@@ -342,9 +342,13 @@ func (a *App) SetupSync() {
 				return
 			}
 			a.EventLogger.CurrentSyncedList.Name = result
+			a.TodoList.Name = result
 			a.TodoList.IsSynced = true
 			a.EventLogger.WriteSyncedLists()
-			a.Sync(false)
+
+			// right here, I need to run a request to create a todo list via the API.
+			backend.CreateTodoList(a.TodoList)
+
 			return
 		}
 	}

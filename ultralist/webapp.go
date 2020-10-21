@@ -38,7 +38,7 @@ func (w *Webapp) handleAuthResponse(writer http.ResponseWriter, r *http.Request)
 
 	backend := NewBackend()
 	backend.WriteCreds(cliTokens[0])
-	fmt.Println("Authorization successful! Next, run `ultralist init` to sync a list.")
+	fmt.Println("Authorization successful! Next, run `ultralist sync --setup` to sync a list.")
 
 	http.Redirect(writer, r, w.frontendUrl(), http.StatusSeeOther)
 
