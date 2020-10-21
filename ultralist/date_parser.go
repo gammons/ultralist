@@ -19,7 +19,7 @@ func (dp *DateParser) ParseDate(dateString string, pivotDay time.Time) (date tim
 		return bod(pivotDay).AddDate(0, 0, -1), nil
 	case "today", "tod":
 		return bod(pivotDay), nil
-	case "tomorrow", "tom":
+	case "tomorrow", "tom", "agenda":
 		return bod(pivotDay).AddDate(0, 0, 1), nil
 	case "monday", "mon":
 		return dp.monday(pivotDay), nil

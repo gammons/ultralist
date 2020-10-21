@@ -102,6 +102,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		r, _ = regexp.Compile(`due:.*$`)
 		if r.MatchString(word) {
 			filter.HasDue = true
+
 			dueDate, err := dateParser.ParseDate(r.FindString(word)[4:], time.Now())
 			if err != nil {
 				return filter, err
@@ -110,7 +111,13 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			if dueDate.IsZero() {
 				filter.Due = ""
 			} else {
-				filter.Due = dueDate.Format(DATE_FORMAT)
+				if word == "due:agenda" {
+					filter.HasDueBefore = true
+					filter.HasDue = false
+					filter.DueBefore = dueDate.Format(DATE_FORMAT)
+				} else {
+					filter.Due = dueDate.Format(DATE_FORMAT)
+				}
 			}
 			match = true
 		}
