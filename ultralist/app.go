@@ -352,7 +352,8 @@ func (a *App) SetupSync() {
 			return
 		}
 	}
-	// pull a list from ultralist.io
+
+	// at this point, it is known that a local todos file does not exist.
 	type Response struct {
 		Todolists []TodoList `json:"todolists"`
 	}
@@ -373,6 +374,7 @@ func (a *App) SetupSync() {
 
 	idx, _, _ := prompt2.Run()
 	a.TodoList = &response.Todolists[idx]
+	a.TodoStore.Initialize()
 	a.TodoStore.Save(a.TodoList.Data)
 
 	a.EventLogger = NewEventLogger(a.TodoList, a.TodoStore)
