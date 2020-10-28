@@ -30,5 +30,13 @@ func EditTodo(todo *Todo, filter *Filter) error {
 		todo.Subject = filter.Subject
 	}
 
+	if len(filter.Projects) > 0 {
+		todo.Projects = filter.Projects
+	}
+
+	if len(filter.Contexts) > 0 {
+		todo.Contexts = filter.Contexts
+	}
+
 	return nil
 }
