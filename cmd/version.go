@@ -17,7 +17,7 @@ var versionCmd = &cobra.Command{
 	Long:  versionCmdLongDesc,
 	Short: versionCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Ultralist v%s.", ultralist.VERSION)
+		fmt.Printf("Ultralist v%s\n", ultralist.VERSION)
 	},
 }
 
