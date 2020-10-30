@@ -156,12 +156,14 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		if r.MatchString(word) {
 			filter.HasProjectFilter = true
 			filter.Projects, filter.ExcludeProjects = p.parseString(r.FindString(word)[8:])
+			match = true
 		}
 
 		r, _ = regexp.Compile(`context:.*$`)
 		if r.MatchString(word) {
 			filter.HasContextFilter = true
 			filter.Contexts, filter.ExcludeContexts = p.parseString(r.FindString(word)[8:])
+			match = true
 		}
 
 		if !match {
