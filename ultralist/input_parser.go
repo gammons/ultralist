@@ -48,6 +48,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		HasDueBefore:     false,
 		HasDue:           false,
 		HasDueAfter:      false,
+		HasRecur:         false,
 	}
 
 	dateParser := &DateParser{}
@@ -164,6 +165,19 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			filter.HasContextFilter = true
 			filter.Contexts, filter.ExcludeContexts = p.parseString(r.FindString(word)[8:])
 			match = true
+		}
+
+		r, _ = regexp.Compile(`recur:.*$`)
+		if r.MatchString(word) {
+			filter.HasRecur = true
+			filter.Recur = r.FindString(word)[6:]
+			filter.Contexts, filter.ExcludeContexts = p.parseString(r.FindString(word)[8:])
+			match = true
+
+			r, _ = regexp.Compile(`until:.*$`)
+			if r.MatchString(word) {
+				filter.RecurUntil = r.FindString(word)[6:]
+			}
 		}
 
 		if !match {

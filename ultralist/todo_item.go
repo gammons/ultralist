@@ -22,6 +22,8 @@ type Todo struct {
 	Archived      bool     `json:"archived"`
 	IsPriority    bool     `json:"is_priority"`
 	Notes         []string `json:"notes"`
+	Recur         string   `json:"recur"`
+	RecurUntil    string   `json:"recur_until"`
 }
 
 // NewTodo is creating a new todo item.
