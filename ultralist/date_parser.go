@@ -37,46 +37,46 @@ func (dp *DateParser) ParseDate(dateString string, pivotDay time.Time) (date tim
 		return dp.sunday(pivotDay), nil
 	case "lastweek":
 		n := bod(pivotDay)
-		return getNearestMonday(n).AddDate(0, 0, -7), nil
+		return dp.getNearestMonday(n).AddDate(0, 0, -7), nil
 	case "nextweek":
 		n := bod(pivotDay)
-		return getNearestMonday(n).AddDate(0, 0, 7), nil
+		return dp.getNearestMonday(n).AddDate(0, 0, 7), nil
 	}
 	return dp.parseSpecificDate(dateString, pivotDay)
 }
 
 func (dp *DateParser) monday(day time.Time) time.Time {
-	mon := getNearestMonday(day)
+	mon := dp.getNearestMonday(day)
 	return dp.thisOrNextWeek(mon, day)
 }
 
 func (dp *DateParser) tuesday(day time.Time) time.Time {
-	tue := getNearestMonday(day).AddDate(0, 0, 1)
+	tue := dp.getNearestMonday(day).AddDate(0, 0, 1)
 	return dp.thisOrNextWeek(tue, day)
 }
 
 func (dp *DateParser) wednesday(day time.Time) time.Time {
-	wed := getNearestMonday(day).AddDate(0, 0, 2)
+	wed := dp.getNearestMonday(day).AddDate(0, 0, 2)
 	return dp.thisOrNextWeek(wed, day)
 }
 
 func (dp *DateParser) thursday(day time.Time) time.Time {
-	thu := getNearestMonday(day).AddDate(0, 0, 3)
+	thu := dp.getNearestMonday(day).AddDate(0, 0, 3)
 	return dp.thisOrNextWeek(thu, day)
 }
 
 func (dp *DateParser) friday(day time.Time) time.Time {
-	fri := getNearestMonday(day).AddDate(0, 0, 4)
+	fri := dp.getNearestMonday(day).AddDate(0, 0, 4)
 	return dp.thisOrNextWeek(fri, day)
 }
 
 func (dp *DateParser) saturday(day time.Time) time.Time {
-	sat := getNearestMonday(day).AddDate(0, 0, 5)
+	sat := dp.getNearestMonday(day).AddDate(0, 0, 5)
 	return dp.thisOrNextWeek(sat, day)
 }
 
 func (dp *DateParser) sunday(day time.Time) time.Time {
-	sun := getNearestMonday(day).AddDate(0, 0, 6)
+	sun := dp.getNearestMonday(day).AddDate(0, 0, 6)
 	return dp.thisOrNextWeek(sun, day)
 }
 
@@ -108,4 +108,14 @@ func (dp *DateParser) parseSpecificDate(date string, pivot time.Time) (time.Time
 	errString := fmt.Sprintf("Could not parse the date you gave me: '%s'", date)
 
 	return time.Time{}, errors.New(errString)
+}
+
+func (dp *DateParser) getNearestMonday(t time.Time) time.Time {
+	for {
+		if t.Weekday() != time.Monday {
+			t = t.AddDate(0, 0, -1)
+		} else {
+			return t
+		}
+	}
 }
