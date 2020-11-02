@@ -1,49 +1,29 @@
 package ultralist
 
 import (
+	"fmt"
 	"time"
 )
 
+// Recurrence struct contains the logic for dealing with recurring todos.
 type Recurrence struct{}
 
-// HasNextRecurringTodo
+// HasNextRecurringTodo determines if a todo has a next recurrence.
 func (r *Recurrence) HasNextRecurringTodo(todo *Todo) bool {
 	recurUntil, _ := time.Parse(DATE_FORMAT, todo.RecurUntil)
+	dueDate, _ := time.Parse(DATE_FORMAT, todo.Due)
 
-	return todo.Recur != "" &&
-		time.Now().Before(recurUntil) &&
-		!todo.Completed
+	if todo.Recur != "" && todo.RecurUntil == "" {
+		return true
+	} else {
+		return todo.Recur != "" && r.nextRecurrence(dueDate, time.Now(), todo.Recur).Before(recurUntil.AddDate(0, 0, 1))
+	}
 }
 
 // NextRecurringTodo generates the next recurring todo from the one passed in.
-func (r *Recurrence) NextRecurringTodo(todo *Todo, completedTime time.Time) *Todo {
-
+func (r *Recurrence) NextRecurringTodo(todo *Todo, completedDate time.Time) *Todo {
 	dueDate, _ := time.Parse(DATE_FORMAT, todo.Due)
-	var nextDueDate time.Time
-
-	switch todo.Recur {
-	case "daily":
-		if completedTime.Before(dueDate) {
-			nextDueDate = dueDate.AddDate(0, 0, 1)
-		} else {
-			nextDueDate = completedTime.AddDate(0, 0, 1)
-		}
-	case "weekdays":
-		// m, t, w, thu, fri
-		// schedule it for tomorrow unless it's currently friday or saturday, in which case schedule it for next monday
-		nextDueDate = r.findNextWeekDay(dueDate, completedTime)
-	case "monthly":
-		// add one month to the due date
-		// schedule the next on the next month day
-		nextDueDate = r.findNextMonth(dueDate, completedTime)
-	case "weekly":
-		// add one week to the due date
-		// schedule it for the next weekday that's the same day as the due date.
-		// if the due date is in the past, schedule it for the next week day closest to today
-		// if the due date is in the future, schedule it for the weekday after the due date
-
-		nextDueDate = r.findNextWeek(dueDate, completedTime)
-	}
+	nextDueDate := r.nextRecurrence(dueDate, completedDate, todo.Recur)
 
 	return &Todo{
 		UUID:       newUUID(),
@@ -59,6 +39,33 @@ func (r *Recurrence) NextRecurringTodo(todo *Todo, completedTime time.Time) *Tod
 		Due:        nextDueDate.Format(DATE_FORMAT),
 		RecurUntil: todo.RecurUntil,
 	}
+}
+
+func (r *Recurrence) nextRecurrence(dueDate time.Time, completedDate time.Time, recurrence string) time.Time {
+	switch recurrence {
+	case "daily":
+		if completedDate.Before(dueDate) {
+			return dueDate.AddDate(0, 0, 1)
+		}
+		return completedDate.AddDate(0, 0, 1)
+	case "weekdays":
+		// m, t, w, thu, fri
+		// schedule it for tomorrow unless it's currently friday or saturday, in which case schedule it for next monday
+		return r.findNextWeekDay(dueDate, completedDate)
+	case "monthly":
+		// add one month to the due date
+		// schedule the next on the next month day
+		return r.findNextMonth(dueDate, completedDate)
+	case "weekly":
+		// add one week to the due date
+		// schedule it for the next weekday that's the same day as the due date.
+		// if the due date is in the past, schedule it for the next week day closest to today
+		// if the due date is in the future, schedule it for the weekday after the due date
+
+		return r.findNextWeek(dueDate, completedDate)
+	}
+	fmt.Println("returning base case")
+	return dueDate
 }
 
 func (r *Recurrence) findNextWeekDay(dueDate time.Time, completedDate time.Time) time.Time {

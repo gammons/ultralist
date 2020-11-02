@@ -7,6 +7,43 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestHasNextRecurringTodoNoRecur(t *testing.T) {
+	assert := assert.New(t)
+
+	r := &Recurrence{}
+	todo := &Todo{Recur: "", RecurUntil: "", Due: "2020-10-28"}
+
+	assert.Equal(false, r.HasNextRecurringTodo(todo))
+}
+
+func TestHasNextRecurringTodoWithUntilNotExpired(t *testing.T) {
+	assert := assert.New(t)
+
+	r := &Recurrence{}
+	tomorrow := time.Now().AddDate(0, 0, 1).Format(DATE_FORMAT)
+	todo := &Todo{Recur: "daily", RecurUntil: tomorrow, Due: "2020-10-28"}
+
+	assert.Equal(true, r.HasNextRecurringTodo(todo))
+}
+
+func TestHasNextRecurringTodoWithExpiredUntil(t *testing.T) {
+	assert := assert.New(t)
+
+	r := &Recurrence{}
+	todo := &Todo{Recur: "weekly", RecurUntil: "2020-10-28", Due: "2020-10-28"}
+
+	assert.Equal(false, r.HasNextRecurringTodo(todo))
+}
+
+func TestHasNextRecurringTodoWithoutUntil(t *testing.T) {
+	assert := assert.New(t)
+
+	r := &Recurrence{}
+	todo := &Todo{Recur: "weekly", RecurUntil: "", Due: "2020-10-28"}
+
+	assert.Equal(true, r.HasNextRecurringTodo(todo))
+}
+
 func TestWeeklyCompleteWeekBefore(t *testing.T) {
 	assert := assert.New(t)
 
