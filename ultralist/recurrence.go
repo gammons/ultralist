@@ -1,7 +1,6 @@
 package ultralist
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -49,22 +48,12 @@ func (r *Recurrence) nextRecurrence(dueDate time.Time, completedDate time.Time, 
 		}
 		return completedDate.AddDate(0, 0, 1)
 	case "weekdays":
-		// m, t, w, thu, fri
-		// schedule it for tomorrow unless it's currently friday or saturday, in which case schedule it for next monday
 		return r.findNextWeekDay(dueDate, completedDate)
 	case "monthly":
-		// add one month to the due date
-		// schedule the next on the next month day
 		return r.findNextMonth(dueDate, completedDate)
 	case "weekly":
-		// add one week to the due date
-		// schedule it for the next weekday that's the same day as the due date.
-		// if the due date is in the past, schedule it for the next week day closest to today
-		// if the due date is in the future, schedule it for the weekday after the due date
-
 		return r.findNextWeek(dueDate, completedDate)
 	}
-	fmt.Println("returning base case")
 	return dueDate
 }
 
