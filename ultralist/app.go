@@ -186,14 +186,14 @@ func (a *App) HandleNotes(input string) {
 		return
 	}
 	parser := &NoteParser{}
-
-	if parser.ParseAddNote(todo, input) {
+	regexedInput := "an " + input
+	if parser.ParseAddNote(todo, regexedInput) {
 		fmt.Println("Note added.")
-	} else if parser.ParseDeleteNote(todo, input) {
+	} else if parser.ParseDeleteNote(todo, regexedInput) {
 		fmt.Println("Note deleted.")
-	} else if parser.ParseEditNote(todo, input) {
+	} else if parser.ParseEditNote(todo, regexedInput) {
 		fmt.Println("Note edited.")
-	} else if parser.ParseShowNote(todo, input) {
+	} else if parser.ParseShowNote(todo, regexedInput) {
 		groups := map[string][]*Todo{}
 		groups[""] = append(groups[""], todo)
 		a.Printer.Print(&GroupedTodos{Groups: groups}, true, true)
