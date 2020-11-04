@@ -48,7 +48,7 @@ var addNoteCmd = &cobra.Command{
 	Long:    addNoteCmdLongDesc,
 	Short:   addNoteCmdDesc,
 	Run: func(cmd *cobra.Command, args []string) {
-		ultralist.NewApp().HandleNotes("an " + strings.Join(args, " "))
+		ultralist.NewApp().HandleNotes(strings.Join(args, " "))
 	},
 }
 
