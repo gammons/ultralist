@@ -53,8 +53,8 @@ func (w *Webapp) frontendUrl() string {
 	envFrontendURL := os.Getenv("ULTRALIST_FRONTEND_URL")
 
 	if envFrontendURL != "" {
-		return envFrontendURL + "/login?cli_auth_completed=true"
+		return envFrontendURL + "/todolist?cli_auth_completed=true"
 	}
 
-	return "https://app.ultralist.io/login?cli_auth_completed=true"
+	return "https://app.ultralist.io/todolist?cli_auth_completed=true"
 }
