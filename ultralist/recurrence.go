@@ -4,8 +4,30 @@ import (
 	"time"
 )
 
+const (
+	Daily    = "daily"
+	Weekdays = "weekdays"
+	Weekly   = "weekly"
+	Monthly  = "monthly"
+	Yearly   = "yearly"
+)
+
 // Recurrence struct contains the logic for dealing with recurring todos.
 type Recurrence struct{}
+
+// ValidRecurrence takes an input string and determines if the value is a valid ultralist recurrence.
+func (r *Recurrence) ValidRecurrence(input string) bool {
+	switch input {
+	case
+		Daily,
+		Weekdays,
+		Weekly,
+		Monthly,
+		Yearly:
+		return true
+	}
+	return false
+}
 
 // HasNextRecurringTodo determines if a todo has a next recurrence.
 func (r *Recurrence) HasNextRecurringTodo(todo *Todo) bool {
@@ -42,18 +64,18 @@ func (r *Recurrence) NextRecurringTodo(todo *Todo, completedDate time.Time) *Tod
 
 func (r *Recurrence) nextRecurrence(dueDate time.Time, completedDate time.Time, recurrence string) time.Time {
 	switch recurrence {
-	case "daily":
+	case Daily:
 		if completedDate.Before(dueDate) {
 			return dueDate.AddDate(0, 0, 1)
 		}
 		return completedDate.AddDate(0, 0, 1)
-	case "weekdays":
+	case Weekdays:
 		return r.findNextWeekDay(dueDate, completedDate)
-	case "weekly":
+	case Weekly:
 		return r.findNextWeek(dueDate, completedDate)
-	case "monthly":
+	case Monthly:
 		return r.findNextMonth(dueDate, completedDate)
-	case "yearly":
+	case Yearly:
 		return r.findNextYear(dueDate, completedDate)
 	}
 	return dueDate

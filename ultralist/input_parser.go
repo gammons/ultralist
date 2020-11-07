@@ -1,6 +1,7 @@
 package ultralist
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -169,12 +170,19 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 
 		r, _ = regexp.Compile(`recur:.*$`)
 		if r.MatchString(word) {
+			match = true
+
 			filter.HasRecur = true
 			filter.Recur = r.FindString(word)[6:]
 
-			filter.Contexts, filter.ExcludeContexts = p.parseString(r.FindString(word)[8:])
-			match = true
+			if filter.Recur == "none" {
+				filter.Recur = ""
+			}
 
+			r := &Recurrence{}
+			if !r.ValidRecurrence(filter.Recur) {
+				return filter, fmt.Errorf("I could not understand the recurrence you gave me: '%s'", filter.Recur)
+			}
 		}
 
 		r, _ = regexp.Compile(`until:.*$`)
