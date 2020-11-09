@@ -89,10 +89,7 @@ func (t Todo) CompletedDateToDate() string {
 
 // HasNotes is showing if an todo has notes.
 func (t Todo) HasNotes() bool {
-	if len(t.Notes) > 0 {
-		return true
-	}
-	return false
+	return len(t.Notes) > 0
 }
 
 // Equals compares 2 todos for equality.
