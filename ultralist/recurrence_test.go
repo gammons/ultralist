@@ -62,7 +62,6 @@ func TestWeeklyCompleteDayBefore(t *testing.T) {
 
 	r := &Recurrence{}
 	pivot, _ := time.Parse(DATE_FORMAT, "2020-10-27")
-	// Wed, Oct 28
 	todo := &Todo{Recur: "weekly", Due: "2020-10-28"}
 
 	nextTodo := r.NextRecurringTodo(todo, pivot)
@@ -86,12 +85,12 @@ func TestWeeklyCompleteDayAfter(t *testing.T) {
 	assert := assert.New(t)
 
 	r := &Recurrence{}
-	pivot, _ := time.Parse(DATE_FORMAT, "2020-10-29")
-	todo := &Todo{Recur: "weekly", Due: "2020-10-28"}
+	pivot, _ := time.Parse(DATE_FORMAT, "2020-11-10")
+	todo := &Todo{Recur: "weekly", Due: "2020-11-02"}
 
 	nextTodo := r.NextRecurringTodo(todo, pivot)
 
-	assert.Equal("2020-11-04", nextTodo.Due)
+	assert.Equal("2020-11-16", nextTodo.Due)
 }
 
 func TestWeeklyCompleteWeekAfter(t *testing.T) {
@@ -164,6 +163,18 @@ func TestWeekDaysOnFriday(t *testing.T) {
 	nextTodo := r.NextRecurringTodo(todo, pivot)
 
 	assert.Equal("2020-11-09", nextTodo.Due)
+}
+
+func TestWeekDaysInPast(t *testing.T) {
+	assert := assert.New(t)
+
+	r := &Recurrence{}
+	pivot, _ := time.Parse(DATE_FORMAT, "2020-11-10")
+	todo := &Todo{Recur: "weekdays", Due: "2020-11-05"}
+
+	nextTodo := r.NextRecurringTodo(todo, pivot)
+
+	assert.Equal("2020-11-11", nextTodo.Due)
 }
 
 func TestDailySameDay(t *testing.T) {

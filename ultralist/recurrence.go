@@ -86,7 +86,7 @@ func (r *Recurrence) findNextWeekDay(dueDate time.Time, completedDate time.Time)
 	dueDate = dueDate.AddDate(0, 0, 1)
 
 	for {
-		if !r.isWeekday(dueDate) || dueDate.Before(completedDate) {
+		if !r.isWeekday(dueDate) || dueDate.Before(completedDate.AddDate(0, 0, 1)) {
 			dueDate = dueDate.AddDate(0, 0, 1)
 		} else {
 			return dueDate
@@ -111,7 +111,7 @@ func (r *Recurrence) findNextWeek(dueDate time.Time, completedDate time.Time) ti
 	weekday := dueDate.Weekday()
 	dueDate = dueDate.AddDate(0, 0, 1)
 	for {
-		if dueDate.Weekday() != weekday || dueDate.Before(completedDate) {
+		if dueDate.Weekday() != weekday || dueDate.Before(completedDate.AddDate(0, 0, 1)) {
 			dueDate = dueDate.AddDate(0, 0, 1)
 		} else {
 			return dueDate
@@ -122,7 +122,7 @@ func (r *Recurrence) findNextWeek(dueDate time.Time, completedDate time.Time) ti
 func (r *Recurrence) findNextMonth(dueDate time.Time, completedDate time.Time) time.Time {
 	dueDate = dueDate.AddDate(0, 1, 0)
 	for {
-		if dueDate.Before(completedDate) {
+		if dueDate.Before(completedDate.AddDate(0, 0, 1)) {
 			dueDate = dueDate.AddDate(0, 1, 0)
 		} else {
 			return dueDate
@@ -133,7 +133,7 @@ func (r *Recurrence) findNextMonth(dueDate time.Time, completedDate time.Time) t
 func (r *Recurrence) findNextYear(dueDate time.Time, completedDate time.Time) time.Time {
 	dueDate = dueDate.AddDate(1, 0, 0)
 	for {
-		if dueDate.Before(completedDate) {
+		if dueDate.Before(completedDate.AddDate(0, 0, 1)) {
 			dueDate = dueDate.AddDate(1, 0, 0)
 		} else {
 			return dueDate
