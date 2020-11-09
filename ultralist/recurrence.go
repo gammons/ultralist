@@ -47,18 +47,19 @@ func (r *Recurrence) NextRecurringTodo(todo *Todo, completedDate time.Time) *Tod
 	nextDueDate := r.nextRecurrence(dueDate, completedDate, todo.Recur)
 
 	return &Todo{
-		UUID:       newUUID(),
-		Completed:  false,
-		Archived:   false,
-		Subject:    todo.Subject,
-		Projects:   todo.Projects,
-		Contexts:   todo.Contexts,
-		Status:     todo.Status,
-		IsPriority: todo.IsPriority,
-		Notes:      todo.Notes,
-		Recur:      todo.Recur,
-		Due:        nextDueDate.Format(DATE_FORMAT),
-		RecurUntil: todo.RecurUntil,
+		UUID:              newUUID(),
+		Completed:         false,
+		Archived:          false,
+		Subject:           todo.Subject,
+		Projects:          todo.Projects,
+		Contexts:          todo.Contexts,
+		Status:            todo.Status,
+		IsPriority:        todo.IsPriority,
+		Notes:             todo.Notes,
+		Recur:             todo.Recur,
+		Due:               nextDueDate.Format(DATE_FORMAT),
+		RecurUntil:        todo.RecurUntil,
+		PrevRecurTodoUUID: todo.UUID,
 	}
 }
 
