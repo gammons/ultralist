@@ -52,6 +52,7 @@ func (b *Backend) PerformRequest(method string, path string, data []byte) []byte
 	req.Header.Set("Authorization", authHeader)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
+	req.Header.Set("x-Ultralist-CLI-Version", VERSION)
 
 	client := &http.Client{}
 
