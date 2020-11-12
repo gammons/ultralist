@@ -33,6 +33,10 @@ type Filter struct {
 	HasStatus        bool
 	HasProjectFilter bool
 	HasContextFilter bool
+
+	HasRecur   bool
+	Recur      string
+	RecurUntil string
 }
 
 // LastStatus returns the last status from the filter

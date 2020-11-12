@@ -1,14 +1,14 @@
 package ultralist
 
 // EditTodo edits a todo based upon a filter
-func EditTodo(todo *Todo, filter *Filter) error {
+func EditTodo(todo *Todo, todoList *TodoList, filter *Filter) error {
 	if filter.HasDue {
 		todo.Due = filter.Due
 	}
 
 	if filter.HasCompleted {
 		if filter.Completed {
-			todo.Complete()
+			todoList.Complete(todo.ID)
 		} else {
 			todo.Uncomplete()
 		}
@@ -36,6 +36,11 @@ func EditTodo(todo *Todo, filter *Filter) error {
 
 	if len(filter.Contexts) > 0 {
 		todo.Contexts = filter.Contexts
+	}
+
+	if filter.HasRecur {
+		todo.Recur = filter.Recur
+		todo.RecurUntil = filter.RecurUntil
 	}
 
 	return nil

@@ -10,9 +10,10 @@ import (
 func init() {
 	var (
 		addCmdDesc    = "Adds todos"
-		addCmdExample = `  ultralist add Prepare meeting notes about +importantProject for the meeting with @bob due today
-  ultralist add Meeting with @bob about +importantProject due:today
-  ultralist add +work +verify did @john fix the build? due:tom`
+		addCmdExample = `  ultralist add Prepare meeting notes about +importantProject for the meeting with @bob due:today
+  ultralist add Meeting with @bob about +project due:tod
+  ultralist a +work +verify did @john fix the build? due:tom
+  ultralist a here is an important task priority:true recur:weekdays due:tom`
 
 		addCmdLongDesc = `Adds todos.
 
@@ -20,11 +21,17 @@ func init() {
   This can be done by by putting 'due:<date>' at the end, where <date> is in (tod|today|tom|tomorrow|mon|tue|wed|thu|fri|sat|sun|thisweek|nextweek).
 
   Dates can also be explicit, using 3 characters for the month.  They can be written in 2 different formats:
-
     ultralist a buy flowers for mom due:may12
-    ultralist a get halloween candy due:31oct
+    ultralist get halloween candy due:31oct
 
-  See the full docs at https://ultralist.io/docs/cli/managing_tasks/#adding-todos`
+  See the full docs at https://ultralist.io/docs/cli/managing_tasks/#adding-todos
+
+  Todos can also recur.  Set the 'recur' directive to control recurrence:
+    ultralist a Daily standup recur:weekdays
+    ultralist a 1o1 meeting with jim recur:weekly
+
+  For the full documentation on recurrence, see the docs:
+  https://ultralist.io/docs/cli/recurrence`
 	)
 
 	var addCmd = &cobra.Command{

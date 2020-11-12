@@ -76,6 +76,12 @@ func (f *TodoFilter) ApplyFilter() []*Todo {
 			}
 		}
 
+		if f.Filter.HasRecur {
+			if todo.Recur != f.Filter.Recur {
+				continue
+			}
+		}
+
 		// finally, if we're still here, append the todo to the filtered list
 		filtered = append(filtered, todo)
 	}

@@ -113,3 +113,27 @@ func TestNoSubject(t *testing.T) {
 	assert.Equal("", filter.Subject)
 	assert.Equal(true, filter.IsPriority)
 }
+
+func TestInvalidRecurrence(t *testing.T) {
+	assert := assert.New(t)
+	parser := &InputParser{}
+
+	_, err := parser.Parse("recur:blah")
+
+	if err == nil {
+		fmt.Println("expected an error")
+		t.Fail()
+	}
+
+	assert.Equal(err.Error(), "I could not understand the recurrence you gave me: 'blah'")
+}
+
+func TestNoneRecurrence(t *testing.T) {
+	assert := assert.New(t)
+	parser := &InputParser{}
+
+	filter, _ := parser.Parse("recur:none")
+
+	assert.Equal(true, filter.HasRecur)
+	assert.Equal("", filter.Recur)
+}

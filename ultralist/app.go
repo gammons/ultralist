@@ -161,7 +161,7 @@ func (a *App) EditTodo(todoID int, input string) {
 		return
 	}
 
-	if err = EditTodo(todo, filter); err != nil {
+	if err = EditTodo(todo, a.TodoList, filter); err != nil {
 		fmt.Println(err.Error())
 		return
 	}

@@ -1,6 +1,7 @@
 package ultralist
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 	"time"
@@ -48,6 +49,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		HasDueBefore:     false,
 		HasDue:           false,
 		HasDueAfter:      false,
+		HasRecur:         false,
 	}
 
 	dateParser := &DateParser{}
@@ -164,6 +166,34 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			filter.HasContextFilter = true
 			filter.Contexts, filter.ExcludeContexts = p.parseString(r.FindString(word)[8:])
 			match = true
+		}
+
+		r, _ = regexp.Compile(`recur:.*$`)
+		if r.MatchString(word) {
+			match = true
+
+			filter.HasRecur = true
+			filter.Recur = r.FindString(word)[6:]
+
+			if filter.Recur == "none" {
+				filter.Recur = ""
+			}
+
+			r := &Recurrence{}
+			if !r.ValidRecurrence(filter.Recur) {
+				return filter, fmt.Errorf("I could not understand the recurrence you gave me: '%s'", filter.Recur)
+			}
+		}
+
+		r, _ = regexp.Compile(`until:.*$`)
+		if r.MatchString(word) {
+			date, err := dateParser.ParseDate(r.FindString(word)[6:], time.Now())
+			if err != nil {
+				return filter, err
+			}
+			match = true
+
+			filter.RecurUntil = date.Format(DATE_FORMAT)
 		}
 
 		if !match {
