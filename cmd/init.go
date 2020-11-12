@@ -8,7 +8,11 @@ import (
 func init() {
 	var (
 		initCmdDesc     = "Initializes a new todo list in the current directory"
-		initCmdLongDesc = initCmdDesc + "."
+		initCmdLongDesc = `Initializes a new todo list in the current directory.
+
+This will create a .todos.json in the directory you're in.  You can then start adding todos to it.
+
+For more info, see https://ultralist.io/docs/cli/managing_lists`
 	)
 
 	var initCmd = &cobra.Command{

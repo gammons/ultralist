@@ -11,23 +11,34 @@ import (
 
 func init() {
 	var (
-		editCmdDesc    = "Edits todos"
-		editCmdExample = `  ultralist edit 33 Meeting with @bob about +importantProject and +anotherImportantProject due today
-		Edits todo 33 entirely.
+		editCmdDesc = "Edits todos"
+		longDesc    = `Edits todos.
 
-		ultralist edit 33 due mon
-		Edits todo 33 and sets the due date to next Monday.
+  You can edit all facets of a todo.
 
-		ultralist edit 33 due none
-		Edits todo 33 and removes the due date.`
-		editCmdLongDesc = editCmdDesc + "."
+  Read the full docs at https://ultralist.io/docs/cli/managing_tasks/#editing-todos`
+		editCmdExample = `  To edit a todo's subject:
+    ultralist edit 33 Meeting with @bob about +project
+    ultralist e 33 Change the subject once again
+
+  To edit just the due date, keeping the subject:
+    ultralist edit 33 due:mon
+
+  To remove a due date:
+    ultralist edit 33 due none
+
+  To edit a status
+    ultralist edit 33 status:next
+
+	To remove a status:
+    ultralist edit 33 status:none`
 	)
 
 	var editCmd = &cobra.Command{
 		Use:     "edit [id]",
 		Aliases: []string{"e"},
 		Example: editCmdExample,
-		Long:    editCmdLongDesc,
+		Long:    longDesc,
 		Short:   editCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
 			todoID, err := strconv.Atoi(args[0])

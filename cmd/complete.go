@@ -10,17 +10,20 @@ import (
 func init() {
 	var (
 		archiveCompletedTodo bool
-		completeCmdExample   = `
-		ultralist complete 33
-		ultralist c 33
-			Completes todo with id 33.
+		long                 = `Completes or un-completes a todo.
 
-		ultralist uncomplete 33 --archive
-			Completes todo with id 33 and archives it.
+For more info, see https://ultralist.io/docs/cli/managing_tasks`
+		completeCmdExample = `
+  Complete a todo with id 33:
+    ultralist complete 33
+    ultralist c 33
 
-		ultralist uncomplete 33
-		ultralist uc 33
-			Uncompletes todo with id 33.`
+  Complete a todo with id 33 and archive it:
+    ultralist uncomplete 33 --archive
+
+  Uncompletes todo with id 33.
+    ultralist uncomplete 33
+    ultralist uc 33`
 	)
 
 	var completeCmd = &cobra.Command{
@@ -28,6 +31,7 @@ func init() {
 		Aliases: []string{"c"},
 		Example: completeCmdExample,
 		Short:   "Completes a todo.",
+		Long:    long,
 		Run: func(cmd *cobra.Command, args []string) {
 			ultralist.NewApp().CompleteTodo(strings.Join(args, " "), archiveCompletedTodo)
 		},
@@ -38,6 +42,7 @@ func init() {
 		Aliases: []string{"uc"},
 		Example: completeCmdExample,
 		Short:   "Un-completes a todo.",
+		Long:    long,
 		Run: func(cmd *cobra.Command, args []string) {
 			ultralist.NewApp().UncompleteTodo(strings.Join(args, " "))
 		},

@@ -9,10 +9,15 @@ func init() {
 	var (
 		webAuthCmdDesc     = "Authenticates you against ultralist.io"
 		webAuthCmdLongDesc = `
-	Run "ultralist auth" to login or signup to ultralist.io to begin syncing lists.
-	"ultralist auth" will redirect you to Ultralist.io's login/signup page.
-	Ultralist stores a JSON web token in ~/.config/ultralist/creds.json.
-	`
+This will authenticate your local ultralist with ultralist.io.
+
+  Syncing with ultralist.io conveys many benefits:
+    - Real-time sync with other ultralist binaries on other computers
+    - Manage your lists via the web at app.ultralist.io
+    - Use Ultralist on your mobile phone
+    - Any many others.
+
+  Ultralist.io is a paid service.  For more information, See https://ultralist.io/docs/cli/pro_integration`
 	)
 
 	var webAuthCmd = &cobra.Command{

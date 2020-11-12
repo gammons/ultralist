@@ -10,9 +10,14 @@ import (
 func init() {
 	var (
 		deleteCmdDesc    = "Deletes todos"
-		deleteCmdExample = `  ultralist delete 33
-		Deletes todo with id 33.`
-		deleteCmdLongDesc = deleteCmdDesc + "."
+		deleteCmdExample = `  To delete a todo with ID 33:
+    ultralist d 33
+    ultralist delete 33
+
+  Note, this will also free up the id of 33.`
+		deleteCmdLongDesc = `Delete a todo with a specified ID.
+
+  See the full docs at https://ultralist.io/docs/cli/managing_tasks`
 	)
 
 	var deleteCmd = &cobra.Command{
