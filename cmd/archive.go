@@ -26,7 +26,12 @@ func init() {
     ultralist archive gc
     ultralist ar gc
 
-  For the full docs, see https://ultralist.io/docs/cli/managing_tasks/#archivingunarchiving-todos`
+  ultralist archive gc
+  ultralist ar gc
+	  Run garbage collection. Delete all archived todos and reclaim ids
+
+  See the full docs here:
+  https://ultralist.io/docs/cli/managing_tasks`
 	)
 
 	var archiveCmd = &cobra.Command{

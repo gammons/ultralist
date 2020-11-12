@@ -27,11 +27,10 @@ func init() {
   See the full docs at https://ultralist.io/docs/cli/managing_tasks/#adding-todos
 
   Todos can also recur.  Set the 'recur' directive to control recurrence:
-
     ultralist a Daily standup recur:weekdays
     ultralist a 1o1 meeting with jim recur:weekly
 
-  For full documentation on recurrence, see:
+  For the full documentation on recurrence, see the docs:
   https://ultralist.io/docs/cli/recurrence`
 	)
 
