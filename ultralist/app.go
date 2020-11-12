@@ -14,7 +14,7 @@ import (
 
 // Current version of ultralist.
 const (
-	VERSION     string = "1.6.3"
+	VERSION     string = "1.7.0"
 	DATE_FORMAT string = "2006-01-02"
 )
 
