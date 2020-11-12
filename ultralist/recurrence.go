@@ -49,10 +49,12 @@ func (r *Recurrence) nextRecurrence(dueDate time.Time, completedDate time.Time, 
 		return completedDate.AddDate(0, 0, 1)
 	case "weekdays":
 		return r.findNextWeekDay(dueDate, completedDate)
-	case "monthly":
-		return r.findNextMonth(dueDate, completedDate)
 	case "weekly":
 		return r.findNextWeek(dueDate, completedDate)
+	case "monthly":
+		return r.findNextMonth(dueDate, completedDate)
+	case "yearly":
+		return r.findNextYear(dueDate, completedDate)
 	}
 	return dueDate
 }
@@ -99,6 +101,17 @@ func (r *Recurrence) findNextMonth(dueDate time.Time, completedDate time.Time) t
 	for {
 		if dueDate.Before(completedDate) {
 			dueDate = dueDate.AddDate(0, 1, 0)
+		} else {
+			return dueDate
+		}
+	}
+}
+
+func (r *Recurrence) findNextYear(dueDate time.Time, completedDate time.Time) time.Time {
+	dueDate = dueDate.AddDate(1, 0, 0)
+	for {
+		if dueDate.Before(completedDate) {
+			dueDate = dueDate.AddDate(1, 0, 0)
 		} else {
 			return dueDate
 		}

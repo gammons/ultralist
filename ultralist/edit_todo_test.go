@@ -12,10 +12,12 @@ func TestEditTodoProjects(t *testing.T) {
 
 	filter, _ := parser.Parse("+p1")
 	todo, _ := CreateTodo(filter)
+	todoList := &TodoList{}
+	todoList.Data = []*Todo{todo}
 
 	editFilter, _ := parser.Parse("+p2")
 
-	EditTodo(todo, editFilter)
+	EditTodo(todo, todoList, editFilter)
 
 	assert.Equal("+p2", todo.Subject)
 	assert.Equal([]string{"p2"}, todo.Projects)
@@ -27,10 +29,12 @@ func TestEditTodoProjectsOtherSyntax(t *testing.T) {
 
 	filter, _ := parser.Parse("+p1")
 	todo, _ := CreateTodo(filter)
+	todoList := &TodoList{}
+	todoList.Data = []*Todo{todo}
 
 	editFilter, _ := parser.Parse("project:p2")
 
-	EditTodo(todo, editFilter)
+	EditTodo(todo, todoList, editFilter)
 
 	assert.Equal("+p1", todo.Subject)
 	assert.Equal([]string{"p2"}, todo.Projects)

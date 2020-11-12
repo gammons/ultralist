@@ -171,13 +171,21 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		if r.MatchString(word) {
 			filter.HasRecur = true
 			filter.Recur = r.FindString(word)[6:]
+
 			filter.Contexts, filter.ExcludeContexts = p.parseString(r.FindString(word)[8:])
 			match = true
 
-			r, _ = regexp.Compile(`until:.*$`)
-			if r.MatchString(word) {
-				filter.RecurUntil = r.FindString(word)[6:]
+		}
+
+		r, _ = regexp.Compile(`until:.*$`)
+		if r.MatchString(word) {
+			date, err := dateParser.ParseDate(r.FindString(word)[6:], time.Now())
+			if err != nil {
+				return filter, err
 			}
+			match = true
+
+			filter.RecurUntil = date.Format(DATE_FORMAT)
 		}
 
 		if !match {

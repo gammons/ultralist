@@ -11,6 +11,8 @@ func CreateTodo(filter *Filter) (*Todo, error) {
 		Contexts:   filter.Contexts,
 		Due:        filter.Due,
 		Status:     filter.LastStatus(),
+		Recur:      filter.Recur,
+		RecurUntil: filter.RecurUntil,
 	}
 	if todoItem.Completed {
 		todoItem.Complete()

@@ -2,6 +2,7 @@ package ultralist
 
 import (
 	"sort"
+	"time"
 )
 
 // TodoList is the struct of a list with several todos.
@@ -48,9 +49,17 @@ func (t *TodoList) Complete(ids ...int) {
 		if todo == nil {
 			continue
 		}
+		prevStatus := todo.Status
 		todo.Complete()
 		t.Delete(id)
 		t.Data = append(t.Data, todo)
+
+		r := &Recurrence{}
+		if r.HasNextRecurringTodo(todo) {
+			next := r.NextRecurringTodo(todo, time.Now())
+			next.Status = prevStatus
+			t.Add(next)
+		}
 	}
 }
 

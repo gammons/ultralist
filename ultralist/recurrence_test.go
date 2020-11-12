@@ -190,6 +190,18 @@ func TestDailyOverdue(t *testing.T) {
 	assert.Equal("2020-11-10", nextTodo.Due)
 }
 
+func TestDailyDueInFuture(t *testing.T) {
+	assert := assert.New(t)
+
+	r := &Recurrence{}
+	pivot, _ := time.Parse(DATE_FORMAT, "2020-11-09")
+	todo := &Todo{Recur: "daily", Due: "2020-11-12"}
+
+	nextTodo := r.NextRecurringTodo(todo, pivot)
+
+	assert.Equal("2020-11-13", nextTodo.Due)
+}
+
 func TestDailyEarly(t *testing.T) {
 	assert := assert.New(t)
 
@@ -200,4 +212,16 @@ func TestDailyEarly(t *testing.T) {
 	nextTodo := r.NextRecurringTodo(todo, pivot)
 
 	assert.Equal("2020-11-07", nextTodo.Due)
+}
+
+func TestYearly(t *testing.T) {
+	assert := assert.New(t)
+
+	r := &Recurrence{}
+	pivot, _ := time.Parse(DATE_FORMAT, "2020-11-04")
+	todo := &Todo{Recur: "yearly", Due: "2020-11-06"}
+
+	nextTodo := r.NextRecurringTodo(todo, pivot)
+
+	assert.Equal("2021-11-06", nextTodo.Due)
 }
