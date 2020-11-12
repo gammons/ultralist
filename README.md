@@ -6,6 +6,8 @@
 
 Ultralist is a task management system for technical people. It is command-line component that is very fast and stays out of the way. 
 
+[![](https://ultralist.io/images/ultralist.png)](https://ultralist.io)
+
 Ultralist is based off of the [Getting Things Done][gtd] system, and is centered around the following concepts:
 
 * due dates
@@ -13,11 +15,10 @@ Ultralist is based off of the [Getting Things Done][gtd] system, and is centered
 * statuses
 * task recurrence
 
-[![](https://ultralist.io/images/ultralist.png)](https://ultralist.io)
 
 The CLI is _fast_, _powerful_ and _intuitive_.  It will also always be open source.
 
-### Documentation
+## Documentation
 
 All of Ultralist's documentation is available on the [Ultralist website](https://ultralist.io).
 
@@ -30,7 +31,7 @@ All of Ultralist's documentation is available on the [Ultralist website](https:/
 * [Syncing with Ultralist Pro](https://ultralist.io/docs/cli/pro_integration/)
 * [The .todos.json file format](https://ultralist.io/docs/cli/todos_json/)
 
-### Ultralist Pro
+## Ultralist Pro
 
 You can optionally combine the Ultralist CLI with [Ultralist Pro](https://ultralist.io).  Doing so adds the following benefits:
 
@@ -42,11 +43,11 @@ You can optionally combine the Ultralist CLI with [Ultralist Pro](https://ultral
 
 Ultralist Pro provides a superior task management experience to Todoist, Any.do etc.  The command-line will app _always_ be first and foremost.
 
-### Is it good?
+## Is it good?
 
 Yes.  Yes it is.
 
-### Installation
+## Installation
 
 * **Mac OS**: Run `brew install ultralist`. (Or `port install ultralist` if you are using [MacPorts](https://www.macports.org).)
 * **Arch Linux**: May be installed from AUR [ultralist](https://aur.archlinux.org/packages/ultralist/)
@@ -76,3 +77,4 @@ Please send complaints, complements, rants, etc to [Grant Ammons][ga]
 Ultralist is open source, and uses the [MIT license](https://github.com/ultralist/ultralist/blob/master/LICENSE.md).
 
 [ga]: https://twitter.com/gammons
+[gtd]: http://lifehacker.com/productivity-101-a-primer-to-the-getting-things-done-1551880955
