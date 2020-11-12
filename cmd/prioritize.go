@@ -31,7 +31,7 @@ func init() {
 		Long:    long,
 		Short:   "Prioritize a todo.",
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().PrioritizeTodo(strings.Join(args, " "))
+			ultralist.NewApp().PrioritizeTodo(strings.Join(args, ","))
 		},
 	}
 
@@ -42,7 +42,7 @@ func init() {
 		Long:    long,
 		Short:   "Un-prioritize a todo.",
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().UnprioritizeTodo(strings.Join(args, " "))
+			ultralist.NewApp().UnprioritizeTodo(strings.Join(args, ","))
 		},
 	}
 
