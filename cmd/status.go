@@ -10,10 +10,17 @@ import (
 func init() {
 	var (
 		setStatusCmdDesc    = "Sets the status of a todo item"
-		setStatusCmdExample = `
-ultralist status 33 blocked
-ultralist s 33 blocked`
-		setStatusCmdLongDesc = `Sets the status of a todo item.  Status can be any string.`
+		setStatusCmdExample = `  To add a "blocked" status to a todo:
+    ultralist status 33 blocked
+    ultralist s 33 blocked
+
+  You can remove a status by setting a status to "none".  Example:
+    ultralist s 33 none`
+
+		setStatusCmdLongDesc = `Sets the status of a todo item.
+  A status should be a single lower-case word, e.g. "now", "blocked", or "waiting".
+
+  For more info, see https://ultralist.io/docs/cli/managing_tasks/#handling-todo-statuses`
 	)
 
 	var setStatusCmd = &cobra.Command{

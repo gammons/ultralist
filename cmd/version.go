@@ -7,20 +7,20 @@ import (
 	"github.com/ultralist/ultralist/ultralist"
 )
 
-var (
-	versionCmdDesc     = "Displays the version of ultralist"
-	versionCmdLongDesc = versionCmdDesc + "."
-)
-
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Long:  versionCmdLongDesc,
-	Short: versionCmdDesc,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Ultralist v%s\n", ultralist.VERSION)
-	},
-}
-
 func init() {
+	var (
+		versionCmdDesc     = "Displays the version of ultralist"
+		versionCmdLongDesc = versionCmdDesc + "."
+	)
+
+	var versionCmd = &cobra.Command{
+		Use:   "version",
+		Long:  versionCmdLongDesc,
+		Short: versionCmdDesc,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("Ultralist v%s\n", ultralist.VERSION)
+		},
+	}
+
 	rootCmd.AddCommand(versionCmd)
 }
