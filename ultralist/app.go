@@ -170,35 +170,60 @@ func (a *App) EditTodo(todoID int, input string) {
 	fmt.Println("Todo updated.")
 }
 
-// HandleNotes is a sub-function that will handle notes on a todo.
-func (a *App) HandleNotes(input string) {
+// AddNote adds a note to a todo.
+func (a *App) AddNote(todoID int, note string) {
 	a.load()
 
-	id, err := a.getID(input)
-	if err != nil {
-		fmt.Println(err.Error())
+	todo := a.TodoList.FindByID(todoID)
+	if todo == nil {
+		fmt.Println("No todo with that id.")
+		return
+	}
+	todo.Notes = append(todo.Notes, note)
+
+	fmt.Println("Note added.")
+	a.save()
+}
+
+// EditNote edits a todo's note.
+func (a *App) EditNote(todoID int, noteID int, note string) {
+	a.load()
+
+	todo := a.TodoList.FindByID(todoID)
+	if todo == nil {
+		fmt.Println("No todo with that id.")
 		return
 	}
 
-	todo := a.TodoList.FindByID(id)
+	if noteID >= len(todo.Notes) {
+		fmt.Println("No note could be found with that ID.")
+		return
+	}
+
+	todo.Notes[noteID] = note
+
+	fmt.Println("Note edited.")
+	a.save()
+}
+
+// DeleteNote deletes a note from a todo.
+func (a *App) DeleteNote(todoID int, noteID int) {
+	a.load()
+
+	todo := a.TodoList.FindByID(todoID)
 	if todo == nil {
-		fmt.Println("No such id.")
+		fmt.Println("No todo with that id.")
 		return
 	}
-	parser := &NoteParser{}
-	regexedInput := "an " + input
-	if parser.ParseAddNote(todo, regexedInput) {
-		fmt.Println("Note added.")
-	} else if parser.ParseDeleteNote(todo, regexedInput) {
-		fmt.Println("Note deleted.")
-	} else if parser.ParseEditNote(todo, regexedInput) {
-		fmt.Println("Note edited.")
-	} else if parser.ParseShowNote(todo, regexedInput) {
-		groups := map[string][]*Todo{}
-		groups[""] = append(groups[""], todo)
-		a.Printer.Print(&GroupedTodos{Groups: groups}, true, true)
+
+	if noteID >= len(todo.Notes) {
+		fmt.Println("No note could be found with that ID.")
 		return
 	}
+
+	todo.Notes = append(todo.Notes[:noteID], todo.Notes[noteID+1:]...)
+
+	fmt.Println("Note deleted.")
 	a.save()
 }
 
