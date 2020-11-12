@@ -8,7 +8,7 @@ Ultralist is a task management system for technical people. It is command-line c
 
 Ultralist is based off of the [Getting Things Done][gtd] system. It has a concept of due dates, projects, and contexts.
 
-[![asciicast](https://asciinema.org/a/226005.svg)](https://asciinema.org/a/226005)
+[![](https://ultralist.io/images/ultralist.png)](https://ultralist.io)
 
 Combined with [Ultralist Pro](https://ultralist.io), Ultralist provides a superior task management experience to Todoist, Any.do etc.  The command-line will app _always_ be first and foremost.
 
