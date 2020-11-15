@@ -19,7 +19,7 @@ task :build do
     ENV["GOOS"] = env[:goos]
     ENV["GOARCH"] = env[:arch]
     puts "Building #{env[:goos]} #{env[:arch]}"
-    `GOOS=#{env[:goos]} GOARCH=#{env[:arch]} go build -v -o dist/#{Version}/ultralist`
+    `GOOS=#{env[:goos]} GOARCH=#{env[:arch]} CGO_ENABLED=0 go build -v -o dist/#{Version}/ultralist`
     if env[:goos] == "windows"
       puts "Creating windows executable"
       `mv dist/#{Version}/ultralist dist/#{Version}/ultralist.exe`
