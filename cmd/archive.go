@@ -40,7 +40,7 @@ func init() {
 		Example: archiveCmdExample,
 		Short:   "Archives a todo.",
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().ArchiveTodo(strings.Join(args, " "))
+			ultralist.NewApp().ArchiveTodo(strings.Join(args, ","))
 		},
 	}
 
@@ -50,7 +50,7 @@ func init() {
 		Example: archiveCmdExample,
 		Short:   "Un-archives a todo.",
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().UnarchiveTodo(strings.Join(args, " "))
+			ultralist.NewApp().UnarchiveTodo(strings.Join(args, ","))
 		},
 	}
 

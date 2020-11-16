@@ -33,7 +33,7 @@ For more info, see https://ultralist.io/docs/cli/managing_tasks`
 		Short:   "Completes a todo.",
 		Long:    long,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().CompleteTodo(strings.Join(args, " "), archiveCompletedTodo)
+			ultralist.NewApp().CompleteTodo(strings.Join(args, ","), archiveCompletedTodo)
 		},
 	}
 

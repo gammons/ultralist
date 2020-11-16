@@ -27,7 +27,7 @@ func init() {
 		Long:    deleteCmdLongDesc,
 		Short:   deleteCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().DeleteTodo(strings.Join(args, " "))
+			ultralist.NewApp().DeleteTodo(strings.Join(args, ","))
 		},
 	}
 
