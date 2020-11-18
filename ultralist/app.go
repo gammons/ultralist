@@ -2,6 +2,7 @@ package ultralist
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -13,7 +14,8 @@ import (
 
 // Current version of ultralist.
 const (
-	VERSION string = "1.0"
+	VERSION     string = "1.7.0"
+	DATE_FORMAT string = "2006-01-02"
 )
 
 // App is the giving you the structure of the ultralist app.
@@ -55,104 +57,34 @@ func NewAppWithPrintOptions(unicodeSupport bool, colorSupport bool) *App {
 func (a *App) InitializeRepo() {
 	a.TodoStore.Initialize()
 	fmt.Println("Repo initialized.")
-
-	backend := NewBackend()
-	eventLogger := &EventLogger{Store: a.TodoStore}
-	eventLogger.LoadSyncedLists()
-
-	if !backend.CredsFileExists() {
-		return
-	}
-
-	prompt := promptui.Prompt{
-		Label:     "Do you wish to sync this list with ultralist.io",
-		IsConfirm: true,
-	}
-
-	result, _ := prompt.Run()
-	if result != "y" {
-		return
-	}
-
-	if !backend.CanConnect() {
-		fmt.Println("I cannot connect to ultralist.io right now.")
-		return
-	}
-
-	// fetch lists from ultralist.io, or allow user to create a new list
-	// use the "select_add" example in promptui as a way to do this
-	type Response struct {
-		Todolists []TodoList `json:"todolists"`
-	}
-
-	var response *Response
-
-	resp := backend.PerformRequest("GET", "/api/v1/todo_lists", []byte{})
-	json.Unmarshal(resp, &response)
-
-	var todolistNames []string
-	for _, todolist := range response.Todolists {
-		todolistNames = append(todolistNames, todolist.Name)
-	}
-
-	prompt2 := promptui.SelectWithAdd{
-		Label:    "You can sync with an existing list on ultralist, or create a new list.",
-		Items:    todolistNames,
-		AddLabel: "New list...",
-	}
-
-	idx, name, _ := prompt2.Run()
-	if idx == -1 {
-		eventLogger.CurrentSyncedList.Name = name
-	} else {
-		eventLogger.CurrentSyncedList.Name = response.Todolists[idx].Name
-		eventLogger.CurrentSyncedList.UUID = response.Todolists[idx].UUID
-		a.TodoList = &response.Todolists[idx]
-		a.save()
-	}
-
-	eventLogger.WriteSyncedLists()
 }
 
-// AddTodo is adding a new todo.
+// AddTodo adds a new todo to the current list
 func (a *App) AddTodo(input string) {
-	a.Load()
-	parser := &Parser{}
-	todo := parser.ParseNewTodo(input)
-	if todo == nil {
+	a.load()
+	parser := &InputParser{}
+
+	filter, err := parser.Parse(input)
+	if err != nil {
+		fmt.Println(err.Error())
 		fmt.Println("I need more information. Try something like 'todo a chat with @bob due tom'")
 		return
 	}
 
-	id := a.TodoList.NextID()
-	a.TodoList.Add(todo)
-	a.save()
-	fmt.Printf("Todo %d added.\n", id)
-}
-
-// AddDoneTodo adds a new todo and immediately completed it.
-func (a *App) AddDoneTodo(input string) {
-	a.Load()
-
-	r, _ := regexp.Compile(`^(done)(\s*|)`)
-	input = r.ReplaceAllString(input, "")
-	parser := &Parser{}
-	todo := parser.ParseNewTodo(input)
-	if todo == nil {
-		fmt.Println("I need more information. Try something like 'todo done chating with @bob'")
+	todoItem, err := CreateTodo(filter)
+	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 
-	id := a.TodoList.NextID()
-	a.TodoList.Add(todo)
-	a.TodoList.Complete(id)
+	a.TodoList.Add(todoItem)
 	a.save()
-	fmt.Printf("Completed Todo %d added.\n", id)
+	fmt.Printf("Todo %d added.\n", todoItem.ID)
 }
 
 // DeleteTodo deletes a todo.
 func (a *App) DeleteTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -164,7 +96,7 @@ func (a *App) DeleteTodo(input string) {
 
 // CompleteTodo completes a todo.
 func (a *App) CompleteTodo(input string, archive bool) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -179,7 +111,7 @@ func (a *App) CompleteTodo(input string, archive bool) {
 
 // UncompleteTodo uncompletes a todo.
 func (a *App) UncompleteTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -191,7 +123,7 @@ func (a *App) UncompleteTodo(input string) {
 
 // ArchiveTodo archives a todo.
 func (a *App) ArchiveTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -203,7 +135,7 @@ func (a *App) ArchiveTodo(input string) {
 
 // UnarchiveTodo unarchives a todo.
 func (a *App) UnarchiveTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -214,85 +146,90 @@ func (a *App) UnarchiveTodo(input string) {
 }
 
 // EditTodo edits a todo with the given input.
-func (a *App) EditTodo(input string) {
-	a.Load()
-	id := a.getID(input)
-	if id == -1 {
-		return
-	}
-	todo := a.TodoList.FindByID(id)
+func (a *App) EditTodo(todoID int, input string) {
+	a.load()
+	todo := a.TodoList.FindByID(todoID)
 	if todo == nil {
-		fmt.Println("No such id.")
-		return
-	}
-	parser := &Parser{}
-
-	if parser.ParseEditTodo(todo, input) {
-		a.save()
-		fmt.Println("Todo updated.")
-	}
-}
-
-// ExpandTodo expands a todo.
-func (a *App) ExpandTodo(input string) {
-	a.Load()
-	id := a.getID(input)
-	parser := &Parser{}
-	if id == -1 {
+		fmt.Println("No todo with that id.")
 		return
 	}
 
-	commonProject := parser.ExpandProject(input)
-	todos := strings.LastIndex(input, ":")
-	if commonProject == "" || len(input) <= todos+1 || todos == -1 {
-		fmt.Println("I'm expecting a format like \"ultralist expand <project>: <todo1>, <todo2>, ...")
+	parser := &InputParser{}
+	filter, err := parser.Parse(input)
+	if err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 
-	newTodos := strings.Split(input[todos+1:], ",")
-
-	for _, todo := range newTodos {
-		args := []string{"add ", commonProject, " ", todo}
-		a.AddTodo(strings.Join(args, ""))
+	if err = EditTodo(todo, a.TodoList, filter); err != nil {
+		fmt.Println(err.Error())
+		return
 	}
 
-	a.TodoList.Delete(id)
 	a.save()
-	fmt.Println("Todo expanded.")
+	fmt.Println("Todo updated.")
 }
 
-// HandleNotes is a sub-function that will handle notes on a todo.
-func (a *App) HandleNotes(input string) {
-	a.Load()
-	id := a.getID(input)
-	if id == -1 {
-		return
-	}
-	todo := a.TodoList.FindByID(id)
-	if todo == nil {
-		fmt.Println("No such id.")
-		return
-	}
-	parser := &Parser{}
+// AddNote adds a note to a todo.
+func (a *App) AddNote(todoID int, note string) {
+	a.load()
 
-	if parser.ParseAddNote(todo, input) {
-		fmt.Println("Note added.")
-	} else if parser.ParseDeleteNote(todo, input) {
-		fmt.Println("Note deleted.")
-	} else if parser.ParseEditNote(todo, input) {
-		fmt.Println("Note edited.")
-	} else if parser.ParseShowNote(todo, input) {
-		groups := map[string][]*Todo{}
-		groups[""] = append(groups[""], todo)
-		a.Printer.Print(&GroupedTodos{Groups: groups}, true)
+	todo := a.TodoList.FindByID(todoID)
+	if todo == nil {
+		fmt.Println("No todo with that id.")
 		return
 	}
+	todo.Notes = append(todo.Notes, note)
+
+	fmt.Println("Note added.")
+	a.save()
+}
+
+// EditNote edits a todo's note.
+func (a *App) EditNote(todoID int, noteID int, note string) {
+	a.load()
+
+	todo := a.TodoList.FindByID(todoID)
+	if todo == nil {
+		fmt.Println("No todo with that id.")
+		return
+	}
+
+	if noteID >= len(todo.Notes) {
+		fmt.Println("No note could be found with that ID.")
+		return
+	}
+
+	todo.Notes[noteID] = note
+
+	fmt.Println("Note edited.")
+	a.save()
+}
+
+// DeleteNote deletes a note from a todo.
+func (a *App) DeleteNote(todoID int, noteID int) {
+	a.load()
+
+	todo := a.TodoList.FindByID(todoID)
+	if todo == nil {
+		fmt.Println("No todo with that id.")
+		return
+	}
+
+	if noteID >= len(todo.Notes) {
+		fmt.Println("No note could be found with that ID.")
+		return
+	}
+
+	todo.Notes = append(todo.Notes[:noteID], todo.Notes[noteID+1:]...)
+
+	fmt.Println("Note deleted.")
 	a.save()
 }
 
 // ArchiveCompleted will archive all completed todos.
 func (a *App) ArchiveCompleted() {
-	a.Load()
+	a.load()
 	for _, todo := range a.TodoList.Todos() {
 		if todo.Completed {
 			todo.Archive()
@@ -303,17 +240,26 @@ func (a *App) ArchiveCompleted() {
 }
 
 // ListTodos will list all todos.
-func (a *App) ListTodos(input string, showNotes bool) {
-	a.Load()
-	filtered := NewFilter(a.TodoList.Todos()).Filter(input)
-	grouped := a.getGroups(input, filtered)
+func (a *App) ListTodos(input string, showNotes bool, showStatus bool) {
+	a.load()
 
-	a.Printer.Print(grouped, showNotes)
+	parser := &InputParser{}
+
+	filter, err := parser.Parse(input)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	todoFilter := &TodoFilter{Todos: a.TodoList.Todos(), Filter: filter}
+	grouped := a.getGroups(input, todoFilter.ApplyFilter())
+
+	a.Printer.Print(grouped, showNotes, showStatus)
 }
 
 // PrioritizeTodo will prioritize a todo.
 func (a *App) PrioritizeTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -325,7 +271,7 @@ func (a *App) PrioritizeTodo(input string) {
 
 // UnprioritizeTodo unprioritizes a todo.
 func (a *App) UnprioritizeTodo(input string) {
-	a.Load()
+	a.load()
 	ids := a.getIDs(input)
 	if len(ids) == 0 {
 		return
@@ -335,9 +281,24 @@ func (a *App) UnprioritizeTodo(input string) {
 	fmt.Println("Todo un-prioritized.")
 }
 
+// StartTodo will start a todo.
+func (a *App) SetTodoStatus(input string) {
+	a.load()
+	ids := a.getIDs(input)
+	if len(ids) == 0 {
+		return
+	}
+
+	splitted := strings.Split(input, " ")
+
+	a.TodoList.SetStatus(splitted[len(splitted)-1], ids...)
+	a.save()
+	fmt.Println("Todo status updated.")
+}
+
 // GarbageCollect will delete all archived todos.
 func (a *App) GarbageCollect() {
-	a.Load()
+	a.load()
 	a.TodoList.GarbageCollect()
 	a.save()
 	fmt.Println("Garbage collection complete.")
@@ -345,19 +306,16 @@ func (a *App) GarbageCollect() {
 
 // Sync will sync the todolist with ultralist.io.
 func (a *App) Sync(quiet bool) {
-	a.Load()
+	backend := NewBackend()
+	if !backend.CredsFileExists() {
+		fmt.Println("You're not authenticated with ultralist.io yet.  Please run `ultralist auth` first.")
+		return
+	}
 
-	if a.EventLogger.CurrentSyncedList.Name == "" {
-		prompt := promptui.Prompt{
-			Label: "Give this list a name",
-		}
-
-		result, err := prompt.Run()
-		if err != nil {
-			fmt.Println("A name is required to sync a list.")
-			return
-		}
-		a.EventLogger.CurrentSyncedList.Name = result
+	a.load()
+	if !a.TodoList.IsSynced {
+		fmt.Println("This list isn't currently syncing with ultralist.io.  Please run `ultralist sync --setup` to set up syncing.")
+		return
 	}
 
 	var synchronizer *Synchronizer
@@ -372,6 +330,100 @@ func (a *App) Sync(quiet bool) {
 		a.EventLogger.ClearEventLogs()
 		a.TodoStore.Save(a.TodoList.Data)
 	}
+}
+
+// SetupSync sets up a todolist to sync with ultralist.io.
+func (a *App) SetupSync() {
+	backend := NewBackend()
+	if !backend.CredsFileExists() {
+		fmt.Println("You're not authenticated with ultralist.io yet.  Please run `ultralist auth` first.")
+		return
+	}
+
+	if a.TodoStore.LocalTodosFileExists() {
+		a.load()
+
+		if a.TodoList.IsSynced {
+			fmt.Println("This list is already sycned with ultralist.io. Use the --unsync flag to stop syncing this list.")
+			return
+		}
+
+		prompt := promptui.Select{
+			Label: "You have a todos list in this directory.  What would you like to do?",
+			Items: []string{"Sync my list to ultralist.io", "Pull a list from ultralist.io, replacing the list that's here"},
+		}
+		_, result, err := prompt.Run()
+		if err != nil {
+			return
+		}
+		if strings.HasPrefix(result, "Sync my list") {
+			prompt := promptui.Prompt{
+				Label: "Give this list a name",
+			}
+
+			result, err := prompt.Run()
+			if err != nil {
+				fmt.Println("A name is required to sync a list.")
+				return
+			}
+			a.EventLogger.CurrentSyncedList.Name = result
+			a.TodoList.Name = result
+			a.TodoList.IsSynced = true
+			a.EventLogger.WriteSyncedLists()
+
+			// right here, I need to run a request to create a todo list via the API.
+			backend.CreateTodoList(a.TodoList)
+
+			return
+		}
+	}
+
+	// at this point, it is known that a local todos file does not exist.
+	type Response struct {
+		Todolists []TodoList `json:"todolists"`
+	}
+
+	var response *Response
+
+	resp := backend.PerformRequest("GET", "/api/v1/todo_lists", []byte{})
+	json.Unmarshal(resp, &response)
+
+	var todolistNames []string
+	for _, todolist := range response.Todolists {
+		todolistNames = append(todolistNames, todolist.Name)
+	}
+	prompt2 := promptui.Select{
+		Label: "Choose a list to import",
+		Items: todolistNames,
+	}
+
+	idx, _, _ := prompt2.Run()
+	a.TodoList = &response.Todolists[idx]
+	a.TodoStore.Initialize()
+	a.TodoStore.Save(a.TodoList.Data)
+
+	a.EventLogger = NewEventLogger(a.TodoList, a.TodoStore)
+	a.EventLogger.WriteSyncedLists()
+}
+
+// Unsync stops a list from syncing with Ultralist.io.
+func (a *App) Unsync() {
+	backend := NewBackend()
+	if !backend.CredsFileExists() {
+		fmt.Println("You're not authenticated with ultralist.io yet.  Please run `ultralist auth` first.")
+		return
+	}
+
+	a.load()
+
+	if !a.TodoList.IsSynced {
+		fmt.Println("This list isn't currently syncing with ultralist.io.")
+		return
+	}
+
+	a.EventLogger.DeleteCurrentSyncedList()
+	a.EventLogger.WriteSyncedLists()
+	fmt.Println("This list will no longer sync with ultralist.io.  To set up syncing again, run `ultralist sync --setup`.")
 }
 
 // CheckAuth is checking the authentication against ultralist.io.
@@ -391,21 +443,20 @@ func (a *App) AuthWorkflow() {
 	webapp.Run()
 }
 
-// Load the todolist from the todo store.
-func (a *App) Load() error {
+// load the todolist from the todo store.
+func (a *App) load() error {
 	todos, err := a.TodoStore.Load()
 	if err != nil {
 		return err
 	}
 	a.TodoList.Load(todos)
 	a.EventLogger = NewEventLogger(a.TodoList, a.TodoStore)
-	a.EventLogger.LoadSyncedLists()
 	return nil
 }
 
 // OpenWeb is opening the current list on ultralist.io in your browser.
 func (a *App) OpenWeb() {
-	a.Load()
+	a.load()
 	if !a.TodoList.IsSynced {
 		fmt.Println("This list isn't synced! Use 'ultralist sync' to synchronize this list with ultralist.io.")
 		return
@@ -417,7 +468,7 @@ func (a *App) OpenWeb() {
 
 // OpenManager opens the terminal UI to manage a list
 func (a *App) OpenManager() {
-	a.Load()
+	a.load()
 	manager := &Manager{}
 	manager.RunManager(a.TodoList)
 }
@@ -433,15 +484,13 @@ func (a *App) save() {
 	}
 }
 
-func (a *App) getID(input string) int {
-	re, _ := regexp.Compile("\\d+")
-	if re.MatchString(input) {
-		id, _ := strconv.Atoi(re.FindString(input))
-		return id
+func (a *App) getID(input string) (int, error) {
+	splitted := strings.Split(input, " ")
+	id, err := strconv.Atoi(splitted[0])
+	if err != nil {
+		return -1, errors.New(fmt.Sprintf("Invalid id: '%s'", splitted[0]))
 	}
-
-	fmt.Println("Invalid id.")
-	return -1
+	return id, nil
 }
 
 func (a *App) getIDs(input string) (ids []int) {
@@ -453,7 +502,7 @@ func (a *App) getIDs(input string) (ids []int) {
 				continue
 			}
 			ids = append(ids, rangedIds...)
-		} else if id := a.getID(idGroup); id != -1 {
+		} else if id, err := a.getID(idGroup); err == nil {
 			ids = append(ids, id)
 		} else {
 			fmt.Printf("Invalid id: %s.\n", idGroup)
@@ -481,6 +530,7 @@ func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 	grouper := &Grouper{}
 	contextRegex, _ := regexp.Compile(`group:c.*$`)
 	projectRegex, _ := regexp.Compile(`group:p.*$`)
+	statusRegex, _ := regexp.Compile(`group:s.*$`)
 
 	var grouped *GroupedTodos
 
@@ -488,6 +538,8 @@ func (a *App) getGroups(input string, todos []*Todo) *GroupedTodos {
 		grouped = grouper.GroupByContext(todos)
 	} else if projectRegex.MatchString(input) {
 		grouped = grouper.GroupByProject(todos)
+	} else if statusRegex.MatchString(input) {
+		grouped = grouper.GroupByStatus(todos)
 	} else {
 		grouped = grouper.GroupByNothing(todos)
 	}

@@ -38,14 +38,14 @@ func (w *Webapp) handleAuthResponse(writer http.ResponseWriter, r *http.Request)
 
 	backend := NewBackend()
 	backend.WriteCreds(cliTokens[0])
-	fmt.Println("Authorization successful! Next, run `ultralist init` to sync a list.")
+	fmt.Println("Authorization successful! Next, run `ultralist sync --setup` to sync a list.")
 
 	http.Redirect(writer, r, w.frontendUrl(), http.StatusSeeOther)
 
 	// sleep 1 second before shutting server down, so we can display msg on web.
 	go func() {
 		time.Sleep(1 * time.Second)
-		w.server.Shutdown(nil)
+		os.Exit(0)
 	}()
 }
 
@@ -53,8 +53,8 @@ func (w *Webapp) frontendUrl() string {
 	envFrontendURL := os.Getenv("ULTRALIST_FRONTEND_URL")
 
 	if envFrontendURL != "" {
-		return envFrontendURL + "/loading?cli_auth_completed=true"
+		return envFrontendURL + "/todolist?cli_auth_completed=true"
 	}
 
-	return "https://app.ultralist.io/loading?cli_auth_completed=true"
+	return "https://app.ultralist.io/todolist?cli_auth_completed=true"
 }

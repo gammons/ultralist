@@ -7,35 +7,45 @@ import (
 	"github.com/ultralist/ultralist/ultralist"
 )
 
-var (
-	revertPrioritizedTodo bool
-	prioritizeCmdDesc     = "Prioritize and unprioritize todos"
-	prioritizeCmdExample  = `  ultralist prioritize 33
-  Prioritizes todo with id 33.
-
-  ultralist prioritize 33 --revert
-  Unprioritizes todo with id 33.`
-	prioritizeCmdLongDesc = `Prioritize and unprioritize todos.
-
-Todos with a priority flag will be highlighted on top of a list.`
-)
-
-var prioritizeCmd = &cobra.Command{
-	Use:     "prioritize [id]",
-	Aliases: []string{"p"},
-	Example: prioritizeCmdExample,
-	Long:    prioritizeCmdLongDesc,
-	Short:   prioritizeCmdDesc,
-	Run: func(cmd *cobra.Command, args []string) {
-		if revertArchivedTodo {
-			ultralist.NewApp().UnprioritizeTodo(strings.Join(args, " "))
-		} else {
-			ultralist.NewApp().PrioritizeTodo(strings.Join(args, " "))
-		}
-	},
-}
-
 func init() {
+	var (
+		example = `  To prioritize a todo with id 33:
+    ultralist prioritize 33
+    ultralist p 33
+
+  To un-prioritize a todo with an id 33:
+    ultralist unprioritize 33
+    ultralist up 33`
+
+		long = `Prioritize and un-prioritize todos.
+
+  Todos with the priority flag will be highlighted, and will be at the top of your list.
+
+  For more info, see https://ultralist.io/docs/cli/managing_tasks/#prioritizingunprioritizing-todos`
+	)
+
+	var prioritizeCmd = &cobra.Command{
+		Use:     "prioritize [id]",
+		Aliases: []string{"p"},
+		Example: example,
+		Long:    long,
+		Short:   "Prioritize a todo.",
+		Run: func(cmd *cobra.Command, args []string) {
+			ultralist.NewApp().PrioritizeTodo(strings.Join(args, " "))
+		},
+	}
+
+	var unprioritizeCmd = &cobra.Command{
+		Use:     "unprioritize [id]",
+		Aliases: []string{"up"},
+		Example: example,
+		Long:    long,
+		Short:   "Un-prioritize a todo.",
+		Run: func(cmd *cobra.Command, args []string) {
+			ultralist.NewApp().UnprioritizeTodo(strings.Join(args, " "))
+		},
+	}
+
 	rootCmd.AddCommand(prioritizeCmd)
-	prioritizeCmd.Flags().BoolVarP(&revertArchivedTodo, "revert", "", false, "Unprioritizes an prioritized todo")
+	rootCmd.AddCommand(unprioritizeCmd)
 }

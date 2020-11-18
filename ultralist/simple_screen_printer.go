@@ -27,7 +27,7 @@ func NewSimpleScreenPrinter(unicodeSupport bool) *SimpleScreenPrinter {
 }
 
 // Print prints the output of ultralist to the terminal screen.
-func (f *SimpleScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
+func (f *SimpleScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool, showStatus bool) {
 	var keys []string
 	for key := range groupedTodos.Groups {
 		keys = append(keys, key)
@@ -39,19 +39,28 @@ func (f *SimpleScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool)
 	for _, key := range keys {
 		tabby.AddLine(fmt.Sprint(key))
 		for _, todo := range groupedTodos.Groups[key] {
-			f.printTodo(tabby, todo, printNotes)
+			f.printTodo(tabby, todo, printNotes, showStatus)
 		}
 		tabby.AddLine()
 	}
 	tabby.Print()
 }
 
-func (f *SimpleScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool) {
-	tabby.AddLine(
-		f.formatID(todo.ID, todo.IsPriority),
-		f.formatCompleted(todo.Completed),
-		f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
-		f.formatSubject(todo.Subject, todo.IsPriority))
+func (f *SimpleScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool, showStatus bool) {
+	if showStatus {
+		tabby.AddLine(
+			f.formatID(todo.ID, todo.IsPriority),
+			f.formatCompleted(todo.Completed),
+			f.formatInformation(todo),
+			f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
+			f.formatSubject(todo.Subject, todo.IsPriority))
+	} else {
+		tabby.AddLine(
+			f.formatID(todo.ID, todo.IsPriority),
+			f.formatCompleted(todo.Completed),
+			f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
+			f.formatSubject(todo.Subject, todo.IsPriority))
+	}
 	if printNotes {
 		for nid, note := range todo.Notes {
 			tabby.AddLine(
@@ -86,13 +95,32 @@ func (f *SimpleScreenPrinter) formatDue(due string, isPriority bool, completed b
 	if due == "" {
 		return fmt.Sprint("          ")
 	}
-	dueTime, _ := time.Parse("2006-01-02", due)
+	dueTime, _ := time.Parse(DATE_FORMAT, due)
 
 	if isPriority {
 		return f.printPriorityDue(dueTime, completed)
 	}
 	return f.printDue(dueTime, completed)
+}
 
+func (f *SimpleScreenPrinter) formatInformation(todo *Todo) string {
+	var information []string
+	if todo.IsPriority {
+		information = append(information, "*")
+	} else {
+		information = append(information, " ")
+	}
+	if todo.HasNotes() {
+		information = append(information, "N")
+	} else {
+		information = append(information, " ")
+	}
+	if todo.Archived {
+		information = append(information, "A")
+	} else {
+		information = append(information, " ")
+	}
+	return fmt.Sprint(strings.Join(information, ""))
 }
 
 func (f *SimpleScreenPrinter) printDue(due time.Time, completed bool) string {

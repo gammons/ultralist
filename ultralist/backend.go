@@ -32,6 +32,17 @@ func NewBackend() *Backend {
 	return backend
 }
 
+// CreateTodoList will create a todo list on the backend
+func (b *Backend) CreateTodoList(todolist *TodoList) {
+	type Request struct {
+		Todolist *TodoList `json:"todolist"`
+	}
+
+	bodyBytes, _ := json.Marshal(&Request{Todolist: todolist})
+
+	b.PerformRequest("POST", "/api/v1/todo_lists", bodyBytes)
+}
+
 // PerformRequest is performing a request to the ultralist API backend.
 func (b *Backend) PerformRequest(method string, path string, data []byte) []byte {
 	url := b.apiURL(path)
@@ -41,6 +52,7 @@ func (b *Backend) PerformRequest(method string, path string, data []byte) []byte
 	req.Header.Set("Authorization", authHeader)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
+	req.Header.Set("x-Ultralist-CLI-Version", VERSION)
 
 	client := &http.Client{}
 
@@ -76,7 +88,7 @@ func (b *Backend) PerformRequest(method string, path string, data []byte) []byte
 func (b *Backend) CanConnect() bool {
 	timeout := time.Duration(2 * time.Second)
 	client := http.Client{Timeout: timeout}
-	if _, err := client.Get(b.apiURL("/api/v1/hb")); err != nil {
+	if _, err := client.Get(b.apiURL("/hb")); err != nil {
 		return false
 	}
 	return true

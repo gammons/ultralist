@@ -12,6 +12,23 @@ import (
 	"github.com/fatih/color"
 )
 
+var (
+	blue        = color.New(0, color.FgBlue)
+	blueBold    = color.New(color.Bold, color.FgBlue)
+	cyan        = color.New(0, color.FgCyan)
+	cyanBold    = color.New(color.Bold, color.FgCyan)
+	green       = color.New(0, color.FgGreen)
+	greenBold   = color.New(color.Bold, color.FgGreen)
+	magenta     = color.New(0, color.FgMagenta)
+	magentaBold = color.New(color.Bold, color.FgMagenta)
+	red         = color.New(0, color.FgRed)
+	redBold     = color.New(color.Bold, color.FgRed)
+	white       = color.New(0, color.FgWhite)
+	whiteBold   = color.New(color.Bold, color.FgWhite)
+	yellow      = color.New(0, color.FgYellow)
+	yellowBold  = color.New(color.Bold, color.FgYellow)
+)
+
 // ScreenPrinter is the default struct of this file
 type ScreenPrinter struct {
 	Writer         *io.Writer
@@ -26,7 +43,7 @@ func NewScreenPrinter(unicodeSupport bool) *ScreenPrinter {
 }
 
 // Print prints the output of ultralist to the terminal screen.
-func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
+func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool, showStatus bool) {
 	var keys []string
 	for key := range groupedTodos.Groups {
 		keys = append(keys, key)
@@ -38,23 +55,35 @@ func (f *ScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool) {
 	for _, key := range keys {
 		tabby.AddLine(cyan.Sprint(key))
 		for _, todo := range groupedTodos.Groups[key] {
-			f.printTodo(tabby, todo, printNotes)
+			f.printTodo(tabby, todo, printNotes, showStatus)
 		}
 		tabby.AddLine()
 	}
 	tabby.Print()
 }
 
-func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool) {
-	tabby.AddLine(
-		f.FormatID(todo.ID, todo.IsPriority),
-		f.FormatCompleted(todo.Completed),
-		f.FormatDue(todo.Due, todo.IsPriority, todo.Completed),
-		f.FormatSubject(todo.Subject, todo.IsPriority))
+func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool, showStatus bool) {
+	if showStatus {
+		tabby.AddLine(
+			f.FormatID(todo.ID, todo.IsPriority),
+			f.FormatCompleted(todo.Completed),
+			f.FormatDue(todo.Due, todo.IsPriority, todo.Completed),
+			f.formatStatus(todo.Status, todo.IsPriority),
+			f.FormatSubject(todo.Subject, todo.IsPriority))
+	} else {
+		tabby.AddLine(
+			f.FormatID(todo.ID, todo.IsPriority),
+			f.FormatCompleted(todo.Completed),
+			f.FormatDue(todo.Due, todo.IsPriority, todo.Completed),
+			f.formatStatus(todo.Status, todo.IsPriority),
+			f.FormatSubject(todo.Subject, todo.IsPriority))
+	}
+
 	if printNotes {
 		for nid, note := range todo.Notes {
 			tabby.AddLine(
 				"  "+cyan.Sprint(strconv.Itoa(nid)),
+				white.Sprint(""),
 				white.Sprint(""),
 				white.Sprint(""),
 				white.Sprint(""),
@@ -74,9 +103,8 @@ func (f *ScreenPrinter) FormatCompleted(completed bool) string {
 	if completed {
 		if f.UnicodeSupport {
 			return white.Sprint("[✔]")
-		} else {
-			return white.Sprint("[x]")
 		}
+		return white.Sprint("[x]")
 	}
 	return white.Sprint("[ ]")
 }
@@ -85,13 +113,47 @@ func (f *ScreenPrinter) FormatDue(due string, isPriority bool, completed bool) s
 	if due == "" {
 		return white.Sprint("          ")
 	}
-	dueTime, _ := time.Parse("2006-01-02", due)
+	dueTime, _ := time.Parse(DATE_FORMAT, due)
 
 	if isPriority {
 		return f.printPriorityDue(dueTime, completed)
 	}
 	return f.printDue(dueTime, completed)
+}
 
+func (f *ScreenPrinter) formatStatus(status string, isPriority bool) string {
+	if status == "" {
+		return green.Sprint("          ")
+	}
+
+	if len(status) < 10 {
+		for x := len(status); x <= 10; x++ {
+			status += " "
+		}
+	}
+
+	statusRune := []rune(status)
+
+	if isPriority {
+		return greenBold.Sprintf("%-10v", string(statusRune[0:10]))
+	}
+	return green.Sprintf("%-10s", string(statusRune[0:10]))
+}
+
+func (f *ScreenPrinter) formatInformation(todo *Todo) string {
+	var information []string
+	if todo.IsPriority {
+		information = append(information, "*")
+	} else {
+		information = append(information, " ")
+	}
+	if todo.HasNotes() {
+		information = append(information, "N")
+	} else {
+		information = append(information, " ")
+	}
+
+	return white.Sprint(strings.Join(information, ""))
 }
 
 func (f *ScreenPrinter) printDue(due time.Time, completed bool) string {

@@ -1,6 +1,9 @@
 package ultralist
 
-import "sort"
+import (
+	"sort"
+	"time"
+)
 
 // TodoList is the struct of a list with several todos.
 type TodoList struct {
@@ -46,9 +49,17 @@ func (t *TodoList) Complete(ids ...int) {
 		if todo == nil {
 			continue
 		}
+		prevStatus := todo.Status
 		todo.Complete()
 		t.Delete(id)
 		t.Data = append(t.Data, todo)
+
+		r := &Recurrence{}
+		if r.HasNextRecurringTodo(todo) {
+			next := r.NextRecurringTodo(todo, time.Now())
+			next.Status = prevStatus
+			t.Add(next)
+		}
 	}
 }
 
@@ -112,6 +123,19 @@ func (t *TodoList) Unprioritize(ids ...int) {
 			continue
 		}
 		todo.Unprioritize()
+		t.Delete(id)
+		t.Data = append(t.Data, todo)
+	}
+}
+
+// SetStatus sets the status of a todo
+func (t *TodoList) SetStatus(input string, ids ...int) {
+	for _, id := range ids {
+		todo := t.FindByID(id)
+		if todo == nil {
+			continue
+		}
+		todo.Status = input
 		t.Delete(id)
 		t.Data = append(t.Data, todo)
 	}

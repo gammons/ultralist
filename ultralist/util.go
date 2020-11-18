@@ -65,16 +65,6 @@ func timestamp(t time.Time) time.Time {
 	return time.Date(year, month, day, hour, min, sec, 0, t.Location())
 }
 
-func getNearestMonday(t time.Time) time.Time {
-	for {
-		if t.Weekday() != time.Monday {
-			t = t.AddDate(0, 0, -1)
-		} else {
-			return t
-		}
-	}
-}
-
 func pluralize(count int, singular, plural string) string {
 	if count > 1 {
 		return plural

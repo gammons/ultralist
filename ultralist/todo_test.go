@@ -50,8 +50,8 @@ func SetUpTestMemoryTodoList() *TodoList {
 	return list
 }
 
-func testFileCleanUp(filename string) {
-	var err = os.Remove(filename)
+func testFileCleanUp() {
+	var err = os.Remove(TodosJSONFile)
 	if err != nil {
 		panic(err)
 	}

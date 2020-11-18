@@ -66,6 +66,26 @@ func (g *Grouper) GroupByProject(todos []*Todo) *GroupedTodos {
 	return &GroupedTodos{Groups: groups}
 }
 
+// GroupByStatus is grouping todos by status
+func (g *Grouper) GroupByStatus(todos []*Todo) *GroupedTodos {
+	groups := map[string][]*Todo{}
+
+	for _, todo := range todos {
+		if todo.Status != "" {
+			groups[todo.Status] = append(groups[todo.Status], todo)
+		} else {
+			groups["No status"] = append(groups["No status"], todo)
+		}
+	}
+
+	// finally, sort the todos
+	for groupName, todos := range groups {
+		groups[groupName] = g.sort(todos)
+	}
+
+	return &GroupedTodos{Groups: groups}
+}
+
 // GroupByNothing is the default result if todos are not grouped by context project.
 func (g *Grouper) GroupByNothing(todos []*Todo) *GroupedTodos {
 	groups := map[string][]*Todo{}
