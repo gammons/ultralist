@@ -69,6 +69,7 @@ func (f *ScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes boo
 			f.formatCompleted(todo.Completed),
 			f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
 			f.formatStatus(todo.Status, todo.IsPriority),
+			f.formatInformation(todo),
 			f.formatSubject(todo.Subject, todo.IsPriority))
 	} else {
 		tabby.AddLine(

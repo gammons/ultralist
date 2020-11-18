@@ -30,7 +30,7 @@ type App struct {
 func NewApp() *App {
 	app := &App{
 		TodoList:  &TodoList{},
-		Printer:   NewScreenPrinter(true),
+		Printer:   &PrettyScreenPrinter{},
 		TodoStore: NewFileStore(),
 	}
 	return app
@@ -40,9 +40,9 @@ func NewApp() *App {
 func NewAppWithPrintOptions(unicodeSupport bool, colorSupport bool) *App {
 	var printer Printer
 	if colorSupport {
-		printer = NewScreenPrinter(unicodeSupport)
+		printer = &PrettyScreenPrinter{}
 	} else {
-		printer = NewSimpleScreenPrinter(unicodeSupport)
+		printer = &PrettyScreenPrinter{}
 	}
 
 	app := &App{
