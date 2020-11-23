@@ -29,7 +29,11 @@ func (m *Manager) RunManager(todoList *TodoList) {
 		for _, todo := range groupedTodos.Groups[key] {
 			sidx := strconv.Itoa(count)
 
-			fmt.Fprintf(textView, "[\"%s\"]%s[\"\"]\n", sidx, viewPrinter.FormatSubject(todo))
+			id := viewPrinter.FormatID(todo)
+			completed := viewPrinter.FormatCompleted(todo)
+			subject := fmt.Sprintf("[\"%s\"]%s[\"\"]", sidx, viewPrinter.FormatSubject(todo))
+
+			fmt.Fprintf(textView, "%s %s %s\n", id, completed, subject)
 
 			count++
 		}
@@ -87,6 +91,4 @@ func (m *Manager) RunManager(todoList *TodoList) {
 	if err := windowApp.Run(); err != nil {
 		panic(err)
 	}
-
-	fmt.Println("manager")
 }
