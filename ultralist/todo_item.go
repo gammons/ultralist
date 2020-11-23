@@ -92,6 +92,31 @@ func (t Todo) HasNotes() bool {
 	return len(t.Notes) > 0
 }
 
+func (t *Todo) DueToday() bool {
+	nowYear, nowMonth, nowDay := time.Now().Date()
+	date, _ := time.Parse(DATE_FORMAT, t.Due)
+	timeYear, timeMonth, timeDay := date.Date()
+
+	return nowYear == timeYear &&
+		nowMonth == timeMonth &&
+		nowDay == timeDay
+}
+
+func (t *Todo) DueTomorrow() bool {
+	nowYear, nowMonth, nowDay := time.Now().AddDate(0, 0, 1).Date()
+	date, _ := time.Parse(DATE_FORMAT, t.Due)
+	timeYear, timeMonth, timeDay := date.Date()
+
+	return nowYear == timeYear &&
+		nowMonth == timeMonth &&
+		nowDay == timeDay
+}
+
+func (t *Todo) PastDue() bool {
+	date, _ := time.Parse(DATE_FORMAT, t.Due)
+	return time.Now().After(date)
+}
+
 // Equals compares 2 todos for equality.
 func (t Todo) Equals(other *Todo) bool {
 	if t.ID != other.ID ||

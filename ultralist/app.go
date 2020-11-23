@@ -469,8 +469,8 @@ func (a *App) OpenWeb() {
 // OpenManager opens the terminal UI to manage a list
 func (a *App) OpenManager() {
 	a.load()
-	manager := &Manager{}
-	manager.RunManager(a.TodoList)
+	manager := NewManager(a.TodoList)
+	manager.RunManager()
 }
 
 // Save the todolist to the store.

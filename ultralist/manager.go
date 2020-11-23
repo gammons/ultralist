@@ -2,51 +2,49 @@ package ultralist
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 )
 
-type Manager struct{}
+type Manager struct {
+	TodoTextView *tview.TextView
+	CommandsArea *tview.Flex
+	MainArea     *tview.Grid
+	DebugArea    *tview.TextView
+	App          *tview.Application
+	Commands     map[string]*tview.TextView
+	TodoList     *TodoList
 
-func (m *Manager) RunManager(todoList *TodoList) {
+	TodoIDs         []int
+	SelectedTodoID  int
+	SelectedTodoIdx int
+}
 
-	grouper := &Grouper{}
-	groupedTodos := grouper.GroupByProject(todoList.Todos())
+// there could be more than one todo with the same ID on the list
+// we need to highlight todos serially.
+// therefore the region must be the idx of the todo, NOT it's ID
+// m.TodoIDs contains an array of todo IDs as they are drawn to screen, e.g. [1,2,2,3]
 
+func NewManager(todoList *TodoList) *Manager {
 	textView := tview.NewTextView()
 	textView.SetDynamicColors(true)
-	textView.SetBorder(true)
+	textView.SetBorder(false)
 	textView.SetRegions(true)
 
-	viewPrinter := &ViewPrinter{}
-
-	count := 0
-	for key := range groupedTodos.Groups {
-		fmt.Fprintf(textView, "\n[#6a9fb5]%s[#d0d0d0]\n", key)
-
-		for _, todo := range groupedTodos.Groups[key] {
-			sidx := strconv.Itoa(count)
-
-			id := viewPrinter.FormatID(todo)
-			completed := viewPrinter.FormatCompleted(todo)
-			subject := fmt.Sprintf("[\"%s\"]%s[\"\"]", sidx, viewPrinter.FormatSubject(todo))
-
-			fmt.Fprintf(textView, "%s %s %s\n", id, completed, subject)
-
-			count++
-		}
-	}
-
-	textView.Highlight("0")
-	textView.SetBackgroundColor(tcell.NewHexColor(0x151515))
-
 	mainArea := tview.NewGrid()
-	mainArea.SetBorder(true).SetTitle(" Your list ")
+	mainArea.SetBackgroundColor(tcell.NewHexColor(0x151515))
+	mainArea.SetBorder(false)
 	mainArea.SetRows(3, -1, 3)
 
-	// need to set this specifically to the height of the textView
+	commandsArea := tview.NewFlex()
+	commandsArea.SetBorder(false)
+	commandsArea.SetBackgroundColor(tcell.NewHexColor(0x151515))
+
+	debugArea := tview.NewTextView()
+
 	mainArea.AddItem(
 		textView,
 		1,    // row
@@ -57,38 +55,130 @@ func (m *Manager) RunManager(todoList *TodoList) {
 		0,    // minGridWidth
 		true) // focus
 
-	// mainArea.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-	// 	AddItem(header, 5, 0, false).
-	// 	AddItem(todoListArea, 60, 0, false), 0, 1, false)
+	mainArea.AddItem(
+		commandsArea,
+		2,     // row
+		0,     // column
+		1,     // rowSpan
+		1,     // colSpan
+		0,     // minGridHeight
+		0,     // minGridWidth
+		false) // focus
 
-	// SetRows(3, 0, 3).
-	// SetColumns(30, 0, 30).
-	// SetBorders(false).
+	manager := &Manager{
+		TodoList:     todoList,
+		TodoTextView: textView,
+		CommandsArea: commandsArea,
+		MainArea:     mainArea,
+		DebugArea:    debugArea,
+	}
 
-	windowApp := tview.NewApplication().SetRoot(mainArea, true).EnableMouse(true)
+	var commands map[string]*tview.TextView
+	commands = make(map[string]*tview.TextView)
+	commands["debug"] = manager.buildTextView("")
+	manager.CommandsArea.AddItem(commands["debug"], 0, 1, false)
+	commands["complete"] = manager.buildTextView("c:complete")
+	manager.CommandsArea.AddItem(commands["complete"], 0, 1, false)
 
-	highlightedTodoID := 0
-	windowApp.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+	commands["prioritize"] = manager.buildTextView("p:prioritize")
+	commands["archive"] = manager.buildTextView("a:archive")
+	manager.Commands = commands
+
+	return manager
+}
+
+func (m *Manager) RunManager() {
+	m.App = tview.NewApplication().SetRoot(m.MainArea, true).EnableMouse(true)
+	m.SelectedTodoIdx = 0
+
+	m.App.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Rune() == 'j' {
-			if highlightedTodoID < len(todoList.Todos())-1 {
-				highlightedTodoID += 1
+			if m.SelectedTodoIdx < len(m.TodoIDs)-1 {
+				m.SelectedTodoIdx += 1
 			}
 		}
 		if event.Rune() == 'k' {
-			if highlightedTodoID > 0 {
-				highlightedTodoID -= 1
+			if m.SelectedTodoIdx > 0 {
+				m.SelectedTodoIdx -= 1
 			}
 		}
+
+		if event.Rune() == 'c' {
+			todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
+			if todo.Completed {
+				m.TodoList.Uncomplete(m.TodoIDs[m.SelectedTodoIdx])
+			} else {
+				m.TodoList.Complete(m.TodoIDs[m.SelectedTodoIdx])
+			}
+		}
+
 		if event.Key() == tcell.KeyTab {
 			fmt.Println("tab")
 		}
 
-		textView.Highlight(strconv.Itoa(highlightedTodoID))
+		m.drawTodos()
+		m.TodoTextView.Highlight(strconv.Itoa(m.SelectedTodoIdx))
 
 		return event
 	})
 
-	if err := windowApp.Run(); err != nil {
+	m.drawTodos()
+	if err := m.App.Run(); err != nil {
 		panic(err)
+	}
+}
+
+func (m *Manager) drawTodos() {
+	grouper := &Grouper{}
+	groupedTodos := grouper.GroupByProject(m.TodoList.Todos())
+
+	var todoIDs []int
+	viewPrinter := &ViewPrinter{}
+
+	var keys []string
+	for key := range groupedTodos.Groups {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	m.TodoTextView.Clear()
+
+	totalDisplayedTodos := 0
+	for _, key := range keys {
+		fmt.Fprintf(m.TodoTextView, "\n[#6a9fb5]%s[#d0d0d0]\n", key)
+
+		for _, todo := range groupedTodos.Groups[key] {
+			id := viewPrinter.FormatID(todo)
+			completed := viewPrinter.FormatCompleted(todo)
+			due := viewPrinter.FormatDue(todo)
+			status := viewPrinter.FormatStatus(todo)
+			subject := viewPrinter.FormatSubject(todo)
+
+			fmt.Fprintf(m.TodoTextView, "[\"%v\"]%v-%s  %s  %s  %s  %s[\"\"]\n", totalDisplayedTodos, totalDisplayedTodos, id, completed, due, status, subject)
+			todoIDs = append(todoIDs, todo.ID)
+
+			if totalDisplayedTodos == m.SelectedTodoIdx {
+				m.buildCommandsMenu(todo)
+			}
+
+			totalDisplayedTodos++
+		}
+	}
+	m.TodoIDs = todoIDs
+}
+
+func (m *Manager) buildTextView(label string) *tview.TextView {
+	view := tview.NewTextView()
+	view.SetBackgroundColor(tcell.NewHexColor(0x151515))
+	view.SetText(label)
+	return view
+}
+
+func (m *Manager) buildCommandsMenu(todo *Todo) {
+	m.Commands["debug"].SetText(fmt.Sprintf("todoIDs: %v, id:%v", m.TodoIDs, m.SelectedTodoIdx))
+	if todo.Completed {
+		m.Commands["complete"].SetText("c:uncomplete")
+	} else {
+		m.Commands["complete"].SetText("c:complete")
 	}
 }

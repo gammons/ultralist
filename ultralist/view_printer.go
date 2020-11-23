@@ -3,12 +3,13 @@ package ultralist
 import (
 	"fmt"
 	"strings"
+	"time"
 )
 
 type ViewPrinter struct{}
 
 func (v *ViewPrinter) FormatID(todo *Todo) string {
-	return fmt.Sprintf("[#F4BF75]%v[#d0d0d0]", todo.ID)
+	return fmt.Sprintf("[#F4BF75]%-3d[#d0d0d0]", todo.ID)
 }
 
 func (v *ViewPrinter) FormatSubject(todo *Todo) string {
@@ -33,4 +34,25 @@ func (v *ViewPrinter) FormatCompleted(todo *Todo) string {
 		return "[#d0d0d0][✔][#d0d0d0]"
 	}
 	return "[#d0d0d0][ ][#d0d0d0]"
+}
+
+func (v *ViewPrinter) FormatDue(todo *Todo) string {
+	due, _ := time.Parse(todo.Due, DATE_FORMAT)
+	if todo.DueToday() {
+		return fmt.Sprintf("[#6A9FB5]%-10s[#d0d0d0]", "today")
+	} else if todo.DueTomorrow() {
+		return fmt.Sprintf("[#6A9FB5]%-10s[#d0d0d0]", "tomorrow")
+	} else if todo.Due != "" && todo.PastDue() {
+		return fmt.Sprintf("[#AC4142]%-10s[#d0d0d0]", due.Format("Mon Jan 02"))
+	}
+
+	if todo.Due == "" {
+		return fmt.Sprintf("[#6A9FB5]%-10s[#d0d0d0]", "")
+	} else {
+		return fmt.Sprintf("[#6A9FB5]%-10s[#d0d0d0]", due.Format("Mon Jan 02"))
+	}
+}
+
+func (v *ViewPrinter) FormatStatus(todo *Todo) string {
+	return fmt.Sprintf("[#90A959]%-10s[#d0d0d0]", todo.Status)
 }
