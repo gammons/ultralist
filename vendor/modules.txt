@@ -13,6 +13,7 @@ github.com/fsnotify/fsnotify
 # github.com/gdamore/encoding v1.0.0
 github.com/gdamore/encoding
 # github.com/gdamore/tcell v1.3.0
+## explicit
 github.com/gdamore/tcell
 github.com/gdamore/tcell/terminfo
 github.com/gdamore/tcell/terminfo/a/adm3a
