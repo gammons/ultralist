@@ -9,12 +9,24 @@ import (
 	"github.com/rivo/tview"
 )
 
+type ManagerState string
+
+const (
+	FocusMode     ManagerState = "focus_mode"
+	TodoEditing   ManagerState = "todo_editing"
+	ListFiltering ManagerState = "list_filtering"
+	StatusEditing ManagerState = "status_editing"
+)
+
 type Manager struct {
+	App          *tview.Application
+	MainArea     *tview.Grid
 	TodoTextView *tview.TextView
 	CommandsArea *tview.Flex
-	MainArea     *tview.Grid
 	DebugArea    *tview.TextView
-	App          *tview.Application
+
+	State ManagerState
+
 	TodoList     *TodoList
 	GroupedTodos *GroupedTodos
 
@@ -95,81 +107,144 @@ func NewManager(todoList *TodoList) *Manager {
 	grouper := &Grouper{}
 	groupedTodos := grouper.GroupByProject(todoList.Todos())
 
+	app := tview.NewApplication().SetRoot(mainArea, true).EnableMouse(true)
+
 	manager := &Manager{
-		TodoList:     todoList,
-		TodoTextView: textView,
-		CommandsArea: commandsArea,
-		MainArea:     mainArea,
-		DebugArea:    debugArea,
-		GroupedTodos: groupedTodos,
+		App:             app,
+		TodoList:        todoList,
+		GroupedTodos:    groupedTodos,
+		TodoTextView:    textView,
+		CommandsArea:    commandsArea,
+		MainArea:        mainArea,
+		DebugArea:       debugArea,
+		SelectedTodoIdx: 0,
 	}
+
+	manager.App.SetInputCapture(manager.inputCapture)
+	manager.switchStateToTodoEditing()
+	manager.drawTodos()
 
 	manager.CommandsArea.AddItem(CmdDebug, 0, 1, false)
 
 	return manager
 }
 
-func (m *Manager) RunManager() {
-	m.App = tview.NewApplication().SetRoot(m.MainArea, true).EnableMouse(true)
-	m.SelectedTodoIdx = 0
+func (m *Manager) inputCapture(event *tcell.EventKey) *tcell.EventKey {
+	if m.State == TodoEditing {
+		m.todoEventsInputCapture(event)
+	} else if m.State == FocusMode {
+		m.focusModeInputCapture(event)
+	}
 
-	m.App.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
-
-		if event.Rune() == 'j' || event.Key() == tcell.KeyDown {
-			if m.SelectedTodoIdx < len(m.TodoIDs)-1 {
-				m.SelectedTodoIdx += 1
-			}
-		}
-		if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
-			if m.SelectedTodoIdx > 0 {
-				m.SelectedTodoIdx -= 1
-			}
-		}
-
-		// complete
-		if event.Rune() == 'c' {
-			if todo.Completed {
-				m.TodoList.Uncomplete(m.TodoIDs[m.SelectedTodoIdx])
-			} else {
-				m.TodoList.Complete(m.TodoIDs[m.SelectedTodoIdx])
-			}
-		}
-
-		// prioritize
-		if event.Rune() == 'p' {
-			if todo.IsPriority {
-				m.TodoList.Unprioritize(m.TodoIDs[m.SelectedTodoIdx])
-			} else {
-				m.TodoList.Prioritize(m.TodoIDs[m.SelectedTodoIdx])
-			}
-		}
-
-		// archive
-		if event.Rune() == 'a' {
-			if todo.Archived {
-				m.TodoList.Unarchive(m.TodoIDs[m.SelectedTodoIdx])
-			} else {
-				m.TodoList.Archive(m.TodoIDs[m.SelectedTodoIdx])
-			}
-		}
-
-		// quit the app
-		if event.Rune() == 'q' {
-			m.App.Stop()
-		}
-
-		if event.Key() == tcell.KeyTab {
-			fmt.Println("tab")
-		}
-
-		m.drawTodos()
-		m.TodoTextView.Highlight(strconv.Itoa(m.SelectedTodoIdx))
-
-		return event
-	})
+	// handle global events
+	m.globalEventsInputCapture(event)
 
 	m.drawTodos()
+
+	return event
+}
+
+func (m *Manager) focusModeInputCapture(event *tcell.EventKey) {
+	if event.Rune() == 'j' || event.Key() == tcell.KeyDown {
+		if m.SelectedTodoIdx < len(m.TodoIDs)-1 {
+			m.SelectedTodoIdx += 1
+		}
+		m.switchStateToTodoEditing()
+	}
+	if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
+		if m.SelectedTodoIdx > 0 {
+			m.SelectedTodoIdx -= 1
+		}
+		m.switchStateToTodoEditing()
+	}
+}
+
+func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
+	todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
+
+	if event.Rune() == 'j' || event.Key() == tcell.KeyDown {
+		if m.SelectedTodoIdx < len(m.TodoIDs)-1 {
+			m.SelectedTodoIdx += 1
+		}
+	}
+	if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
+		if m.SelectedTodoIdx > 0 {
+			m.SelectedTodoIdx -= 1
+		}
+	}
+
+	// complete
+	if event.Rune() == 'c' {
+		if todo.Completed {
+			m.TodoList.Uncomplete(m.TodoIDs[m.SelectedTodoIdx])
+		} else {
+			m.TodoList.Complete(m.TodoIDs[m.SelectedTodoIdx])
+		}
+	}
+
+	// prioritize
+	if event.Rune() == 'p' {
+		if todo.IsPriority {
+			m.TodoList.Unprioritize(m.TodoIDs[m.SelectedTodoIdx])
+		} else {
+			m.TodoList.Prioritize(m.TodoIDs[m.SelectedTodoIdx])
+		}
+	}
+
+	// archive
+	if event.Rune() == 'a' {
+		if todo.Archived {
+			m.TodoList.Unarchive(m.TodoIDs[m.SelectedTodoIdx])
+		} else {
+			m.TodoList.Archive(m.TodoIDs[m.SelectedTodoIdx])
+		}
+	}
+}
+
+func (m *Manager) globalEventsInputCapture(event *tcell.EventKey) {
+	// quit the app
+	if event.Rune() == 'q' {
+		m.App.Stop()
+	}
+
+	// switch the app to a different context
+	if event.Key() == tcell.KeyTab {
+		if m.State == TodoEditing {
+			m.switchStateToListFiltering()
+		} else {
+			m.switchStateToTodoEditing()
+		}
+	}
+
+	// switch to focus mode
+	if event.Key() == tcell.KeyEsc {
+		if m.State != FocusMode {
+			m.switchStateToFocusMode()
+		} else {
+			m.switchStateToTodoEditing()
+		}
+	}
+}
+
+func (m *Manager) switchStateToListFiltering() {
+	m.State = ListFiltering
+
+	m.CommandsArea.Clear()
+	m.CommandsArea.AddItem(tview.NewTextView().SetText("List filtering"), 0, 1, false)
+}
+
+func (m *Manager) switchStateToTodoEditing() {
+	m.State = TodoEditing
+	m.drawTodos()
+}
+
+func (m *Manager) switchStateToFocusMode() {
+	m.State = FocusMode
+	m.CommandsArea.Clear()
+	m.drawTodos()
+}
+
+func (m *Manager) RunManager() {
 	if err := m.App.Run(); err != nil {
 		panic(err)
 	}
@@ -187,6 +262,7 @@ func (m *Manager) drawTodos() {
 	sort.Strings(keys)
 
 	m.TodoTextView.Clear()
+	m.TodoTextView.Highlight("-1")
 
 	totalDisplayedTodos := 0
 	for _, key := range keys {
@@ -206,8 +282,9 @@ func (m *Manager) drawTodos() {
 
 			todoIDs = append(todoIDs, todo.ID)
 
-			if totalDisplayedTodos == m.SelectedTodoIdx {
-				m.buildCommandsMenu(todo)
+			if totalDisplayedTodos == m.SelectedTodoIdx && m.State == TodoEditing {
+				m.buildTodoCommandsMenu(todo)
+				m.TodoTextView.Highlight(strconv.Itoa(m.SelectedTodoIdx))
 			}
 
 			totalDisplayedTodos++
@@ -216,7 +293,7 @@ func (m *Manager) drawTodos() {
 	m.TodoIDs = todoIDs
 }
 
-func (m *Manager) buildCommandsMenu(todo *Todo) {
+func (m *Manager) buildTodoCommandsMenu(todo *Todo) {
 	m.CommandsArea.Clear()
 
 	// CmdDebug.SetText(fmt.Sprintf("todoIDs: %v, id:%v", m.TodoIDs, m.SelectedTodoIdx))
