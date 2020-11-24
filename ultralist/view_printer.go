@@ -13,6 +13,10 @@ func (v *ViewPrinter) FormatID(todo *Todo) string {
 }
 
 func (v *ViewPrinter) FormatSubject(todo *Todo) string {
+	if todo.Archived {
+		return fmt.Sprintf("[%s::%s]%s[%s::-]", ColorGray, v.bold(todo), todo.Subject, ColorForeground)
+	}
+
 	splitted := strings.Split(todo.Subject, " ")
 	coloredWords := []string{}
 
@@ -47,23 +51,54 @@ func (v *ViewPrinter) FormatCompleted(todo *Todo) string {
 
 func (v *ViewPrinter) FormatDue(todo *Todo) string {
 	due, _ := time.Parse(todo.Due, DATE_FORMAT)
+
 	if todo.DueToday() {
-		return fmt.Sprintf("[%s::%s]%-10s[%s::-]", ColorBlue, v.bold(todo), "today", ColorForeground)
+		return fmt.Sprintf(
+			"[%s::%s]%-10s[%s::-]",
+			v.color(todo, ColorBlue),
+			v.bold(todo),
+			"today",
+			ColorForeground,
+		)
 	} else if todo.DueTomorrow() {
-		return fmt.Sprintf("[%s::%s]%-10s[%s::-]", ColorBlue, v.bold(todo), "tomorrow", ColorForeground)
+		return fmt.Sprintf(
+			"[%s::%s]%-10s[%s::-]",
+			v.color(todo, ColorBlue),
+			v.bold(todo),
+			"tomorrow",
+			ColorForeground,
+		)
 	} else if todo.Due != "" && todo.PastDue() {
-		return fmt.Sprintf("[%s::%s]%-10s[%s::-]", ColorRed, v.bold(todo), due.Format("Mon Jan 02"), ColorForeground)
+		return fmt.Sprintf(
+			"[%s::%s]%-10s[%s::-]",
+			v.color(todo, ColorRed),
+			v.bold(todo),
+			due.Format("Mon Jan 02"),
+			ColorForeground,
+		)
 	}
 
 	if todo.Due == "" {
 		return fmt.Sprintf("%-10s", "")
 	} else {
-		return fmt.Sprintf("[%s::%s]%-10s[%s::-]", ColorBlue, v.bold(todo), due.Format("Mon Jan 02"), ColorForeground)
+		return fmt.Sprintf(
+			"[%s::%s]%-10s[%s::-]",
+			v.color(todo, ColorBlue),
+			v.bold(todo),
+			due.Format("Mon Jan 02"),
+			ColorForeground,
+		)
 	}
 }
 
 func (v *ViewPrinter) FormatStatus(todo *Todo) string {
-	return fmt.Sprintf("[%s::%s]%-10s[%s::-]", ColorGreen, v.bold(todo), todo.Status, ColorForeground)
+	return fmt.Sprintf(
+		"[%s::%s]%-10s[%s::-]",
+		v.color(todo, ColorGreen),
+		v.bold(todo),
+		todo.Status,
+		ColorForeground,
+	)
 }
 
 func (v *ViewPrinter) bold(todo *Todo) string {
@@ -71,4 +106,11 @@ func (v *ViewPrinter) bold(todo *Todo) string {
 		return "b"
 	}
 	return "-"
+}
+
+func (v *ViewPrinter) color(todo *Todo, defaultColor string) string {
+	if todo.Archived {
+		return ColorGray
+	}
+	return defaultColor
 }

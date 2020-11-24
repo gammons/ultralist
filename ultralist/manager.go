@@ -16,6 +16,7 @@ type Manager struct {
 	DebugArea    *tview.TextView
 	App          *tview.Application
 	TodoList     *TodoList
+	GroupedTodos *GroupedTodos
 
 	TodoIDs         []int
 	SelectedTodoID  int
@@ -31,9 +32,12 @@ const (
 	ColorPurple = "#AA759F"
 	ColorGreen  = "#90A959"
 	ColorYellow = "#F4BF75"
+	ColorGray   = "#606060"
 )
 
+// Todo commands
 var (
+	CmdDebug      = buildTextView("")
 	CmdComplete   = buildTextView("c:complete")
 	CmdUncomplete = buildTextView("c:uncomplete")
 
@@ -45,8 +49,11 @@ var (
 
 	CmdStatus = buildTextView("s:status")
 	CmdDue    = buildTextView("d:due")
-	CmdDebug  = buildTextView("")
+	CmdDelete = buildTextView("x:delete")
 )
+
+// Todo list commands
+var ()
 
 func NewManager(todoList *TodoList) *Manager {
 	textView := tview.NewTextView()
@@ -85,12 +92,16 @@ func NewManager(todoList *TodoList) *Manager {
 		0,     // minGridWidth
 		false) // focus
 
+	grouper := &Grouper{}
+	groupedTodos := grouper.GroupByProject(todoList.Todos())
+
 	manager := &Manager{
 		TodoList:     todoList,
 		TodoTextView: textView,
 		CommandsArea: commandsArea,
 		MainArea:     mainArea,
 		DebugArea:    debugArea,
+		GroupedTodos: groupedTodos,
 	}
 
 	manager.CommandsArea.AddItem(CmdDebug, 0, 1, false)
@@ -105,17 +116,18 @@ func (m *Manager) RunManager() {
 	m.App.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
 
-		if event.Rune() == 'j' {
+		if event.Rune() == 'j' || event.Key() == tcell.KeyDown {
 			if m.SelectedTodoIdx < len(m.TodoIDs)-1 {
 				m.SelectedTodoIdx += 1
 			}
 		}
-		if event.Rune() == 'k' {
+		if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
 			if m.SelectedTodoIdx > 0 {
 				m.SelectedTodoIdx -= 1
 			}
 		}
 
+		// complete
 		if event.Rune() == 'c' {
 			if todo.Completed {
 				m.TodoList.Uncomplete(m.TodoIDs[m.SelectedTodoIdx])
@@ -131,6 +143,20 @@ func (m *Manager) RunManager() {
 			} else {
 				m.TodoList.Prioritize(m.TodoIDs[m.SelectedTodoIdx])
 			}
+		}
+
+		// archive
+		if event.Rune() == 'a' {
+			if todo.Archived {
+				m.TodoList.Unarchive(m.TodoIDs[m.SelectedTodoIdx])
+			} else {
+				m.TodoList.Archive(m.TodoIDs[m.SelectedTodoIdx])
+			}
+		}
+
+		// quit the app
+		if event.Rune() == 'q' {
+			m.App.Stop()
 		}
 
 		if event.Key() == tcell.KeyTab {
@@ -150,14 +176,12 @@ func (m *Manager) RunManager() {
 }
 
 func (m *Manager) drawTodos() {
-	grouper := &Grouper{}
-	groupedTodos := grouper.GroupByProject(m.TodoList.Todos())
 
 	var todoIDs []int
 	viewPrinter := &ViewPrinter{}
 
 	var keys []string
-	for key := range groupedTodos.Groups {
+	for key := range m.GroupedTodos.Groups {
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)
@@ -168,7 +192,7 @@ func (m *Manager) drawTodos() {
 	for _, key := range keys {
 		fmt.Fprintf(m.TodoTextView, "\n[%s]%s[%s]\n", ColorBlue, key, ColorForeground)
 
-		for _, todo := range groupedTodos.Groups[key] {
+		for _, todo := range m.GroupedTodos.Groups[key] {
 			fmt.Fprintf(
 				m.TodoTextView,
 				"[\"%v\"]%s  %s  %s  %s  %s[\"\"]\n",
@@ -195,8 +219,8 @@ func (m *Manager) drawTodos() {
 func (m *Manager) buildCommandsMenu(todo *Todo) {
 	m.CommandsArea.Clear()
 
-	CmdDebug.SetText(fmt.Sprintf("todoIDs: %v, id:%v", m.TodoIDs, m.SelectedTodoIdx))
-	m.CommandsArea.AddItem(CmdDebug, 0, 1, false)
+	// CmdDebug.SetText(fmt.Sprintf("todoIDs: %v, id:%v", m.TodoIDs, m.SelectedTodoIdx))
+	// m.CommandsArea.AddItem(CmdDebug, 0, 1, false)
 
 	if todo.Completed {
 		m.CommandsArea.AddItem(CmdUncomplete, 0, 1, false)
@@ -218,6 +242,7 @@ func (m *Manager) buildCommandsMenu(todo *Todo) {
 
 	m.CommandsArea.AddItem(CmdStatus, 0, 1, false)
 	m.CommandsArea.AddItem(CmdDue, 0, 1, false)
+	m.CommandsArea.AddItem(CmdDelete, 0, 1, false)
 }
 
 func buildTextView(label string) *tview.TextView {
