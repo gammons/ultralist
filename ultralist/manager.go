@@ -2,6 +2,8 @@ package ultralist
 
 import (
 	"fmt"
+	"log"
+	"os"
 	"regexp"
 	"sort"
 	"strconv"
@@ -34,7 +36,6 @@ type Manager struct {
 	GroupedTodos *GroupedTodos
 
 	TodoIDs         []int
-	SelectedTodoID  int
 	SelectedTodoIdx int
 
 	SearchTerm string
@@ -130,6 +131,13 @@ func NewManager(todoList *TodoList) *Manager {
 
 	app := tview.NewApplication().SetRoot(mainArea, true).EnableMouse(true)
 
+	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.SetOutput(file)
+
 	manager := &Manager{
 		App:             app,
 		TodoList:        todoList,
@@ -158,8 +166,6 @@ func (m *Manager) inputCapture(event *tcell.EventKey) *tcell.EventKey {
 		m.todoEventsInputCapture(event)
 	case ModeFocus:
 		m.focusModeInputCapture(event)
-	case ModeSearching:
-		m.searchModeInputCapture(event)
 	}
 
 	// handle global events
@@ -185,16 +191,11 @@ func (m *Manager) focusModeInputCapture(event *tcell.EventKey) {
 	}
 }
 
-func (m *Manager) searchModeInputCapture(event *tcell.EventKey) {
-	if event.Key() == tcell.KeyBackspace2 {
-		m.SearchTerm = m.SearchTerm[:len(m.SearchTerm)-1]
-	} else {
-		m.SearchTerm = m.SearchTerm + string(event.Rune())
-	}
-	CmdSearch.SetText(fmt.Sprintf("Search: '%s'", m.SearchTerm))
-}
-
 func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
+	if len(m.TodoIDs) == 0 {
+		return
+	}
+
 	todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
 
 	if event.Rune() == 'j' || event.Key() == tcell.KeyDown {
@@ -292,10 +293,24 @@ func (m *Manager) switchStateToModeFocus() {
 
 func (m *Manager) switchStateToSearching() {
 	m.SearchTerm = ""
-	CmdSearch.SetText("Search:")
 	m.State = ModeSearching
-	m.CommandsArea.Clear()
-	m.CommandsArea.AddItem(CmdSearch, 0, 1, false)
+	m.FilterArea.Clear()
+
+	input := tview.NewInputField().SetLabel("Search: ").SetFieldWidth(10)
+	input.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		m.SearchTerm = input.GetText()
+		m.drawTodos()
+		return event
+	})
+
+	input.SetDoneFunc(func(key tcell.Key) {
+		m.SelectedTodoIdx = 0
+		m.switchStateToModeTodoEditing()
+		m.App.SetFocus(m.MainArea)
+	})
+
+	m.FilterArea.AddItem(input, 0, 1, false)
+	m.App.SetFocus(input)
 	m.drawTodos()
 }
 
@@ -343,8 +358,7 @@ func (m *Manager) drawTodos() {
 
 	totalDisplayedTodos := 0
 	for _, key := range keys {
-		fmt.Fprintf(m.TodoTextView, "\n[%s]%s[%s]\n", ColorBlue, key, ColorForeground)
-
+		var filteredTodos []*Todo
 		for _, todo := range m.GroupedTodos.Groups[key] {
 			if m.SearchTerm != "" {
 				match, _ := regexp.MatchString(m.SearchTerm, todo.Subject)
@@ -352,7 +366,14 @@ func (m *Manager) drawTodos() {
 					break
 				}
 			}
+			filteredTodos = append(filteredTodos, todo)
+		}
 
+		if len(filteredTodos) > 0 {
+			fmt.Fprintf(m.TodoTextView, "\n[%s]%s[%s]\n", ColorBlue, key, ColorForeground)
+		}
+
+		for _, todo := range filteredTodos {
 			fmt.Fprintf(
 				m.TodoTextView,
 				"[\"%v\"]%s  %s  %s  %s  %s[\"\"]\n",
@@ -379,9 +400,6 @@ func (m *Manager) drawTodos() {
 
 func (m *Manager) buildTodoCommandsMenu(todo *Todo) {
 	m.CommandsArea.Clear()
-
-	// CmdDebug.SetText(fmt.Sprintf("todoIDs: %v, id:%v", m.TodoIDs, m.SelectedTodoIdx))
-	// m.CommandsArea.AddItem(CmdDebug, 0, 1, false)
 
 	if todo.Completed {
 		m.CommandsArea.AddItem(CmdUncomplete, 0, 1, false)
