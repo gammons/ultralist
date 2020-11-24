@@ -23,10 +23,16 @@ type Manager struct {
 	SelectedTodoIdx int
 }
 
-// there could be more than one todo with the same ID on the list
-// we need to highlight todos serially.
-// therefore the region must be the idx of the todo, NOT it's ID
-// m.TodoIDs contains an array of todo IDs as they are drawn to screen, e.g. [1,2,2,3]
+const (
+	ColorBackground = 0x151515 // background color
+	ColorForeground = "#d0d0d0"
+
+	ColorBlue   = "#6A9FB5"
+	ColorRed    = "#AC4142"
+	ColorPurple = "#AA759F"
+	ColorGreen  = "#90A959"
+	ColorYellow = "#F4BF75"
+)
 
 func NewManager(todoList *TodoList) *Manager {
 	textView := tview.NewTextView()
@@ -35,13 +41,13 @@ func NewManager(todoList *TodoList) *Manager {
 	textView.SetRegions(true)
 
 	mainArea := tview.NewGrid()
-	mainArea.SetBackgroundColor(tcell.NewHexColor(0x151515))
+	mainArea.SetBackgroundColor(tcell.NewHexColor(ColorBackground))
 	mainArea.SetBorder(false)
 	mainArea.SetRows(3, -1, 3)
 
 	commandsArea := tview.NewFlex()
 	commandsArea.SetBorder(false)
-	commandsArea.SetBackgroundColor(tcell.NewHexColor(0x151515))
+	commandsArea.SetBackgroundColor(tcell.NewHexColor(ColorBackground))
 
 	debugArea := tview.NewTextView()
 
@@ -145,16 +151,20 @@ func (m *Manager) drawTodos() {
 
 	totalDisplayedTodos := 0
 	for _, key := range keys {
-		fmt.Fprintf(m.TodoTextView, "\n[#6a9fb5]%s[#d0d0d0]\n", key)
+		fmt.Fprintf(m.TodoTextView, "\n[%s]%s[%s]\n", ColorBlue, key, ColorForeground)
 
 		for _, todo := range groupedTodos.Groups[key] {
-			id := viewPrinter.FormatID(todo)
-			completed := viewPrinter.FormatCompleted(todo)
-			due := viewPrinter.FormatDue(todo)
-			status := viewPrinter.FormatStatus(todo)
-			subject := viewPrinter.FormatSubject(todo)
+			fmt.Fprintf(
+				m.TodoTextView,
+				"[\"%v\"]%s  %s  %s  %s  %s[\"\"]\n",
+				totalDisplayedTodos,
+				viewPrinter.FormatID(todo),
+				viewPrinter.FormatCompleted(todo),
+				viewPrinter.FormatDue(todo),
+				viewPrinter.FormatStatus(todo),
+				viewPrinter.FormatSubject(todo),
+			)
 
-			fmt.Fprintf(m.TodoTextView, "[\"%v\"]%v-%s  %s  %s  %s  %s[\"\"]\n", totalDisplayedTodos, totalDisplayedTodos, id, completed, due, status, subject)
 			todoIDs = append(todoIDs, todo.ID)
 
 			if totalDisplayedTodos == m.SelectedTodoIdx {
@@ -169,7 +179,7 @@ func (m *Manager) drawTodos() {
 
 func (m *Manager) buildTextView(label string) *tview.TextView {
 	view := tview.NewTextView()
-	view.SetBackgroundColor(tcell.NewHexColor(0x151515))
+	view.SetBackgroundColor(tcell.NewHexColor(ColorBackground))
 	view.SetText(label)
 	return view
 }
