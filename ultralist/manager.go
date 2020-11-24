@@ -2,6 +2,7 @@ package ultralist
 
 import (
 	"fmt"
+	"regexp"
 	"sort"
 	"strconv"
 
@@ -12,10 +13,11 @@ import (
 type ManagerState string
 
 const (
-	FocusMode     ManagerState = "focus_mode"
-	TodoEditing   ManagerState = "todo_editing"
-	ListFiltering ManagerState = "list_filtering"
-	StatusEditing ManagerState = "status_editing"
+	ModeFocus         ManagerState = "focus_mode"
+	ModeTodoEditing   ManagerState = "todo_editing"
+	ModeListFiltering ManagerState = "list_filtering"
+	ModeStatusEditing ManagerState = "status_editing"
+	ModeSearching     ManagerState = "searching"
 )
 
 type Manager struct {
@@ -33,6 +35,8 @@ type Manager struct {
 	TodoIDs         []int
 	SelectedTodoID  int
 	SelectedTodoIdx int
+
+	SearchTerm string
 }
 
 const (
@@ -62,6 +66,7 @@ var (
 	CmdStatus = buildTextView("s:status")
 	CmdDue    = buildTextView("d:due")
 	CmdDelete = buildTextView("x:delete")
+	CmdSearch = buildTextView("Search: ")
 )
 
 // Todo list commands
@@ -118,10 +123,11 @@ func NewManager(todoList *TodoList) *Manager {
 		MainArea:        mainArea,
 		DebugArea:       debugArea,
 		SelectedTodoIdx: 0,
+		SearchTerm:      "",
 	}
 
 	manager.App.SetInputCapture(manager.inputCapture)
-	manager.switchStateToTodoEditing()
+	manager.switchStateToModeTodoEditing()
 	manager.drawTodos()
 
 	manager.CommandsArea.AddItem(CmdDebug, 0, 1, false)
@@ -130,10 +136,13 @@ func NewManager(todoList *TodoList) *Manager {
 }
 
 func (m *Manager) inputCapture(event *tcell.EventKey) *tcell.EventKey {
-	if m.State == TodoEditing {
+	switch m.State {
+	case ModeTodoEditing:
 		m.todoEventsInputCapture(event)
-	} else if m.State == FocusMode {
+	case ModeFocus:
 		m.focusModeInputCapture(event)
+	case ModeSearching:
+		m.searchModeInputCapture(event)
 	}
 
 	// handle global events
@@ -149,14 +158,23 @@ func (m *Manager) focusModeInputCapture(event *tcell.EventKey) {
 		if m.SelectedTodoIdx < len(m.TodoIDs)-1 {
 			m.SelectedTodoIdx += 1
 		}
-		m.switchStateToTodoEditing()
+		m.switchStateToModeTodoEditing()
 	}
 	if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
 		if m.SelectedTodoIdx > 0 {
 			m.SelectedTodoIdx -= 1
 		}
-		m.switchStateToTodoEditing()
+		m.switchStateToModeTodoEditing()
 	}
+}
+
+func (m *Manager) searchModeInputCapture(event *tcell.EventKey) {
+	if event.Key() == tcell.KeyBackspace2 {
+		m.SearchTerm = m.SearchTerm[:len(m.SearchTerm)-1]
+	} else {
+		m.SearchTerm = m.SearchTerm + string(event.Rune())
+	}
+	CmdSearch.SetText(fmt.Sprintf("Search: '%s'", m.SearchTerm))
 }
 
 func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
@@ -202,45 +220,59 @@ func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
 }
 
 func (m *Manager) globalEventsInputCapture(event *tcell.EventKey) {
-	// quit the app
-	if event.Rune() == 'q' {
-		m.App.Stop()
+	if event.Rune() == '/' {
+		m.switchStateToSearching()
 	}
 
 	// switch the app to a different context
 	if event.Key() == tcell.KeyTab {
-		if m.State == TodoEditing {
-			m.switchStateToListFiltering()
+		if m.State == ModeTodoEditing {
+			m.switchStateToModeListFiltering()
 		} else {
-			m.switchStateToTodoEditing()
+			m.switchStateToModeTodoEditing()
 		}
 	}
 
 	// switch to focus mode
 	if event.Key() == tcell.KeyEsc {
-		if m.State != FocusMode {
-			m.switchStateToFocusMode()
+		if m.State != ModeFocus {
+			m.switchStateToModeFocus()
 		} else {
-			m.switchStateToTodoEditing()
+			m.switchStateToModeTodoEditing()
 		}
 	}
+
+	// quit the app
+	if event.Rune() == 'q' {
+		m.App.Stop()
+	}
+
 }
 
-func (m *Manager) switchStateToListFiltering() {
-	m.State = ListFiltering
+func (m *Manager) switchStateToModeListFiltering() {
+	m.State = ModeListFiltering
 
 	m.CommandsArea.Clear()
 	m.CommandsArea.AddItem(tview.NewTextView().SetText("List filtering"), 0, 1, false)
 }
 
-func (m *Manager) switchStateToTodoEditing() {
-	m.State = TodoEditing
+func (m *Manager) switchStateToModeTodoEditing() {
+	m.State = ModeTodoEditing
 	m.drawTodos()
 }
 
-func (m *Manager) switchStateToFocusMode() {
-	m.State = FocusMode
+func (m *Manager) switchStateToModeFocus() {
+	m.State = ModeFocus
 	m.CommandsArea.Clear()
+	m.drawTodos()
+}
+
+func (m *Manager) switchStateToSearching() {
+	m.SearchTerm = ""
+	CmdSearch.SetText("Search:")
+	m.State = ModeSearching
+	m.CommandsArea.Clear()
+	m.CommandsArea.AddItem(CmdSearch, 0, 1, false)
 	m.drawTodos()
 }
 
@@ -264,11 +296,20 @@ func (m *Manager) drawTodos() {
 	m.TodoTextView.Clear()
 	m.TodoTextView.Highlight("-1")
 
+	// searchRegex := regexp.MustCompile(fmt.Sprintf("%s", m.SearchTerm))
+
 	totalDisplayedTodos := 0
 	for _, key := range keys {
 		fmt.Fprintf(m.TodoTextView, "\n[%s]%s[%s]\n", ColorBlue, key, ColorForeground)
 
 		for _, todo := range m.GroupedTodos.Groups[key] {
+			if m.SearchTerm != "" {
+				match, _ := regexp.MatchString(m.SearchTerm, todo.Subject)
+				if !match {
+					break
+				}
+			}
+
 			fmt.Fprintf(
 				m.TodoTextView,
 				"[\"%v\"]%s  %s  %s  %s  %s[\"\"]\n",
@@ -282,7 +323,7 @@ func (m *Manager) drawTodos() {
 
 			todoIDs = append(todoIDs, todo.ID)
 
-			if totalDisplayedTodos == m.SelectedTodoIdx && m.State == TodoEditing {
+			if totalDisplayedTodos == m.SelectedTodoIdx && m.State == ModeTodoEditing {
 				m.buildTodoCommandsMenu(todo)
 				m.TodoTextView.Highlight(strconv.Itoa(m.SelectedTodoIdx))
 			}
