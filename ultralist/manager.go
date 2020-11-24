@@ -24,6 +24,7 @@ type Manager struct {
 	App          *tview.Application
 	MainArea     *tview.Grid
 	TodoTextView *tview.TextView
+	FilterArea   *tview.Flex
 	CommandsArea *tview.Flex
 	DebugArea    *tview.TextView
 
@@ -74,6 +75,7 @@ var ()
 
 func NewManager(todoList *TodoList) *Manager {
 	textView := tview.NewTextView()
+	textView.SetBackgroundColor(tcell.NewHexColor(0x101010))
 	textView.SetDynamicColors(true)
 	textView.SetBorder(false)
 	textView.SetRegions(true)
@@ -81,13 +83,27 @@ func NewManager(todoList *TodoList) *Manager {
 	mainArea := tview.NewGrid()
 	mainArea.SetBackgroundColor(tcell.NewHexColor(ColorBackground))
 	mainArea.SetBorder(false)
-	mainArea.SetRows(3, -1, 3)
+	mainArea.SetRows(2, -1, 2)
+
+	filterArea := tview.NewFlex()
+	filterArea.SetBorder(false)
+	filterArea.SetBackgroundColor(tcell.NewHexColor(ColorBackground))
 
 	commandsArea := tview.NewFlex()
 	commandsArea.SetBorder(false)
 	commandsArea.SetBackgroundColor(tcell.NewHexColor(ColorBackground))
 
 	debugArea := tview.NewTextView()
+
+	mainArea.AddItem(
+		filterArea,
+		0,     // row
+		0,     // column
+		1,     // rowSpan
+		1,     // colSpan
+		0,     // minGridHeight
+		0,     // minGridWidth
+		false) // focus
 
 	mainArea.AddItem(
 		textView,
@@ -120,6 +136,7 @@ func NewManager(todoList *TodoList) *Manager {
 		GroupedTodos:    groupedTodos,
 		TodoTextView:    textView,
 		CommandsArea:    commandsArea,
+		FilterArea:      filterArea,
 		MainArea:        mainArea,
 		DebugArea:       debugArea,
 		SelectedTodoIdx: 0,
@@ -217,6 +234,11 @@ func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
 			m.TodoList.Archive(m.TodoIDs[m.SelectedTodoIdx])
 		}
 	}
+
+	// set status
+	if event.Rune() == 's' {
+		m.switchStateToModeStatusEditing()
+	}
 }
 
 func (m *Manager) globalEventsInputCapture(event *tcell.EventKey) {
@@ -225,7 +247,7 @@ func (m *Manager) globalEventsInputCapture(event *tcell.EventKey) {
 	}
 
 	// switch the app to a different context
-	if event.Key() == tcell.KeyTab {
+	if event.Rune() == ' ' {
 		if m.State == ModeTodoEditing {
 			m.switchStateToModeListFiltering()
 		} else {
@@ -253,7 +275,8 @@ func (m *Manager) switchStateToModeListFiltering() {
 	m.State = ModeListFiltering
 
 	m.CommandsArea.Clear()
-	m.CommandsArea.AddItem(tview.NewTextView().SetText("List filtering"), 0, 1, false)
+	m.FilterArea.Clear()
+	m.FilterArea.AddItem(tview.NewTextView().SetText("List filtering"), 0, 1, false)
 }
 
 func (m *Manager) switchStateToModeTodoEditing() {
@@ -273,6 +296,26 @@ func (m *Manager) switchStateToSearching() {
 	m.State = ModeSearching
 	m.CommandsArea.Clear()
 	m.CommandsArea.AddItem(CmdSearch, 0, 1, false)
+	m.drawTodos()
+}
+
+func (m *Manager) switchStateToModeStatusEditing() {
+	m.State = ModeStatusEditing
+	m.CommandsArea.Clear()
+	todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
+
+	input := tview.NewInputField().SetLabel("Set status: ").SetFieldWidth(10)
+	input.SetText(todo.Status)
+
+	input.SetDoneFunc(func(key tcell.Key) {
+		if key == tcell.KeyEnter {
+			todo.Status = input.GetText()
+		}
+		m.switchStateToModeTodoEditing()
+	})
+
+	m.CommandsArea.AddItem(input, 0, 1, false)
+	m.App.SetFocus(input)
 	m.drawTodos()
 }
 
