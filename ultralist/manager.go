@@ -15,7 +15,6 @@ type Manager struct {
 	MainArea     *tview.Grid
 	DebugArea    *tview.TextView
 	App          *tview.Application
-	Commands     map[string]*tview.TextView
 	TodoList     *TodoList
 
 	TodoIDs         []int
@@ -32,6 +31,21 @@ const (
 	ColorPurple = "#AA759F"
 	ColorGreen  = "#90A959"
 	ColorYellow = "#F4BF75"
+)
+
+var (
+	CmdComplete   = buildTextView("c:complete")
+	CmdUncomplete = buildTextView("c:uncomplete")
+
+	CmdPrioritize   = buildTextView("p:prioritize")
+	CmdUnprioritize = buildTextView("p:unprioritize")
+
+	CmdArchive   = buildTextView("a:archive")
+	CmdUnarchive = buildTextView("a:unarchive")
+
+	CmdStatus = buildTextView("s:status")
+	CmdDue    = buildTextView("d:due")
+	CmdDebug  = buildTextView("")
 )
 
 func NewManager(todoList *TodoList) *Manager {
@@ -79,16 +93,7 @@ func NewManager(todoList *TodoList) *Manager {
 		DebugArea:    debugArea,
 	}
 
-	var commands map[string]*tview.TextView
-	commands = make(map[string]*tview.TextView)
-	commands["debug"] = manager.buildTextView("")
-	manager.CommandsArea.AddItem(commands["debug"], 0, 1, false)
-	commands["complete"] = manager.buildTextView("c:complete")
-	manager.CommandsArea.AddItem(commands["complete"], 0, 1, false)
-
-	commands["prioritize"] = manager.buildTextView("p:prioritize")
-	commands["archive"] = manager.buildTextView("a:archive")
-	manager.Commands = commands
+	manager.CommandsArea.AddItem(CmdDebug, 0, 1, false)
 
 	return manager
 }
@@ -98,6 +103,8 @@ func (m *Manager) RunManager() {
 	m.SelectedTodoIdx = 0
 
 	m.App.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
+
 		if event.Rune() == 'j' {
 			if m.SelectedTodoIdx < len(m.TodoIDs)-1 {
 				m.SelectedTodoIdx += 1
@@ -110,11 +117,19 @@ func (m *Manager) RunManager() {
 		}
 
 		if event.Rune() == 'c' {
-			todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
 			if todo.Completed {
 				m.TodoList.Uncomplete(m.TodoIDs[m.SelectedTodoIdx])
 			} else {
 				m.TodoList.Complete(m.TodoIDs[m.SelectedTodoIdx])
+			}
+		}
+
+		// prioritize
+		if event.Rune() == 'p' {
+			if todo.IsPriority {
+				m.TodoList.Unprioritize(m.TodoIDs[m.SelectedTodoIdx])
+			} else {
+				m.TodoList.Prioritize(m.TodoIDs[m.SelectedTodoIdx])
 			}
 		}
 
@@ -177,18 +192,37 @@ func (m *Manager) drawTodos() {
 	m.TodoIDs = todoIDs
 }
 
-func (m *Manager) buildTextView(label string) *tview.TextView {
+func (m *Manager) buildCommandsMenu(todo *Todo) {
+	m.CommandsArea.Clear()
+
+	CmdDebug.SetText(fmt.Sprintf("todoIDs: %v, id:%v", m.TodoIDs, m.SelectedTodoIdx))
+	m.CommandsArea.AddItem(CmdDebug, 0, 1, false)
+
+	if todo.Completed {
+		m.CommandsArea.AddItem(CmdUncomplete, 0, 1, false)
+	} else {
+		m.CommandsArea.AddItem(CmdComplete, 0, 1, false)
+	}
+
+	if todo.IsPriority {
+		m.CommandsArea.AddItem(CmdUnprioritize, 0, 1, false)
+	} else {
+		m.CommandsArea.AddItem(CmdPrioritize, 0, 1, false)
+	}
+
+	if todo.Archived {
+		m.CommandsArea.AddItem(CmdUnarchive, 0, 1, false)
+	} else {
+		m.CommandsArea.AddItem(CmdArchive, 0, 1, false)
+	}
+
+	m.CommandsArea.AddItem(CmdStatus, 0, 1, false)
+	m.CommandsArea.AddItem(CmdDue, 0, 1, false)
+}
+
+func buildTextView(label string) *tview.TextView {
 	view := tview.NewTextView()
 	view.SetBackgroundColor(tcell.NewHexColor(ColorBackground))
 	view.SetText(label)
 	return view
-}
-
-func (m *Manager) buildCommandsMenu(todo *Todo) {
-	m.Commands["debug"].SetText(fmt.Sprintf("todoIDs: %v, id:%v", m.TodoIDs, m.SelectedTodoIdx))
-	if todo.Completed {
-		m.Commands["complete"].SetText("c:uncomplete")
-	} else {
-		m.Commands["complete"].SetText("c:complete")
-	}
 }
