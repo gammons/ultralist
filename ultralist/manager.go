@@ -68,11 +68,18 @@ var (
 	CmdStatus = buildTextView("s:status")
 	CmdDue    = buildTextView("d:due")
 	CmdDelete = buildTextView("x:delete")
-	CmdSearch = buildTextView("Search: ")
+
+	CmdSearch = buildTextView("/:Search")
+	CmdGroup  = buildTextView("g:group")
+
+	StatusInput = tview.NewInputField()
 )
 
 // Todo list commands
-var ()
+var (
+	GroupSelect = tview.NewDropDown()
+	SearchInput = tview.NewInputField()
+)
 
 func NewManager(todoList *TodoList) *Manager {
 	textView := tview.NewTextView()
@@ -152,9 +159,17 @@ func NewManager(todoList *TodoList) *Manager {
 	}
 
 	manager.App.SetInputCapture(manager.inputCapture)
+
+	// set up the inputs
+	manager.setupSearchInput()
+	manager.setupGroupSelect()
+	manager.setupStatusInput()
+
+	// set up initial state for the app.
 	manager.switchStateToModeTodoEditing()
 	manager.drawTodos()
 
+	// temporary to debug.
 	manager.CommandsArea.AddItem(CmdDebug, 0, 1, false)
 
 	return manager
@@ -189,6 +204,12 @@ func (m *Manager) focusModeInputCapture(event *tcell.EventKey) {
 		}
 		m.switchStateToModeTodoEditing()
 	}
+
+	if event.Key() == tcell.KeyEnter ||
+		event.Rune() == ' ' {
+		m.switchStateToModeTodoEditing()
+	}
+
 }
 
 func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
@@ -244,16 +265,7 @@ func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
 
 func (m *Manager) globalEventsInputCapture(event *tcell.EventKey) {
 	if event.Rune() == '/' {
-		m.switchStateToSearching()
-	}
-
-	// switch the app to a different context
-	if event.Rune() == ' ' {
-		if m.State == ModeTodoEditing {
-			m.switchStateToModeListFiltering()
-		} else {
-			m.switchStateToModeTodoEditing()
-		}
+		m.switchStateToModeListFiltering()
 	}
 
 	// switch to focus mode
@@ -266,22 +278,29 @@ func (m *Manager) globalEventsInputCapture(event *tcell.EventKey) {
 	}
 
 	// quit the app
-	if event.Rune() == 'q' {
+	if event.Rune() == 'q' && m.State != ModeListFiltering {
 		m.App.Stop()
 	}
-
 }
 
 func (m *Manager) switchStateToModeListFiltering() {
 	m.State = ModeListFiltering
+	m.FilterArea.Clear()
 
 	m.CommandsArea.Clear()
-	m.FilterArea.Clear()
-	m.FilterArea.AddItem(tview.NewTextView().SetText("List filtering"), 0, 1, false)
+	m.CommandsArea.AddItem(CmdSearch, 0, 1, false)
+	m.CommandsArea.AddItem(CmdGroup, 0, 1, false)
+
+	m.FilterArea.AddItem(SearchInput, 0, 1, false)
+	m.FilterArea.AddItem(GroupSelect, 0, 1, false)
+	m.App.SetFocus(SearchInput)
+
+	m.drawTodos()
 }
 
 func (m *Manager) switchStateToModeTodoEditing() {
 	m.State = ModeTodoEditing
+	m.FilterArea.Clear()
 	m.drawTodos()
 }
 
@@ -319,18 +338,17 @@ func (m *Manager) switchStateToModeStatusEditing() {
 	m.CommandsArea.Clear()
 	todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
 
-	input := tview.NewInputField().SetLabel("Set status: ").SetFieldWidth(10)
-	input.SetText(todo.Status)
+	StatusInput.SetText(todo.Status)
 
-	input.SetDoneFunc(func(key tcell.Key) {
+	StatusInput.SetDoneFunc(func(key tcell.Key) {
 		if key == tcell.KeyEnter {
-			todo.Status = input.GetText()
+			todo.Status = StatusInput.GetText()
 		}
 		m.switchStateToModeTodoEditing()
 	})
 
-	m.CommandsArea.AddItem(input, 0, 1, false)
-	m.App.SetFocus(input)
+	m.CommandsArea.AddItem(StatusInput, 0, 1, false)
+	m.App.SetFocus(StatusInput)
 	m.drawTodos()
 }
 
@@ -354,16 +372,15 @@ func (m *Manager) drawTodos() {
 	m.TodoTextView.Clear()
 	m.TodoTextView.Highlight("-1")
 
-	// searchRegex := regexp.MustCompile(fmt.Sprintf("%s", m.SearchTerm))
-
 	totalDisplayedTodos := 0
 	for _, key := range keys {
 		var filteredTodos []*Todo
+
 		for _, todo := range m.GroupedTodos.Groups[key] {
 			if m.SearchTerm != "" {
 				match, _ := regexp.MatchString(m.SearchTerm, todo.Subject)
 				if !match {
-					break
+					continue
 				}
 			}
 			filteredTodos = append(filteredTodos, todo)
@@ -422,6 +439,74 @@ func (m *Manager) buildTodoCommandsMenu(todo *Todo) {
 	m.CommandsArea.AddItem(CmdStatus, 0, 1, false)
 	m.CommandsArea.AddItem(CmdDue, 0, 1, false)
 	m.CommandsArea.AddItem(CmdDelete, 0, 1, false)
+}
+
+func (m *Manager) setupSearchInput() {
+	SearchInput := SearchInput.SetLabel("Search: ").SetFieldWidth(10)
+	SearchInput.SetText(m.SearchTerm)
+	SearchInput.SetFieldBackgroundColor(tcell.NewHexColor(0x505050))
+	SearchInput.SetLabelColor(tcell.NewHexColor(0xd0d0d0))
+
+	SearchInput.SetChangedFunc(func(term string) {
+		m.SearchTerm = term
+		CmdSearch.SetText(fmt.Sprintf("'%s'", m.SearchTerm))
+		m.drawTodos()
+	})
+
+	SearchInput.SetDoneFunc(func(key tcell.Key) {
+		m.SelectedTodoIdx = 0
+		if key == tcell.KeyTab || key == tcell.KeyBacktab {
+			m.App.SetFocus(GroupSelect)
+		} else {
+			m.switchStateToModeTodoEditing()
+			m.App.SetFocus(m.MainArea)
+		}
+	})
+}
+
+func (m *Manager) setupGroupSelect() {
+	grouper := &Grouper{}
+	GroupSelect.SetLabel("Group: ").SetFieldWidth(10)
+	GroupSelect.SetFieldBackgroundColor(tcell.NewHexColor(0x505050))
+	GroupSelect.SetLabelColor(tcell.NewHexColor(0xd0d0d0))
+
+	GroupSelect.AddOption("None", func() {
+		m.GroupedTodos = grouper.GroupByNothing(m.TodoList.Todos())
+		m.drawTodos()
+		m.switchStateToModeTodoEditing()
+		m.App.SetFocus(m.MainArea)
+
+	})
+	GroupSelect.AddOption("Project", func() {
+		m.GroupedTodos = grouper.GroupByProject(m.TodoList.Todos())
+		m.drawTodos()
+		m.switchStateToModeTodoEditing()
+		m.App.SetFocus(m.MainArea)
+	})
+	GroupSelect.AddOption("Context", func() {
+		m.GroupedTodos = grouper.GroupByContext(m.TodoList.Todos())
+		m.drawTodos()
+		m.switchStateToModeTodoEditing()
+		m.App.SetFocus(m.MainArea)
+	})
+	GroupSelect.AddOption("Status", func() {
+		m.GroupedTodos = grouper.GroupByStatus(m.TodoList.Todos())
+		m.drawTodos()
+		m.switchStateToModeTodoEditing()
+		m.App.SetFocus(m.MainArea)
+	})
+
+	GroupSelect.SetDoneFunc(func(key tcell.Key) {
+		if key == tcell.KeyBacktab {
+			m.App.SetFocus(SearchInput)
+		}
+	})
+}
+
+func (m *Manager) setupStatusInput() {
+	StatusInput.SetLabel("Set status: ").SetFieldWidth(10)
+	StatusInput.SetFieldBackgroundColor(tcell.NewHexColor(0x505050))
+	StatusInput.SetLabelColor(tcell.NewHexColor(0xd0d0d0))
 }
 
 func buildTextView(label string) *tview.TextView {
