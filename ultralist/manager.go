@@ -12,6 +12,28 @@ import (
 	"github.com/rivo/tview"
 )
 
+/*
+**filtering**
+* [ ] filter by priority
+* [ ] filter by completed
+* [ ] filter by archived
+* [ ] filter by due
+
+**todo editing**
+* [ ] edit due date
+* [ ] edit recurring
+* [ ] delete todo (with prompt)
+
+**Adding todos**
+* [ ] quick add
+* [ ] add modal?
+
+**other**
+* [ ] help modal with keys
+* [ ] see if I can make todo highlighting look a little nicer
+
+ */
+
 type ManagerState string
 
 const (
