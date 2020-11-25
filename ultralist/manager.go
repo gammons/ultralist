@@ -183,9 +183,6 @@ func (m *Manager) inputCapture(event *tcell.EventKey) *tcell.EventKey {
 		m.focusModeInputCapture(event)
 	}
 
-	// handle global events
-	m.globalEventsInputCapture(event)
-
 	m.drawTodos()
 
 	return event
@@ -210,6 +207,20 @@ func (m *Manager) focusModeInputCapture(event *tcell.EventKey) {
 		m.switchStateToModeTodoEditing()
 	}
 
+	if event.Rune() == '/' {
+		m.switchStateToModeListFiltering()
+		m.App.SetFocus(SearchInput)
+	}
+
+	if event.Rune() == 'g' {
+		m.switchStateToModeListFiltering()
+		m.App.SetFocus(GroupSelect)
+	}
+
+	// quit the app
+	if event.Rune() == 'q' {
+		m.App.Stop()
+	}
 }
 
 func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
@@ -261,25 +272,24 @@ func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
 	if event.Rune() == 's' {
 		m.switchStateToModeStatusEditing()
 	}
-}
 
-func (m *Manager) globalEventsInputCapture(event *tcell.EventKey) {
 	if event.Rune() == '/' {
 		m.switchStateToModeListFiltering()
+		m.App.SetFocus(SearchInput)
 	}
 
-	// switch to focus mode
-	if event.Key() == tcell.KeyEsc {
-		if m.State != ModeFocus {
-			m.switchStateToModeFocus()
-		} else {
-			m.switchStateToModeTodoEditing()
-		}
+	if event.Rune() == 'g' {
+		m.switchStateToModeListFiltering()
+		m.App.SetFocus(GroupSelect)
 	}
 
 	// quit the app
-	if event.Rune() == 'q' && m.State != ModeListFiltering {
+	if event.Rune() == 'q' {
 		m.App.Stop()
+	}
+
+	if event.Key() == tcell.KeyEsc {
+		m.switchStateToModeFocus()
 	}
 }
 
@@ -293,7 +303,6 @@ func (m *Manager) switchStateToModeListFiltering() {
 
 	m.FilterArea.AddItem(SearchInput, 0, 1, false)
 	m.FilterArea.AddItem(GroupSelect, 0, 1, false)
-	m.App.SetFocus(SearchInput)
 
 	m.drawTodos()
 }
@@ -378,7 +387,7 @@ func (m *Manager) drawTodos() {
 
 		for _, todo := range m.GroupedTodos.Groups[key] {
 			if m.SearchTerm != "" {
-				match, _ := regexp.MatchString(m.SearchTerm, todo.Subject)
+				match, _ := regexp.MatchString(fmt.Sprintf("(?i)%s", m.SearchTerm), todo.Subject)
 				if !match {
 					continue
 				}
