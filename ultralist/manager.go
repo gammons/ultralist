@@ -202,6 +202,7 @@ func NewManager(todoList *TodoList) *Manager {
 	// set up the inputs
 	manager.setupSearchInput()
 	manager.setupGroupSelect()
+	manager.setupCompletedSelect()
 	manager.setupStatusInput()
 	manager.setupDueInput()
 
@@ -336,6 +337,11 @@ func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
 	if event.Key() == tcell.KeyEsc {
 		m.switchStateToModeFocus()
 	}
+
+	if event.Key() == tcell.KeyTab {
+		m.switchStateToModeListFiltering()
+		m.App.SetFocus(SearchInput)
+	}
 }
 
 func (m *Manager) switchStateToModeListFiltering() {
@@ -348,6 +354,7 @@ func (m *Manager) switchStateToModeListFiltering() {
 
 	m.FilterArea.AddItem(SearchInput, 0, 1, false)
 	m.FilterArea.AddItem(GroupSelect, 0, 1, false)
+	m.FilterArea.AddItem(CompletedSelect, 0, 1, false)
 
 	m.drawTodos()
 }
@@ -566,6 +573,28 @@ func (m *Manager) setupCompletedSelect() {
 	CompletedSelect.SetLabelColor(tcell.NewHexColor(0xd0d0d0))
 
 	CompletedSelect.AddOption("All", func() {
+		m.TodoFilter.HasCompleted = false
+		m.drawTodos()
+	})
+	CompletedSelect.AddOption("true", func() {
+		m.TodoFilter.HasCompleted = true
+		m.TodoFilter.Completed = true
+		m.drawTodos()
+	})
+	CompletedSelect.AddOption("false", func() {
+		m.TodoFilter.HasCompleted = true
+		m.TodoFilter.Completed = false
+		m.drawTodos()
+	})
+
+	CompletedSelect.SetDoneFunc(func(key tcell.Key) {
+		if key == tcell.KeyBacktab {
+			m.App.SetFocus(GroupSelect)
+		}
+		if key == tcell.KeyTab {
+			m.switchStateToModeTodoManaging()
+			m.App.SetFocus(m.MainArea)
+		}
 	})
 }
 
@@ -605,8 +634,7 @@ func (m *Manager) setupGroupSelect() {
 			m.App.SetFocus(SearchInput)
 		}
 		if key == tcell.KeyTab {
-			m.switchStateToModeTodoManaging()
-			m.App.SetFocus(m.MainArea)
+			m.App.SetFocus(CompletedSelect)
 		}
 	})
 }
