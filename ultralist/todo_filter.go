@@ -1,6 +1,8 @@
 package ultralist
 
 import (
+	"fmt"
+	"regexp"
 	"time"
 )
 
@@ -15,6 +17,13 @@ func (f *TodoFilter) ApplyFilter() []*Todo {
 	var filtered []*Todo
 
 	for _, todo := range f.Todos {
+		if f.Filter.HasSubject {
+			match, _ := regexp.MatchString(fmt.Sprintf("(?i)%s", f.Filter.Subject), todo.Subject)
+			if !match {
+				continue
+			}
+		}
+
 		if f.Filter.HasIsPriority {
 			if todo.IsPriority != f.Filter.IsPriority {
 				continue

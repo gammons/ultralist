@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"regexp"
 	"sort"
 	"strconv"
 
@@ -17,11 +16,13 @@ import (
 * [ ] filter by priority
 * [ ] filter by completed
 * [ ] filter by archived
+* [ ] filter by status
 * [ ] filter by due
 
 **todo editing**
 * [ ] edit due date
 * [ ] edit recurring
+* [ ] edit todo
 * [ ] delete todo (with prompt)
 
 **Adding todos**
@@ -31,6 +32,9 @@ import (
 **other**
 * [ ] help modal with keys
 * [ ] see if I can make todo highlighting look a little nicer
+* [ ] mouse click on a todo to select it
+* [ ] handle ctrl+c event (maybe with a "type q to quit" msg)
+* [ ] scrolling seems to not follow highlighted todo
 
  */
 
@@ -38,10 +42,19 @@ type ManagerState string
 
 const (
 	ModeFocus         ManagerState = "focus_mode"
+	ModeTodoManaging  ManagerState = "todo_managing"
 	ModeTodoEditing   ManagerState = "todo_editing"
 	ModeListFiltering ManagerState = "list_filtering"
-	ModeStatusEditing ManagerState = "status_editing"
 	ModeSearching     ManagerState = "searching"
+)
+
+type GroupBy string
+
+const (
+	GroupNone    GroupBy = "none"
+	GroupContext GroupBy = "context"
+	GroupProject GroupBy = "project"
+	GroupStatus  GroupBy = "status"
 )
 
 type Manager struct {
@@ -54,13 +67,13 @@ type Manager struct {
 
 	State ManagerState
 
-	TodoList     *TodoList
-	GroupedTodos *GroupedTodos
+	TodoList *TodoList
 
 	TodoIDs         []int
 	SelectedTodoIdx int
 
-	SearchTerm string
+	GroupBy    GroupBy
+	TodoFilter *Filter
 }
 
 const (
@@ -93,18 +106,25 @@ var (
 
 	CmdSearch = buildTextView("/:Search")
 	CmdGroup  = buildTextView("g:group")
+)
 
+// Todo editing controls
+var (
 	StatusInput = tview.NewInputField()
+	DueInput    = tview.NewInputField()
 )
 
 // Todo list commands
 var (
-	GroupSelect = tview.NewDropDown()
-	SearchInput = tview.NewInputField()
+	GroupSelect     = tview.NewDropDown()
+	CompletedSelect = tview.NewDropDown()
+	SearchInput     = tview.NewInputField()
 )
 
 func NewManager(todoList *TodoList) *Manager {
 	textView := tview.NewTextView()
+	textView.SetWrap(false)
+	// textView.SetScrollable(false)
 	textView.SetBackgroundColor(tcell.NewHexColor(0x101010))
 	textView.SetDynamicColors(true)
 	textView.SetBorder(false)
@@ -155,9 +175,6 @@ func NewManager(todoList *TodoList) *Manager {
 		0,     // minGridWidth
 		false) // focus
 
-	grouper := &Grouper{}
-	groupedTodos := grouper.GroupByProject(todoList.Todos())
-
 	app := tview.NewApplication().SetRoot(mainArea, true).EnableMouse(true)
 
 	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
@@ -170,14 +187,14 @@ func NewManager(todoList *TodoList) *Manager {
 	manager := &Manager{
 		App:             app,
 		TodoList:        todoList,
-		GroupedTodos:    groupedTodos,
 		TodoTextView:    textView,
 		CommandsArea:    commandsArea,
 		FilterArea:      filterArea,
 		MainArea:        mainArea,
 		DebugArea:       debugArea,
 		SelectedTodoIdx: 0,
-		SearchTerm:      "",
+		TodoFilter:      &Filter{},
+		GroupBy:         GroupNone,
 	}
 
 	manager.App.SetInputCapture(manager.inputCapture)
@@ -186,9 +203,10 @@ func NewManager(todoList *TodoList) *Manager {
 	manager.setupSearchInput()
 	manager.setupGroupSelect()
 	manager.setupStatusInput()
+	manager.setupDueInput()
 
 	// set up initial state for the app.
-	manager.switchStateToModeTodoEditing()
+	manager.switchStateToModeTodoManaging()
 	manager.drawTodos()
 
 	// temporary to debug.
@@ -199,7 +217,7 @@ func NewManager(todoList *TodoList) *Manager {
 
 func (m *Manager) inputCapture(event *tcell.EventKey) *tcell.EventKey {
 	switch m.State {
-	case ModeTodoEditing:
+	case ModeTodoManaging:
 		m.todoEventsInputCapture(event)
 	case ModeFocus:
 		m.focusModeInputCapture(event)
@@ -215,18 +233,18 @@ func (m *Manager) focusModeInputCapture(event *tcell.EventKey) {
 		if m.SelectedTodoIdx < len(m.TodoIDs)-1 {
 			m.SelectedTodoIdx += 1
 		}
-		m.switchStateToModeTodoEditing()
+		m.switchStateToModeTodoManaging()
 	}
 	if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
 		if m.SelectedTodoIdx > 0 {
 			m.SelectedTodoIdx -= 1
 		}
-		m.switchStateToModeTodoEditing()
+		m.switchStateToModeTodoManaging()
 	}
 
 	if event.Key() == tcell.KeyEnter ||
 		event.Rune() == ' ' {
-		m.switchStateToModeTodoEditing()
+		m.switchStateToModeTodoManaging()
 	}
 
 	if event.Rune() == '/' {
@@ -292,7 +310,12 @@ func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
 
 	// set status
 	if event.Rune() == 's' {
-		m.switchStateToModeStatusEditing()
+		m.editTodoStatus()
+	}
+
+	// set due
+	if event.Rune() == 'd' {
+		m.editTodoDue()
 	}
 
 	if event.Rune() == '/' {
@@ -329,8 +352,8 @@ func (m *Manager) switchStateToModeListFiltering() {
 	m.drawTodos()
 }
 
-func (m *Manager) switchStateToModeTodoEditing() {
-	m.State = ModeTodoEditing
+func (m *Manager) switchStateToModeTodoManaging() {
+	m.State = ModeTodoManaging
 	m.FilterArea.Clear()
 	m.drawTodos()
 }
@@ -342,20 +365,22 @@ func (m *Manager) switchStateToModeFocus() {
 }
 
 func (m *Manager) switchStateToSearching() {
-	m.SearchTerm = ""
+	m.TodoFilter.Subject = ""
+	m.TodoFilter.HasSubject = false
 	m.State = ModeSearching
 	m.FilterArea.Clear()
 
 	input := tview.NewInputField().SetLabel("Search: ").SetFieldWidth(10)
 	input.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		m.SearchTerm = input.GetText()
+		m.TodoFilter.Subject = input.GetText()
+		m.TodoFilter.HasSubject = true
 		m.drawTodos()
 		return event
 	})
 
 	input.SetDoneFunc(func(key tcell.Key) {
 		m.SelectedTodoIdx = 0
-		m.switchStateToModeTodoEditing()
+		m.switchStateToModeTodoManaging()
 		m.App.SetFocus(m.MainArea)
 	})
 
@@ -364,8 +389,8 @@ func (m *Manager) switchStateToSearching() {
 	m.drawTodos()
 }
 
-func (m *Manager) switchStateToModeStatusEditing() {
-	m.State = ModeStatusEditing
+func (m *Manager) editTodoStatus() {
+	m.State = ModeTodoEditing
 	m.CommandsArea.Clear()
 	todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
 
@@ -375,11 +400,30 @@ func (m *Manager) switchStateToModeStatusEditing() {
 		if key == tcell.KeyEnter {
 			todo.Status = StatusInput.GetText()
 		}
-		m.switchStateToModeTodoEditing()
+		m.switchStateToModeTodoManaging()
 	})
 
 	m.CommandsArea.AddItem(StatusInput, 0, 1, false)
 	m.App.SetFocus(StatusInput)
+	m.drawTodos()
+}
+
+func (m *Manager) editTodoDue() {
+	m.State = ModeTodoEditing
+	m.CommandsArea.Clear()
+	todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
+
+	DueInput.SetText(todo.Due)
+
+	DueInput.SetDoneFunc(func(key tcell.Key) {
+		if key == tcell.KeyEnter {
+			todo.Due = DueInput.GetText()
+		}
+		m.switchStateToModeTodoManaging()
+	})
+
+	m.CommandsArea.AddItem(DueInput, 0, 1, false)
+	m.App.SetFocus(DueInput)
 	m.drawTodos()
 }
 
@@ -390,12 +434,30 @@ func (m *Manager) RunManager() {
 }
 
 func (m *Manager) drawTodos() {
-
 	var todoIDs []int
+	var keys []string
 	viewPrinter := &ViewPrinter{}
 
-	var keys []string
-	for key := range m.GroupedTodos.Groups {
+	filter := &TodoFilter{
+		Filter: m.TodoFilter,
+		Todos:  m.TodoList.Todos(),
+	}
+
+	grouper := &Grouper{}
+	var groups *GroupedTodos
+
+	switch m.GroupBy {
+	case GroupNone:
+		groups = grouper.GroupByNothing(filter.ApplyFilter())
+	case GroupProject:
+		groups = grouper.GroupByProject(filter.ApplyFilter())
+	case GroupContext:
+		groups = grouper.GroupByContext(filter.ApplyFilter())
+	case GroupStatus:
+		groups = grouper.GroupByStatus(filter.ApplyFilter())
+	}
+
+	for key := range groups.Groups {
 		keys = append(keys, key)
 	}
 	sort.Strings(keys)
@@ -405,23 +467,11 @@ func (m *Manager) drawTodos() {
 
 	totalDisplayedTodos := 0
 	for _, key := range keys {
-		var filteredTodos []*Todo
-
-		for _, todo := range m.GroupedTodos.Groups[key] {
-			if m.SearchTerm != "" {
-				match, _ := regexp.MatchString(fmt.Sprintf("(?i)%s", m.SearchTerm), todo.Subject)
-				if !match {
-					continue
-				}
-			}
-			filteredTodos = append(filteredTodos, todo)
-		}
-
-		if len(filteredTodos) > 0 {
+		if len(groups.Groups[key]) > 0 {
 			fmt.Fprintf(m.TodoTextView, "\n[%s]%s[%s]\n", ColorBlue, key, ColorForeground)
 		}
 
-		for _, todo := range filteredTodos {
+		for _, todo := range groups.Groups[key] {
 			fmt.Fprintf(
 				m.TodoTextView,
 				"[\"%v\"]%s  %s  %s  %s  %s[\"\"]\n",
@@ -435,7 +485,7 @@ func (m *Manager) drawTodos() {
 
 			todoIDs = append(todoIDs, todo.ID)
 
-			if totalDisplayedTodos == m.SelectedTodoIdx && m.State == ModeTodoEditing {
+			if totalDisplayedTodos == m.SelectedTodoIdx && m.State == ModeTodoManaging {
 				m.buildTodoCommandsMenu(todo)
 				m.TodoTextView.Highlight(strconv.Itoa(m.SelectedTodoIdx))
 			}
@@ -443,9 +493,23 @@ func (m *Manager) drawTodos() {
 			totalDisplayedTodos++
 		}
 	}
+	m.TodoTextView.ScrollTo(m.SelectedTodoIdx, 0)
 	m.TodoIDs = todoIDs
 }
 
+// func (m *Manager) handleTodoScrollLocation(selectedTodoLineLocation int) {
+// 	_, _, _, height := m.TodoTextView.GetRect()
+//
+// 	// handle the top of the list
+// 	// handle when scrolling in the middle
+//
+// 	// hight is 5
+// 	// selectedTodoLineLocation is 5
+// 	// todo list length is 10
+// 	// keep highlighted todo in middle
+//
+// }
+//
 func (m *Manager) buildTodoCommandsMenu(todo *Todo) {
 	m.CommandsArea.Clear()
 
@@ -474,13 +538,14 @@ func (m *Manager) buildTodoCommandsMenu(todo *Todo) {
 
 func (m *Manager) setupSearchInput() {
 	SearchInput := SearchInput.SetLabel("Search: ").SetFieldWidth(10)
-	SearchInput.SetText(m.SearchTerm)
+	SearchInput.SetText(m.TodoFilter.Subject)
 	SearchInput.SetFieldBackgroundColor(tcell.NewHexColor(0x505050))
 	SearchInput.SetLabelColor(tcell.NewHexColor(0xd0d0d0))
 
 	SearchInput.SetChangedFunc(func(term string) {
-		m.SearchTerm = term
-		CmdSearch.SetText(fmt.Sprintf("'%s'", m.SearchTerm))
+		m.TodoFilter.Subject = term
+		m.TodoFilter.HasSubject = true
+		CmdSearch.SetText(fmt.Sprintf("'%s'", term))
 		m.drawTodos()
 	})
 
@@ -489,47 +554,59 @@ func (m *Manager) setupSearchInput() {
 		if key == tcell.KeyTab || key == tcell.KeyBacktab {
 			m.App.SetFocus(GroupSelect)
 		} else {
-			m.switchStateToModeTodoEditing()
+			m.switchStateToModeTodoManaging()
 			m.App.SetFocus(m.MainArea)
 		}
 	})
 }
 
+func (m *Manager) setupCompletedSelect() {
+	CompletedSelect.SetLabel("Completed: ")
+	CompletedSelect.SetFieldBackgroundColor(tcell.NewHexColor(0x505050))
+	CompletedSelect.SetLabelColor(tcell.NewHexColor(0xd0d0d0))
+
+	CompletedSelect.AddOption("All", func() {
+	})
+}
+
 func (m *Manager) setupGroupSelect() {
-	grouper := &Grouper{}
 	GroupSelect.SetLabel("Group: ").SetFieldWidth(10)
 	GroupSelect.SetFieldBackgroundColor(tcell.NewHexColor(0x505050))
 	GroupSelect.SetLabelColor(tcell.NewHexColor(0xd0d0d0))
 
 	GroupSelect.AddOption("None", func() {
-		m.GroupedTodos = grouper.GroupByNothing(m.TodoList.Todos())
+		m.GroupBy = GroupNone
 		m.drawTodos()
-		m.switchStateToModeTodoEditing()
+		m.switchStateToModeTodoManaging()
 		m.App.SetFocus(m.MainArea)
 
 	})
 	GroupSelect.AddOption("Project", func() {
-		m.GroupedTodos = grouper.GroupByProject(m.TodoList.Todos())
+		m.GroupBy = GroupProject
 		m.drawTodos()
-		m.switchStateToModeTodoEditing()
+		m.switchStateToModeTodoManaging()
 		m.App.SetFocus(m.MainArea)
 	})
 	GroupSelect.AddOption("Context", func() {
-		m.GroupedTodos = grouper.GroupByContext(m.TodoList.Todos())
+		m.GroupBy = GroupContext
 		m.drawTodos()
-		m.switchStateToModeTodoEditing()
+		m.switchStateToModeTodoManaging()
 		m.App.SetFocus(m.MainArea)
 	})
 	GroupSelect.AddOption("Status", func() {
-		m.GroupedTodos = grouper.GroupByStatus(m.TodoList.Todos())
+		m.GroupBy = GroupStatus
 		m.drawTodos()
-		m.switchStateToModeTodoEditing()
+		m.switchStateToModeTodoManaging()
 		m.App.SetFocus(m.MainArea)
 	})
 
 	GroupSelect.SetDoneFunc(func(key tcell.Key) {
 		if key == tcell.KeyBacktab {
 			m.App.SetFocus(SearchInput)
+		}
+		if key == tcell.KeyTab {
+			m.switchStateToModeTodoManaging()
+			m.App.SetFocus(m.MainArea)
 		}
 	})
 }
@@ -538,6 +615,12 @@ func (m *Manager) setupStatusInput() {
 	StatusInput.SetLabel("Set status: ").SetFieldWidth(10)
 	StatusInput.SetFieldBackgroundColor(tcell.NewHexColor(0x505050))
 	StatusInput.SetLabelColor(tcell.NewHexColor(0xd0d0d0))
+}
+
+func (m *Manager) setupDueInput() {
+	DueInput.SetLabel("Set due: ").SetFieldWidth(10)
+	DueInput.SetFieldBackgroundColor(tcell.NewHexColor(0x505050))
+	DueInput.SetLabelColor(tcell.NewHexColor(0xd0d0d0))
 }
 
 func buildTextView(label string) *tview.TextView {
