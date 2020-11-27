@@ -1,4 +1,4 @@
-package ultralist
+package sync
 
 import (
 	"bytes"
@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/ultralist/ultralist/ultralist"
 )
 
 const (
@@ -33,9 +35,9 @@ func NewBackend() *Backend {
 }
 
 // CreateTodoList will create a todo list on the backend
-func (b *Backend) CreateTodoList(todolist *TodoList) {
+func (b *Backend) CreateTodoList(todolist *ultralist.TodoList) {
 	type Request struct {
-		Todolist *TodoList `json:"todolist"`
+		Todolist *ultralist.TodoList `json:"todolist"`
 	}
 
 	bodyBytes, _ := json.Marshal(&Request{Todolist: todolist})
@@ -52,7 +54,7 @@ func (b *Backend) PerformRequest(method string, path string, data []byte) []byte
 	req.Header.Set("Authorization", authHeader)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("x-Ultralist-CLI-Version", VERSION)
+	req.Header.Set("x-Ultralist-CLI-Version", ultralist.Version)
 
 	client := &http.Client{}
 
@@ -135,7 +137,7 @@ func (b *Backend) apiURL(path string) string {
 }
 
 func (b *Backend) credsFolderPath() string {
-	home := UserHomeDir()
+	home := b.userHomeDir()
 	return fmt.Sprintf("%s/.config/ultralist/", home)
 }
 
@@ -153,4 +155,14 @@ func (b *Backend) loadCreds() string {
 		panic(err)
 	}
 	return string(data)
+}
+
+// UserHomeDir returns the home dir of the current user.
+func (b *Backend) userHomeDir() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return home
 }

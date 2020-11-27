@@ -1,10 +1,12 @@
-package ultralist
+package cli
 
 import (
 	"fmt"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/ultralist/ultralist/ultralist"
 )
 
 // InputParser parses text to extract a Filter struct
@@ -38,8 +40,8 @@ project:one,-two
 */
 
 // Parse parses raw input and returns a Filter object
-func (p *InputParser) Parse(input string) (*Filter, error) {
-	filter := &Filter{
+func (p *InputParser) Parse(input string) (*ultralist.Filter, error) {
+	filter := &ultralist.Filter{
 		HasStatus:        false,
 		HasCompleted:     false,
 		HasCompletedAt:   false,
@@ -52,7 +54,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		HasRecur:         false,
 	}
 
-	dateParser := &DateParser{}
+	dateParser := &ultralist.DateParser{}
 
 	var subjectMatches []string
 
@@ -96,7 +98,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			if dueDate.IsZero() {
 				filter.DueBefore = ""
 			} else {
-				filter.DueBefore = dueDate.Format(DATE_FORMAT)
+				filter.DueBefore = dueDate.Format(ultralist.DateFormat)
 			}
 			match = true
 		}
@@ -116,9 +118,9 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 				if word == "due:agenda" {
 					filter.HasDueBefore = true
 					filter.HasDue = false
-					filter.DueBefore = dueDate.Format(DATE_FORMAT)
+					filter.DueBefore = dueDate.Format(ultralist.DateFormat)
 				} else {
-					filter.Due = dueDate.Format(DATE_FORMAT)
+					filter.Due = dueDate.Format(ultralist.DateFormat)
 				}
 			}
 			match = true
@@ -135,7 +137,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			if dueDate.IsZero() {
 				filter.DueAfter = ""
 			} else {
-				filter.DueAfter = dueDate.Format(DATE_FORMAT)
+				filter.DueAfter = dueDate.Format(ultralist.DateFormat)
 			}
 			match = true
 		}
@@ -179,7 +181,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 				filter.Recur = ""
 			}
 
-			r := &Recurrence{}
+			r := &ultralist.Recurrence{}
 			if !r.ValidRecurrence(filter.Recur) {
 				return filter, fmt.Errorf("I could not understand the recurrence you gave me: '%s'", filter.Recur)
 			}
@@ -193,7 +195,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			}
 			match = true
 
-			filter.RecurUntil = date.Format(DATE_FORMAT)
+			filter.RecurUntil = date.Format(ultralist.DateFormat)
 		}
 
 		if !match {

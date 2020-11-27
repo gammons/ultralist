@@ -1,4 +1,4 @@
-package ultralist
+package cli
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/ultralist/ultralist/ultralist"
 )
 
 func TestInputParser(t *testing.T) {
@@ -19,7 +20,7 @@ func TestInputParser(t *testing.T) {
 	assert.Equal("now", filter.Status[0])
 	assert.Equal("next", filter.Status[1])
 
-	tomorrow := time.Now().AddDate(0, 0, 1).Format(DATE_FORMAT)
+	tomorrow := time.Now().AddDate(0, 0, 1).Format(ultralist.DateFormat)
 	assert.Equal(tomorrow, filter.Due)
 	assert.Equal("do this thing", filter.Subject)
 }
@@ -31,7 +32,7 @@ func TestSubject(t *testing.T) {
 	filter, _ := parser.Parse("due:tom here is the subject")
 
 	assert.Equal("here is the subject", filter.Subject)
-	tomorrow := time.Now().AddDate(0, 0, 1).Format(DATE_FORMAT)
+	tomorrow := time.Now().AddDate(0, 0, 1).Format(ultralist.DateFormat)
 	assert.Equal(tomorrow, filter.Due)
 }
 
@@ -41,7 +42,7 @@ func TestDueAgenda(t *testing.T) {
 
 	filter, _ := parser.Parse("due:agenda blah blah")
 
-	tomorrow := time.Now().AddDate(0, 0, 1).Format(DATE_FORMAT)
+	tomorrow := time.Now().AddDate(0, 0, 1).Format(ultralist.DateFormat)
 	assert.Equal(tomorrow, filter.DueBefore)
 	assert.Equal(true, filter.HasDueBefore)
 	assert.Equal(false, filter.HasDue)

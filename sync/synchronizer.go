@@ -1,10 +1,12 @@
-package ultralist
+package sync
 
 import (
 	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
+
+	"github.com/ultralist/ultralist/ultralist"
 )
 
 // Synchronizer is the default struct of this file.
@@ -54,7 +56,7 @@ func (s *Synchronizer) ExecSyncInBackground() {
 }
 
 // Sync is synchronizing the todos with the ultralist API.
-func (s *Synchronizer) Sync(todolist *TodoList, syncedList *SyncedList) {
+func (s *Synchronizer) Sync(todolist *ultralist.TodoList, syncedList *SyncedList) {
 
 	if s.Backend.CredsFileExists() == false {
 		s.println("Cannot find credentials file.  Please re-authorize!")
@@ -106,9 +108,9 @@ type UserRequest struct {
 
 // TodolistRequest is the struct for a todolist request.
 type TodolistRequest struct {
-	UUID                string  `json:"uuid"`
-	Name                string  `json:"name"`
-	TodoItemsAttributes []*Todo `json:"todo_items_attributes"`
+	UUID                string            `json:"uuid"`
+	Name                string            `json:"name"`
+	TodoItemsAttributes []*ultralist.Todo `json:"todo_items_attributes"`
 }
 
 // Request is the struct for a request.
@@ -118,7 +120,7 @@ type Request struct {
 	Todolist *TodolistRequest `json:"todolist"`
 }
 
-func (s *Synchronizer) doSync(todolist *TodoList, syncedList *SyncedList) {
+func (s *Synchronizer) doSync(todolist *ultralist.TodoList, syncedList *SyncedList) {
 	data := s.buildRequest(todolist, syncedList)
 	path := "/api/v1/todo_lists/event_cache"
 
@@ -141,7 +143,7 @@ func (s *Synchronizer) doSync(todolist *TodoList, syncedList *SyncedList) {
 	}
 }
 
-func (s *Synchronizer) buildRequest(todolist *TodoList, syncedList *SyncedList) []byte {
+func (s *Synchronizer) buildRequest(todolist *ultralist.TodoList, syncedList *SyncedList) []byte {
 	requestData := &Request{
 		From:   "cli",
 		Events: syncedList.Events,

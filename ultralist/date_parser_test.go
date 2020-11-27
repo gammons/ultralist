@@ -11,7 +11,7 @@ import (
 func TestNone(t *testing.T) {
 	assert := assert.New(t)
 	dp := &DateParser{}
-	date, _ := time.Parse(DATE_FORMAT, "2010-01-01")
+	date, _ := time.Parse(DateFormat, "2010-01-01")
 
 	res, err := dp.ParseDate("none", date)
 
@@ -26,36 +26,36 @@ func TestNone(t *testing.T) {
 func TestToday(t *testing.T) {
 	assert := assert.New(t)
 	dp := &DateParser{}
-	date, _ := time.Parse(DATE_FORMAT, "2010-01-01")
+	date, _ := time.Parse(DateFormat, "2010-01-01")
 
 	res, err := dp.ParseDate("today", date)
-	formattedRes := res.Format(DATE_FORMAT)
+	formattedRes := res.Format(DateFormat)
 
 	if err != nil {
 		fmt.Println("err is ", err)
 		t.Fail()
 	}
 
-	expectedTime, _ := time.Parse(DATE_FORMAT, "2010-01-01")
-	expected := expectedTime.Format(DATE_FORMAT)
+	expectedTime, _ := time.Parse(DateFormat, "2010-01-01")
+	expected := expectedTime.Format(DateFormat)
 	assert.Equal(expected, formattedRes)
 }
 
 func TestTomorrow(t *testing.T) {
 	assert := assert.New(t)
 	dp := &DateParser{}
-	date, _ := time.Parse(DATE_FORMAT, "2010-01-01")
+	date, _ := time.Parse(DateFormat, "2010-01-01")
 
 	res, err := dp.ParseDate("tomorrow", date)
-	formattedRes := res.Format(DATE_FORMAT)
+	formattedRes := res.Format(DateFormat)
 
 	if err != nil {
 		fmt.Println("err is ", err)
 		t.Fail()
 	}
 
-	expectedTime, _ := time.Parse(DATE_FORMAT, "2010-01-02")
-	expected := expectedTime.Format(DATE_FORMAT)
+	expectedTime, _ := time.Parse(DateFormat, "2010-01-02")
+	expected := expectedTime.Format(DateFormat)
 	assert.Equal(expected, formattedRes)
 }
 
@@ -63,18 +63,18 @@ func TestTomorrow(t *testing.T) {
 func TestMondayThisWeek(t *testing.T) {
 	assert := assert.New(t)
 	dp := &DateParser{}
-	date, _ := time.Parse(DATE_FORMAT, "2020-08-16")
+	date, _ := time.Parse(DateFormat, "2020-08-16")
 
 	res, err := dp.ParseDate("mon", date)
-	formattedRes := res.Format(DATE_FORMAT)
+	formattedRes := res.Format(DateFormat)
 
 	if err != nil {
 		fmt.Println("err is ", err)
 		t.Fail()
 	}
 
-	expectedTime, _ := time.Parse(DATE_FORMAT, "2020-08-17")
-	expected := expectedTime.Format(DATE_FORMAT)
+	expectedTime, _ := time.Parse(DateFormat, "2020-08-17")
+	expected := expectedTime.Format(DateFormat)
 	assert.Equal(expected, formattedRes)
 }
 
@@ -82,18 +82,18 @@ func TestMondayThisWeek(t *testing.T) {
 func TestMondayNextWeek(t *testing.T) {
 	assert := assert.New(t)
 	dp := &DateParser{}
-	date, _ := time.Parse(DATE_FORMAT, "2020-08-20")
+	date, _ := time.Parse(DateFormat, "2020-08-20")
 
 	res, err := dp.ParseDate("mon", date)
-	formattedRes := res.Format(DATE_FORMAT)
+	formattedRes := res.Format(DateFormat)
 
 	if err != nil {
 		fmt.Println("err is ", err)
 		t.Fail()
 	}
 
-	expectedTime, _ := time.Parse(DATE_FORMAT, "2020-08-24")
-	expected := expectedTime.Format(DATE_FORMAT)
+	expectedTime, _ := time.Parse(DateFormat, "2020-08-24")
+	expected := expectedTime.Format(DateFormat)
 	assert.Equal(expected, formattedRes)
 }
 
@@ -101,7 +101,7 @@ func TestMondayNextWeek(t *testing.T) {
 func TestSpecificUSDateAfterPivot(t *testing.T) {
 	assert := assert.New(t)
 	dp := &DateParser{}
-	date, _ := time.Parse(DATE_FORMAT, "2019-08-11")
+	date, _ := time.Parse(DateFormat, "2019-08-11")
 
 	res, err := dp.ParseDate("Aug12", date)
 
@@ -110,9 +110,9 @@ func TestSpecificUSDateAfterPivot(t *testing.T) {
 		t.Fail()
 	}
 
-	formattedRes := res.Format(DATE_FORMAT)
-	expectedTime, _ := time.Parse(DATE_FORMAT, "2019-08-12")
-	expected := expectedTime.Format(DATE_FORMAT)
+	formattedRes := res.Format(DateFormat)
+	expectedTime, _ := time.Parse(DateFormat, "2019-08-12")
+	expected := expectedTime.Format(DateFormat)
 	assert.Equal(expected, formattedRes)
 }
 
@@ -120,7 +120,7 @@ func TestSpecificUSDateAfterPivot(t *testing.T) {
 func TestSpecificUSDateBeforePivot(t *testing.T) {
 	assert := assert.New(t)
 	dp := &DateParser{}
-	date, _ := time.Parse(DATE_FORMAT, "2019-08-20")
+	date, _ := time.Parse(DateFormat, "2019-08-20")
 
 	res, err := dp.ParseDate("Aug12", date)
 
@@ -129,9 +129,9 @@ func TestSpecificUSDateBeforePivot(t *testing.T) {
 		t.Fail()
 	}
 
-	formattedRes := res.Format(DATE_FORMAT)
-	expectedTime, _ := time.Parse(DATE_FORMAT, "2020-08-12")
-	expected := expectedTime.Format(DATE_FORMAT)
+	formattedRes := res.Format(DateFormat)
+	expectedTime, _ := time.Parse(DateFormat, "2020-08-12")
+	expected := expectedTime.Format(DateFormat)
 	assert.Equal(expected, formattedRes)
 }
 
@@ -139,7 +139,7 @@ func TestSpecificUSDateBeforePivot(t *testing.T) {
 func TestSpecificEUDateAfterPivot(t *testing.T) {
 	assert := assert.New(t)
 	dp := &DateParser{}
-	date, _ := time.Parse(DATE_FORMAT, "2019-08-11")
+	date, _ := time.Parse(DateFormat, "2019-08-11")
 
 	res, err := dp.ParseDate("12Aug", date)
 
@@ -148,9 +148,9 @@ func TestSpecificEUDateAfterPivot(t *testing.T) {
 		t.Fail()
 	}
 
-	formattedRes := res.Format(DATE_FORMAT)
-	expectedTime, _ := time.Parse(DATE_FORMAT, "2019-08-12")
-	expected := expectedTime.Format(DATE_FORMAT)
+	formattedRes := res.Format(DateFormat)
+	expectedTime, _ := time.Parse(DateFormat, "2019-08-12")
+	expected := expectedTime.Format(DateFormat)
 	assert.Equal(expected, formattedRes)
 }
 
@@ -158,7 +158,7 @@ func TestSpecificEUDateAfterPivot(t *testing.T) {
 func TestSpecificEUDateBeforePivot(t *testing.T) {
 	assert := assert.New(t)
 	dp := &DateParser{}
-	date, _ := time.Parse(DATE_FORMAT, "2019-08-20")
+	date, _ := time.Parse(DateFormat, "2019-08-20")
 
 	res, err := dp.ParseDate("12Aug", date)
 
@@ -167,16 +167,16 @@ func TestSpecificEUDateBeforePivot(t *testing.T) {
 		t.Fail()
 	}
 
-	formattedRes := res.Format(DATE_FORMAT)
-	expectedTime, _ := time.Parse(DATE_FORMAT, "2020-08-12")
-	expected := expectedTime.Format(DATE_FORMAT)
+	formattedRes := res.Format(DateFormat)
+	expectedTime, _ := time.Parse(DateFormat, "2020-08-12")
+	expected := expectedTime.Format(DateFormat)
 	assert.Equal(expected, formattedRes)
 }
 
 func TestParsingError(t *testing.T) {
 	assert := assert.New(t)
 	dp := &DateParser{}
-	date, _ := time.Parse(DATE_FORMAT, "2019-08-20")
+	date, _ := time.Parse(DateFormat, "2019-08-20")
 
 	_, err := dp.ParseDate("asdf", date)
 

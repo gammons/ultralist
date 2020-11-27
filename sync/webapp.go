@@ -1,4 +1,4 @@
-package ultralist
+package sync
 
 import (
 	"fmt"

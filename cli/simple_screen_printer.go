@@ -1,4 +1,4 @@
-package ultralist
+package cli
 
 import (
 	"fmt"
@@ -11,6 +11,7 @@ import (
 
 	"github.com/cheynewallace/tabby"
 	"github.com/fatih/color"
+	"github.com/ultralist/ultralist/ultralist"
 )
 
 // ScreenPrinter is the default struct of this file
@@ -27,7 +28,7 @@ func NewSimpleScreenPrinter(unicodeSupport bool) *SimpleScreenPrinter {
 }
 
 // Print prints the output of ultralist to the terminal screen.
-func (f *SimpleScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool, showStatus bool) {
+func (f *SimpleScreenPrinter) Print(groupedTodos *ultralist.GroupedTodos, printNotes bool, showStatus bool) {
 	var keys []string
 	for key := range groupedTodos.Groups {
 		keys = append(keys, key)
@@ -46,19 +47,19 @@ func (f *SimpleScreenPrinter) Print(groupedTodos *GroupedTodos, printNotes bool,
 	tabby.Print()
 }
 
-func (f *SimpleScreenPrinter) printTodo(tabby *tabby.Tabby, todo *Todo, printNotes bool, showStatus bool) {
+func (f *SimpleScreenPrinter) printTodo(tabby *tabby.Tabby, todo *ultralist.Todo, printNotes bool, showStatus bool) {
 	if showStatus {
 		tabby.AddLine(
 			f.formatID(todo.ID, todo.IsPriority),
 			f.formatCompleted(todo.Completed),
 			f.formatInformation(todo),
-			f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
+			f.formatDue(todo),
 			f.formatSubject(todo.Subject, todo.IsPriority))
 	} else {
 		tabby.AddLine(
 			f.formatID(todo.ID, todo.IsPriority),
 			f.formatCompleted(todo.Completed),
-			f.formatDue(todo.Due, todo.IsPriority, todo.Completed),
+			f.formatDue(todo),
 			f.formatSubject(todo.Subject, todo.IsPriority))
 	}
 	if printNotes {
@@ -91,19 +92,18 @@ func (f *SimpleScreenPrinter) formatCompleted(completed bool) string {
 	return fmt.Sprint("[ ]")
 }
 
-func (f *SimpleScreenPrinter) formatDue(due string, isPriority bool, completed bool) string {
-	if due == "" {
+func (f *SimpleScreenPrinter) formatDue(todo *ultralist.Todo) string {
+	if todo.Due == "" {
 		return fmt.Sprint("          ")
 	}
-	dueTime, _ := time.Parse(DATE_FORMAT, due)
 
-	if isPriority {
-		return f.printPriorityDue(dueTime, completed)
+	if todo.IsPriority {
+		return f.printPriorityDue(todo)
 	}
-	return f.printDue(dueTime, completed)
+	return f.printDue(todo)
 }
 
-func (f *SimpleScreenPrinter) formatInformation(todo *Todo) string {
+func (f *SimpleScreenPrinter) formatInformation(todo *ultralist.Todo) string {
 	var information []string
 	if todo.IsPriority {
 		information = append(information, "*")
@@ -123,26 +123,30 @@ func (f *SimpleScreenPrinter) formatInformation(todo *Todo) string {
 	return fmt.Sprint(strings.Join(information, ""))
 }
 
-func (f *SimpleScreenPrinter) printDue(due time.Time, completed bool) string {
-	if isToday(due) {
+func (f *SimpleScreenPrinter) printDue(todo *ultralist.Todo) string {
+	dueTime, _ := time.Parse(ultralist.DateFormat, todo.Due)
+
+	if todo.DueToday() {
 		return fmt.Sprint("today     ")
-	} else if isTomorrow(due) {
+	} else if todo.DueTomorrow() {
 		return fmt.Sprint("tomorrow  ")
-	} else if isPastDue(due) && !completed {
-		return fmt.Sprint(due.Format("Mon Jan 02"))
+	} else if todo.PastDue() && !todo.Completed {
+		return fmt.Sprint(dueTime.Format("Mon Jan 02"))
 	}
-	return fmt.Sprint(due.Format("Mon Jan 02"))
+	return fmt.Sprint(dueTime.Format("Mon Jan 02"))
 }
 
-func (f *SimpleScreenPrinter) printPriorityDue(due time.Time, completed bool) string {
-	if isToday(due) {
+func (f *SimpleScreenPrinter) printPriorityDue(todo *ultralist.Todo) string {
+	dueTime, _ := time.Parse(ultralist.DateFormat, todo.Due)
+
+	if todo.DueToday() {
 		return fmt.Sprint("today     ")
-	} else if isTomorrow(due) {
+	} else if todo.DueTomorrow() {
 		return fmt.Sprint("tomorrow  ")
-	} else if isPastDue(due) && !completed {
-		return fmt.Sprint(due.Format("Mon Jan 02"))
+	} else if todo.PastDue() {
+		return fmt.Sprint(dueTime.Format("Mon Jan 02"))
 	}
-	return fmt.Sprint(due.Format("Mon Jan 02"))
+	return fmt.Sprint(dueTime.Format("Mon Jan 02"))
 }
 
 func (f *SimpleScreenPrinter) formatSubject(subject string, isPriority bool) string {

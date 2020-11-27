@@ -49,14 +49,14 @@ func TestMaxID(t *testing.T) {
 func TestIndexOf(t *testing.T) {
 	assert := assert.New(t)
 	todo := &Todo{Subject: "Grant"}
-	list := SetUpTestMemoryTodoList()
+	list := &TodoList{}
 	assert.Equal(-1, list.IndexOf(todo))
 	assert.Equal(0, list.IndexOf(list.Data[0]))
 }
 
 func TestDelete(t *testing.T) {
 	assert := assert.New(t)
-	list := SetUpTestMemoryTodoList()
+	list := &TodoList{}
 	assert.Equal(2, len(list.Data))
 	list.Delete(1)
 	assert.Equal(1, len(list.Data))
@@ -64,7 +64,7 @@ func TestDelete(t *testing.T) {
 
 func TestComplete(t *testing.T) {
 	assert := assert.New(t)
-	list := SetUpTestMemoryTodoList()
+	list := &TodoList{}
 	assert.Equal(false, list.FindByID(1).Completed)
 	list.Complete(1)
 	assert.Equal(true, list.FindByID(1).Completed)
@@ -72,14 +72,14 @@ func TestComplete(t *testing.T) {
 
 func TestArchive(t *testing.T) {
 	assert := assert.New(t)
-	list := SetUpTestMemoryTodoList()
+	list := &TodoList{}
 	assert.Equal(false, list.FindByID(2).Archived)
 	list.Archive(2)
 	assert.Equal(true, list.FindByID(2).Archived)
 }
 func TestUnarchive(t *testing.T) {
 	assert := assert.New(t)
-	list := SetUpTestMemoryTodoList()
+	list := &TodoList{}
 	assert.Equal(true, list.FindByID(1).Archived)
 	list.Unarchive(1)
 	assert.Equal(false, list.FindByID(1).Archived)
@@ -87,7 +87,7 @@ func TestUnarchive(t *testing.T) {
 
 func TestUncomplete(t *testing.T) {
 	assert := assert.New(t)
-	list := SetUpTestMemoryTodoList()
+	list := &TodoList{}
 	assert.Equal(true, list.FindByID(2).Completed)
 	list.Uncomplete(2)
 	assert.Equal(false, list.FindByID(2).Completed)
@@ -112,7 +112,7 @@ func TestGarbageCollect(t *testing.T) {
 
 func TestPrioritizeNotInTodosJson(t *testing.T) {
 	assert := assert.New(t)
-	list := SetUpTestMemoryTodoList()
+	list := &TodoList{}
 	assert.Equal(false, list.FindByID(2).IsPriority)
 }
 
