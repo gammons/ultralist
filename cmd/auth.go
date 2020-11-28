@@ -25,7 +25,7 @@ This will authenticate your local ultralist with ultralist.io.
 		Long:  webAuthCmdLongDesc,
 		Short: webAuthCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().AuthWorkflow()
+			// ultralist.NewApp().AuthWorkflow()
 		},
 	}
 

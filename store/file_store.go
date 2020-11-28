@@ -7,7 +7,14 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/ultralist/ultralist/ultralist"
 )
+
+// LegacyTodosJSONFormat is a struct we can use to migrate old-school .todos.json files to the newer format.
+type LegacyTodosJSONFormat struct {
+	Todos []*ultralist.Todo
+}
 
 // TodosJSONFile is the filename to store todos in
 const TodosJSONFile = ".todos.json"
@@ -27,7 +34,9 @@ func (f *FileStore) Initialize() error {
 	if f.localTodosFileExists() {
 		return errors.New("It looks like a .todos.json file already exists")
 	}
-	if err := ioutil.WriteFile(TodosJSONFile, []byte("[]"), 0644); err != nil {
+
+	marshalled, _ := json.Marshal(&Data{})
+	if err := ioutil.WriteFile(TodosJSONFile, []byte(marshalled), 0644); err != nil {
 		return err
 	}
 
@@ -42,9 +51,16 @@ func (f *FileStore) Load() (*Data, error) {
 	}
 
 	var data *Data
-	jerr := json.Unmarshal(fileData, &data)
-	if jerr != nil {
-		return nil, jerr
+	err = json.Unmarshal(fileData, &data)
+
+	if err != nil {
+
+		// try loading the .todos.json legacy file format before giving up.
+		data, err = f.parseLegacyTodosJSONFile(fileData)
+
+		if err != nil {
+			return nil, err
+		}
 	}
 	f.Loaded = true
 
@@ -58,6 +74,19 @@ func (f *FileStore) Save(data *Data) error {
 		return err
 	}
 	return nil
+}
+
+func (f *FileStore) parseLegacyTodosJSONFile(fileData []byte) (*Data, error) {
+	var legacyData *LegacyTodosJSONFormat
+
+	err := json.Unmarshal(fileData, &legacyData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Data{
+		TodoList: &ultralist.TodoList{Data: legacyData.Todos},
+	}, nil
 }
 
 // Returns if a local .todos.json file exists in the current dir.

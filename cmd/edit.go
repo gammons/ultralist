@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
+	"github.com/ultralist/ultralist/cli"
 )
 
 func init() {
@@ -46,7 +46,7 @@ func init() {
 				fmt.Printf("Could not parse todo ID: '%s'\n", args[0])
 				return
 			}
-			ultralist.NewApp().EditTodo(todoID, strings.Join(args[1:], " "))
+			cli.NewApp().EditTodo(todoID, strings.Join(args[1:], " "))
 		},
 	}
 

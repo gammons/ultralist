@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"strings"
-
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
+	"github.com/ultralist/ultralist/cli"
 )
 
 func init() {
@@ -33,7 +31,14 @@ For more info, see https://ultralist.io/docs/cli/managing_tasks`
 		Short:   "Completes a todo.",
 		Long:    long,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().CompleteTodo(strings.Join(args, " "), archiveCompletedTodo)
+			ids := argsToIDs(args)
+			app := cli.NewApp()
+
+			app.CompleteTodos(ids...)
+
+			if archiveCompletedTodo {
+				app.ArchiveTodos(ids...)
+			}
 		},
 	}
 
@@ -44,7 +49,8 @@ For more info, see https://ultralist.io/docs/cli/managing_tasks`
 		Short:   "Un-completes a todo.",
 		Long:    long,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().UncompleteTodo(strings.Join(args, " "))
+			ids := argsToIDs(args)
+			cli.NewApp().UncompleteTodos(ids...)
 		},
 	}
 

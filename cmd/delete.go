@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"strings"
-
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
+	"github.com/ultralist/ultralist/cli"
 )
 
 func init() {
@@ -27,7 +25,8 @@ func init() {
 		Long:    deleteCmdLongDesc,
 		Short:   deleteCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().DeleteTodo(strings.Join(args, " "))
+			ids := argsToIDs(args)
+			cli.NewApp().DeleteTodos(ids...)
 		},
 	}
 
