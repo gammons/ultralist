@@ -11,7 +11,7 @@ import (
 // App is a representation of the ultralist app that is invoked in CLI mode.
 // it will output to stdout.
 type App struct {
-	TodoStore *store.FileStore
+	TodoStore store.Store
 	TodoList  *ultralist.TodoList
 	Filter    *ultralist.Filter
 }
@@ -95,7 +95,7 @@ func (a *App) EditTodo(todoID int, input string) {
 
 	parser := &InputParser{}
 
-	filter, err := parser.Parse(input)
+	filter, _, err := parser.Parse(input)
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Println("I need more information. Try something like 'ultralist a chat with @bob due tom'")
@@ -118,6 +118,24 @@ func (a *App) EditTodo(todoID int, input string) {
 	fmt.Println("Todo updated.")
 }
 
+// ListTodos will list all todos with the specified options.
+func (a *App) ListTodos(input string, printer Printer) {
+	a.loadTodoList()
+
+	parser := &InputParser{}
+
+	filter, grouping, err := parser.Parse(input)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	todoFilter := &ultralist.TodoFilter{Todos: a.TodoList.Todos(), Filter: filter}
+	grouper := &ultralist.Grouper{}
+	groups := grouper.GroupTodos(todoFilter.ApplyFilter(), grouping)
+	printer.Print(groups)
+}
+
 // UncompleteTodos will complete todos with the specified ids.
 func (a *App) UncompleteTodos(ids ...int) {
 	a.loadTodoList()
@@ -136,6 +154,7 @@ func (a *App) GarbageCollect() {
 	fmt.Println("Garbage collection complete.")
 }
 
+// UnarchiveTodos will unarchive todos with the specified IDs.
 func (a *App) UnarchiveTodos(ids ...int) {
 	a.loadTodoList()
 	a.TodoList.Unarchive(ids...)

@@ -44,7 +44,7 @@ func NewScreenPrinter(unicodeSupport bool) *ScreenPrinter {
 }
 
 // Print prints the output of ultralist to the terminal screen.
-func (f *ScreenPrinter) Print(groupedTodos *ultralist.GroupedTodos, printNotes bool, showStatus bool) {
+func (f *ScreenPrinter) Print(groupedTodos *ultralist.GroupedTodos) {
 	var keys []string
 	for key := range groupedTodos.Groups {
 		keys = append(keys, key)

@@ -4,12 +4,42 @@ import (
 	"sort"
 )
 
+// Grouping dictates how todos should be grouped
+type Grouping string
+
+const (
+	// ByNone dictates that todos should not be grouped at all.
+	ByNone Grouping = "none"
+
+	// ByContext dictates that todos should be grouped by their context.
+	ByContext Grouping = "context"
+
+	// ByProject dictates that todos should be grouped by their project.
+	ByProject Grouping = "project"
+
+	// ByStatus dictates that todos should be grouped by their status.
+	ByStatus Grouping = "status"
+)
+
 // Grouper is the group struct.
 type Grouper struct{}
 
 // GroupedTodos is the main struct of this file.
 type GroupedTodos struct {
 	Groups map[string][]*Todo
+}
+
+// GroupTodos will group an array of todos by the specified Grouping.
+func (g *Grouper) GroupTodos(todos []*Todo, grouping Grouping) *GroupedTodos {
+	switch grouping {
+	case ByContext:
+		return g.GroupByContext(todos)
+	case ByProject:
+		return g.GroupByProject(todos)
+	case ByStatus:
+		return g.GroupByStatus(todos)
+	}
+	return g.GroupByNothing(todos)
 }
 
 // GroupByContext is grouping todos by its context.

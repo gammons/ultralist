@@ -1,11 +1,7 @@
 package cmd
 
 import (
-	"strconv"
-	"strings"
-
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
 )
 
 func init() {
@@ -25,9 +21,9 @@ func init() {
 		Long:    longCmdDesc,
 		Short:   cmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			todoID, _ := strconv.Atoi(args[0])
-			noteID, _ := strconv.Atoi(args[1])
-			ultralist.NewApp().EditNote(todoID, noteID, strings.Join(args[2:], " "))
+			// todoID, _ := strconv.Atoi(args[0])
+			// noteID, _ := strconv.Atoi(args[1])
+			// ultralist.NewApp().EditNote(todoID, noteID, strings.Join(args[2:], " "))
 		},
 	}
 

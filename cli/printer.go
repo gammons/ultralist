@@ -13,5 +13,5 @@ var (
 
 // Printer is an interface for printing grouped todos.
 type Printer interface {
-	Print(*ultralist.GroupedTodos, bool, bool)
+	Print(*ultralist.GroupedTodos)
 }

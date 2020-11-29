@@ -18,6 +18,8 @@ import (
 type SimpleScreenPrinter struct {
 	Writer         *io.Writer
 	UnicodeSupport bool
+	listNotes      bool
+	showStatus     bool
 }
 
 // NewScreenPrinter creates a new screeen printer.
@@ -28,7 +30,7 @@ func NewSimpleScreenPrinter(unicodeSupport bool) *SimpleScreenPrinter {
 }
 
 // Print prints the output of ultralist to the terminal screen.
-func (f *SimpleScreenPrinter) Print(groupedTodos *ultralist.GroupedTodos, printNotes bool, showStatus bool) {
+func (f *SimpleScreenPrinter) Print(groupedTodos *ultralist.GroupedTodos) {
 	var keys []string
 	for key := range groupedTodos.Groups {
 		keys = append(keys, key)
@@ -40,7 +42,7 @@ func (f *SimpleScreenPrinter) Print(groupedTodos *ultralist.GroupedTodos, printN
 	for _, key := range keys {
 		tabby.AddLine(fmt.Sprint(key))
 		for _, todo := range groupedTodos.Groups[key] {
-			f.printTodo(tabby, todo, printNotes, showStatus)
+			f.printTodo(tabby, todo, f.printNotes, f.showStatus)
 		}
 		tabby.AddLine()
 	}

@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
+	"github.com/ultralist/ultralist/cli"
 )
 
 func init() {
@@ -20,7 +20,7 @@ For more info, see https://ultralist.io/docs/cli/managing_lists`
 		Long:  initCmdLongDesc,
 		Short: initCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().InitializeRepo()
+			cli.NewApp().InitializeRepo()
 		},
 	}
 
