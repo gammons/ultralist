@@ -163,12 +163,13 @@ func (a *App) GarbageCollect() {
 	fmt.Println("Garbage collection complete.")
 }
 
+// SetTodosStatus will set the status for the specified todo ids
 func (a *App) SetTodosStatus(status string, ids ...int) {
 	a.loadTodoList()
 	a.TodoList.SetStatus(status, ids...)
 	a.saveTodoList()
 
-	fmt.Printf("%s unarchived.\n", a.pluralize("Todo", len(ids)))
+	fmt.Printf("%s status set.\n", a.pluralize("Todo", len(ids)))
 }
 
 // UnarchiveTodos will unarchive todos with the specified IDs.

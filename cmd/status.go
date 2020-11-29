@@ -29,7 +29,7 @@ func init() {
 		Short:   setStatusCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
 			status := args[len(args)-1]
-			ids := argsToIDs(args[0 : len(args)-2])
+			ids := argsToIDs(args[0 : len(args)-1])
 			cli.NewApp().SetTodosStatus(status, ids...)
 		},
 	}

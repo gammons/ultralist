@@ -11,11 +11,6 @@ import (
 	"github.com/ultralist/ultralist/ultralist"
 )
 
-// LegacyTodosJSONFormat is a struct we can use to migrate old-school .todos.json files to the newer format.
-type LegacyTodosJSONFormat struct {
-	Todos []*ultralist.Todo
-}
-
 // TodosJSONFile is the filename to store todos in
 const TodosJSONFile = ".todos.json"
 
@@ -77,15 +72,14 @@ func (f *FileStore) Save(data *Data) error {
 }
 
 func (f *FileStore) parseLegacyTodosJSONFile(fileData []byte) (*Data, error) {
-	var legacyData *LegacyTodosJSONFormat
-
-	err := json.Unmarshal(fileData, &legacyData)
+	var todos []*ultralist.Todo
+	err := json.Unmarshal(fileData, &todos)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Data{
-		TodoList: &ultralist.TodoList{Data: legacyData.Todos},
+		TodoList: &ultralist.TodoList{Data: todos},
 	}, nil
 }
 
