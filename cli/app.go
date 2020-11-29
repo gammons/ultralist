@@ -196,7 +196,7 @@ func (a *App) loadTodoList() {
 	if err != nil {
 		fmt.Println("I had trouble loading the .todos.json file.")
 		fmt.Println(err.Error())
-		os.Exit(0)
+		os.Exit(1)
 		return
 	}
 
@@ -211,7 +211,7 @@ func (a *App) saveTodoList() {
 
 	if err := a.TodoStore.Save(data); err != nil {
 		fmt.Println(err)
-		os.Exit(0)
+		os.Exit(1)
 	}
 }
 

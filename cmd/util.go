@@ -14,7 +14,7 @@ func argsToIDs(args []string) []int {
 
 		if err != nil {
 			fmt.Println("Could not parse ID: '%v'", id)
-			os.Exit(0)
+			os.Exit(1)
 			return nil
 		}
 

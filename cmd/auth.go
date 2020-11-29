@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
 )
 
 func init() {
@@ -39,7 +38,7 @@ This will authenticate your local ultralist with ultralist.io.
 		Long:  webAuthCheckCmdLongDesc,
 		Short: webAuthCheckCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().CheckAuth()
+			// ultralist.NewApp().CheckAuth()
 		},
 	}
 

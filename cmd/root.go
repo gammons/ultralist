@@ -6,7 +6,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"github.com/ultralist/ultralist/ultralist"
 )
 
 var (
@@ -29,7 +28,11 @@ func initConfig() {
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
 	} else {
-		home := ultralist.UserHomeDir()
+		home, err := os.UserHomeDir()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 
 		viper.AddConfigPath(home)
 		viper.AddConfigPath(home + "/.config/ultralist")
