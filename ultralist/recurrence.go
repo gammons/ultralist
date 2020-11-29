@@ -5,6 +5,7 @@ import (
 )
 
 const (
+	None     = ""
 	Daily    = "daily"
 	Weekdays = "weekdays"
 	Weekly   = "weekly"
@@ -19,6 +20,7 @@ type Recurrence struct{}
 func (r *Recurrence) ValidRecurrence(input string) bool {
 	switch input {
 	case
+		None,
 		Daily,
 		Weekdays,
 		Weekly,

@@ -13,7 +13,7 @@ func argsToIDs(args []string) []int {
 		intID, err := strconv.Atoi(id)
 
 		if err != nil {
-			fmt.Println("Could not parse ID: '%v'", id)
+			fmt.Printf("Could not parse ID: '%v'\n", id)
 			os.Exit(1)
 			return nil
 		}

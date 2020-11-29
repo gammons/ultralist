@@ -176,7 +176,7 @@ func TestNoneRecurrence(t *testing.T) {
 	filter, _, err := parser.Parse("recur:none")
 
 	if err != nil {
-		fmt.Println("unexpected error raised")
+		fmt.Println("unexpected error raised: ", err.Error())
 		t.Fail()
 	}
 
