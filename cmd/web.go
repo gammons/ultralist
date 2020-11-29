@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
 )
 
 func init() {
@@ -16,7 +15,7 @@ func init() {
 		Long:  webCmdLongDesc,
 		Short: webCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().OpenWeb()
+			// ultralist.NewApp().OpenWeb()
 		},
 	}
 

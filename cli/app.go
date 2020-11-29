@@ -35,7 +35,7 @@ func (a *App) InitializeRepo() {
 func (a *App) AddTodo(input string) {
 	parser := &InputParser{}
 
-	filter, err := parser.Parse(input)
+	filter, _, err := parser.Parse(input)
 	if err != nil {
 		fmt.Println(err.Error())
 		fmt.Println("I need more information. Try something like 'ultralist a chat with @bob due tom'")
@@ -145,6 +145,15 @@ func (a *App) UncompleteTodos(ids ...int) {
 	fmt.Printf("%s uncompleted.\n", a.pluralize("Todo", len(ids)))
 }
 
+// PrioritizeTodos will prioritize todos with the specified IDs.
+func (a *App) PrioritizeTodos(ids ...int) {
+	a.loadTodoList()
+	a.TodoList.Prioritize(ids...)
+	a.saveTodoList()
+
+	fmt.Printf("%s prioritized.\n", a.pluralize("Todo", len(ids)))
+}
+
 // GarbageCollect will delete all archived todos, thus re-claiming
 // low todo IDs.
 func (a *App) GarbageCollect() {
@@ -154,6 +163,14 @@ func (a *App) GarbageCollect() {
 	fmt.Println("Garbage collection complete.")
 }
 
+func (a *App) SetTodosStatus(status string, ids ...int) {
+	a.loadTodoList()
+	a.TodoList.SetStatus(status, ids...)
+	a.saveTodoList()
+
+	fmt.Printf("%s unarchived.\n", a.pluralize("Todo", len(ids)))
+}
+
 // UnarchiveTodos will unarchive todos with the specified IDs.
 func (a *App) UnarchiveTodos(ids ...int) {
 	a.loadTodoList()
@@ -161,6 +178,15 @@ func (a *App) UnarchiveTodos(ids ...int) {
 	a.saveTodoList()
 
 	fmt.Printf("%s unarchived.\n", a.pluralize("Todo", len(ids)))
+}
+
+// UnprioritizeTodos will un-prioritize todos with the specified IDs.
+func (a *App) UnprioritizeTodos(ids ...int) {
+	a.loadTodoList()
+	a.TodoList.Unprioritize(ids...)
+	a.saveTodoList()
+
+	fmt.Printf("%s unprioritized.\n", a.pluralize("Todo", len(ids)))
 }
 
 func (a *App) loadTodoList() {

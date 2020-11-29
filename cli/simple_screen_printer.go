@@ -18,14 +18,19 @@ import (
 type SimpleScreenPrinter struct {
 	Writer         *io.Writer
 	UnicodeSupport bool
-	listNotes      bool
-	showStatus     bool
+	ListNotes      bool
+	ShowStatus     bool
 }
 
 // NewScreenPrinter creates a new screeen printer.
-func NewSimpleScreenPrinter(unicodeSupport bool) *SimpleScreenPrinter {
+func NewSimpleScreenPrinter(unicodeSupport bool, listNotes bool, showStatus bool) *SimpleScreenPrinter {
 	w := new(io.Writer)
-	formatter := &SimpleScreenPrinter{Writer: w, UnicodeSupport: unicodeSupport}
+	formatter := &SimpleScreenPrinter{
+		Writer:         w,
+		UnicodeSupport: unicodeSupport,
+		ListNotes:      listNotes,
+		ShowStatus:     showStatus,
+	}
 	return formatter
 }
 
@@ -42,15 +47,15 @@ func (f *SimpleScreenPrinter) Print(groupedTodos *ultralist.GroupedTodos) {
 	for _, key := range keys {
 		tabby.AddLine(fmt.Sprint(key))
 		for _, todo := range groupedTodos.Groups[key] {
-			f.printTodo(tabby, todo, f.printNotes, f.showStatus)
+			f.printTodo(tabby, todo)
 		}
 		tabby.AddLine()
 	}
 	tabby.Print()
 }
 
-func (f *SimpleScreenPrinter) printTodo(tabby *tabby.Tabby, todo *ultralist.Todo, printNotes bool, showStatus bool) {
-	if showStatus {
+func (f *SimpleScreenPrinter) printTodo(tabby *tabby.Tabby, todo *ultralist.Todo) {
+	if f.ShowStatus {
 		tabby.AddLine(
 			f.formatID(todo.ID, todo.IsPriority),
 			f.formatCompleted(todo.Completed),
@@ -64,7 +69,7 @@ func (f *SimpleScreenPrinter) printTodo(tabby *tabby.Tabby, todo *ultralist.Todo
 			f.formatDue(todo),
 			f.formatSubject(todo.Subject, todo.IsPriority))
 	}
-	if printNotes {
+	if f.ListNotes {
 		for nid, note := range todo.Notes {
 			tabby.AddLine(
 				"  "+fmt.Sprint(strconv.Itoa(nid)),

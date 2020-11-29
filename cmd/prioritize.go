@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"strings"
-
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
+	"github.com/ultralist/ultralist/cli"
 )
 
 func init() {
@@ -31,7 +29,8 @@ func init() {
 		Long:    long,
 		Short:   "Prioritize a todo.",
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().PrioritizeTodo(strings.Join(args, " "))
+			ids := argsToIDs(args)
+			cli.NewApp().PrioritizeTodos(ids...)
 		},
 	}
 
@@ -42,7 +41,8 @@ func init() {
 		Long:    long,
 		Short:   "Un-prioritize a todo.",
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().UnprioritizeTodo(strings.Join(args, " "))
+			ids := argsToIDs(args)
+			cli.NewApp().UnprioritizeTodos(ids...)
 		},
 	}
 

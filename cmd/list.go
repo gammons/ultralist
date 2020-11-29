@@ -148,9 +148,9 @@ See the full docs at https://ultralist.io/docs/cli/showing_tasks`
 		Run: func(cmd *cobra.Command, args []string) {
 			var printer cli.Printer
 			if colorSupport {
-				printer = cli.NewScreenPrinter(unicodeSupport)
+				printer = cli.NewScreenPrinter(unicodeSupport, listNotes, showStatus)
 			} else {
-				printer = cli.NewSimpleScreenPrinter(unicodeSupport)
+				printer = cli.NewSimpleScreenPrinter(unicodeSupport, listNotes, showStatus)
 			}
 
 			cli.NewApp().ListTodos(strings.Join(args, " "), printer)

@@ -14,7 +14,12 @@ func TestInputParser(t *testing.T) {
 
 	parser := &InputParser{}
 
-	filter, _ := parser.Parse("do this thing due:tom status:now,next")
+	filter, _, err := parser.Parse("do this thing due:tom status:now,next")
+
+	if err != nil {
+		fmt.Println("unexpected error raised")
+		t.Fail()
+	}
 
 	assert.Equal(2, len(filter.Status))
 	assert.Equal("now", filter.Status[0])
@@ -29,7 +34,12 @@ func TestSubject(t *testing.T) {
 	assert := assert.New(t)
 	parser := &InputParser{}
 
-	filter, _ := parser.Parse("due:tom here is the subject")
+	filter, _, err := parser.Parse("due:tom here is the subject")
+
+	if err != nil {
+		fmt.Println("unexpected error raised")
+		t.Fail()
+	}
 
 	assert.Equal("here is the subject", filter.Subject)
 	tomorrow := time.Now().AddDate(0, 0, 1).Format(ultralist.DateFormat)
@@ -40,7 +50,12 @@ func TestDueAgenda(t *testing.T) {
 	assert := assert.New(t)
 	parser := &InputParser{}
 
-	filter, _ := parser.Parse("due:agenda blah blah")
+	filter, _, err := parser.Parse("due:agenda blah blah")
+
+	if err != nil {
+		fmt.Println("unexpected error raised")
+		t.Fail()
+	}
 
 	tomorrow := time.Now().AddDate(0, 0, 1).Format(ultralist.DateFormat)
 	assert.Equal(tomorrow, filter.DueBefore)
@@ -52,7 +67,12 @@ func TestProjectsInSubject(t *testing.T) {
 	assert := assert.New(t)
 	parser := &InputParser{}
 
-	filter, _ := parser.Parse("due:tom here is the +project with @context1 and @context2")
+	filter, _, err := parser.Parse("due:tom here is the +project with @context1 and @context2")
+
+	if err != nil {
+		fmt.Println("unexpected error raised")
+		t.Fail()
+	}
 
 	assert.Equal("here is the +project with @context1 and @context2", filter.Subject)
 	assert.Equal("project", filter.Projects[0])
@@ -63,13 +83,23 @@ func TestProjectsAsFilter(t *testing.T) {
 	assert := assert.New(t)
 	parser := &InputParser{}
 
-	filter, _ := parser.Parse("subject project:project1,-project2")
+	filter, _, err := parser.Parse("subject project:project1,-project2")
+
+	if err != nil {
+		fmt.Println("unexpected error raised")
+		t.Fail()
+	}
 
 	assert.Equal([]string{"project1"}, filter.Projects)
 	assert.Equal([]string{"project2"}, filter.ExcludeProjects)
 
 	// assert that project filters override subject projects
-	filter, _ = parser.Parse("subject +subjectProject project:project1,-project2")
+	filter, _, err = parser.Parse("subject +subjectProject project:project1,-project2")
+
+	if err != nil {
+		fmt.Println("unexpected error raised")
+		t.Fail()
+	}
 
 	assert.Equal([]string{"project1"}, filter.Projects)
 	assert.Equal([]string{"project2"}, filter.ExcludeProjects)
@@ -79,7 +109,12 @@ func TestCompleted(t *testing.T) {
 	assert := assert.New(t)
 	parser := &InputParser{}
 
-	filter, _ := parser.Parse("lunch with bob completed:true")
+	filter, _, err := parser.Parse("lunch with bob completed:true")
+
+	if err != nil {
+		fmt.Println("unexpected error raised")
+		t.Fail()
+	}
 
 	assert.Equal("lunch with bob", filter.Subject)
 	assert.Equal(true, filter.Completed)
@@ -89,7 +124,7 @@ func TestStatus(t *testing.T) {
 	assert := assert.New(t)
 	parser := &InputParser{}
 
-	filter, err := parser.Parse("status:one,-two")
+	filter, _, err := parser.Parse("status:one,-two")
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -100,7 +135,7 @@ func TestStatus(t *testing.T) {
 	assert.Equal([]string{"one"}, filter.Status)
 	assert.Equal([]string{"two"}, filter.ExcludeStatus)
 
-	filter, err = parser.Parse("this is the subject")
+	filter, _, err = parser.Parse("this is the subject")
 
 	assert.Equal(false, filter.HasStatus)
 }
@@ -109,7 +144,12 @@ func TestNoSubject(t *testing.T) {
 	assert := assert.New(t)
 	parser := &InputParser{}
 
-	filter, _ := parser.Parse("priority:true")
+	filter, _, err := parser.Parse("priority:true")
+
+	if err != nil {
+		fmt.Println("unexpected error raised")
+		t.Fail()
+	}
 
 	assert.Equal("", filter.Subject)
 	assert.Equal(true, filter.IsPriority)
@@ -119,7 +159,7 @@ func TestInvalidRecurrence(t *testing.T) {
 	assert := assert.New(t)
 	parser := &InputParser{}
 
-	_, err := parser.Parse("recur:blah")
+	_, _, err := parser.Parse("recur:blah")
 
 	if err == nil {
 		fmt.Println("expected an error")
@@ -133,8 +173,27 @@ func TestNoneRecurrence(t *testing.T) {
 	assert := assert.New(t)
 	parser := &InputParser{}
 
-	filter, _ := parser.Parse("recur:none")
+	filter, _, err := parser.Parse("recur:none")
+
+	if err != nil {
+		fmt.Println("unexpected error raised")
+		t.Fail()
+	}
 
 	assert.Equal(true, filter.HasRecur)
 	assert.Equal("", filter.Recur)
+}
+
+func TestGrouping(t *testing.T) {
+	assert := assert.New(t)
+	parser := &InputParser{}
+
+	_, group, err := parser.Parse("group:p")
+
+	if err != nil {
+		fmt.Println("unexpected error raised")
+		t.Fail()
+	}
+
+	assert.Equal(ultralist.ByProject, group)
 }
