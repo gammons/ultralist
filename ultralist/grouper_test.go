@@ -10,7 +10,7 @@ import (
 func TestGroupByContext(t *testing.T) {
 	assert := assert.New(t)
 
-	list := &TodoList{}
+	list := setUpTestMemoryTodoList()
 	grouper := &Grouper{}
 	grouped := grouper.GroupByContext(list.Todos())
 
@@ -21,7 +21,7 @@ func TestGroupByContext(t *testing.T) {
 func TestGroupByProject(t *testing.T) {
 	assert := assert.New(t)
 
-	list := &TodoList{}
+	list := setUpTestMemoryTodoList()
 	grouper := &Grouper{}
 	grouped := grouper.GroupByProject(list.Todos())
 
@@ -95,4 +95,25 @@ func TestGroupByContextSortedByDueDateWithArchived(t *testing.T) {
 	grouped := grouper.GroupByContext(list)
 
 	assert.Equal("c - three", grouped.Groups["No contexts"][0].Subject)
+}
+
+func setUpTestMemoryTodoList() *TodoList {
+	list := &TodoList{}
+
+	todo1 := NewTodo()
+	todo1.Subject = "this is the first subject"
+	todo1.Projects = []string{"test1"}
+	todo1.Contexts = []string{"root"}
+	todo1.Due = "2016-04-04"
+	todo1.Archive()
+	list.Add(todo1)
+
+	todo2 := NewTodo()
+	todo2.Subject = "audit userify for 2FA"
+	todo2.Projects = []string{"test1"}
+	todo2.Contexts = []string{"root", "more"}
+	todo2.Complete()
+	list.Add(todo2)
+
+	return list
 }
