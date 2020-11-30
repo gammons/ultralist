@@ -7,8 +7,8 @@ import (
 )
 
 var (
-	projectRegex, _ = regexp.Compile(`\+[\p{L}\d_]+`)
-	contextRegex, _ = regexp.Compile(`\@[\p{L}\d_]+`)
+	projectRegex, _ = regexp.Compile(ultralist.ProjectRegexp)
+	contextRegex, _ = regexp.Compile(ultralist.ContextRegexp)
 )
 
 // Printer is an interface for printing grouped todos.

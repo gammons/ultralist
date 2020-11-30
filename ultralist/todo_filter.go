@@ -4,6 +4,14 @@ import (
 	"time"
 )
 
+const (
+	// ProjectRegexp can be used to match words that are a project (e.g "+mobile")
+	ProjectRegexp string = `\+[\p{L}\d_]+`
+
+	// ContextRegexp can be used to match words that are a context (e.g "@bob")
+	ContextRegexp string = `\@[\p{L}\d_]+`
+)
+
 // TodoFilter filters todos based on patterns.
 type TodoFilter struct {
 	Filter *Filter

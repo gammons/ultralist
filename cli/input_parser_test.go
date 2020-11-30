@@ -195,5 +195,5 @@ func TestGrouping(t *testing.T) {
 		t.Fail()
 	}
 
-	assert.Equal(ultralist.ByProject, group)
+	assert.Equal(ultralist.GroupByProject, group)
 }

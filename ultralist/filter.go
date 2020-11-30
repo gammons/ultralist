@@ -21,6 +21,7 @@ type Filter struct {
 
 	CompletedAt []string
 
+	HasSubject     bool
 	HasCompleted   bool
 	HasCompletedAt bool
 	HasArchived    bool

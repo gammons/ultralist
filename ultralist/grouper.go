@@ -9,16 +9,16 @@ type Grouping string
 
 const (
 	// ByNone dictates that todos should not be grouped at all.
-	ByNone Grouping = "none"
+	GroupByNone Grouping = "none"
 
 	// ByContext dictates that todos should be grouped by their context.
-	ByContext Grouping = "context"
+	GroupByContext Grouping = "context"
 
 	// ByProject dictates that todos should be grouped by their project.
-	ByProject Grouping = "project"
+	GroupByProject Grouping = "project"
 
 	// ByStatus dictates that todos should be grouped by their status.
-	ByStatus Grouping = "status"
+	GroupByStatus Grouping = "status"
 )
 
 // Grouper is the group struct.
@@ -32,11 +32,11 @@ type GroupedTodos struct {
 // GroupTodos will group an array of todos by the specified Grouping.
 func (g *Grouper) GroupTodos(todos []*Todo, grouping Grouping) *GroupedTodos {
 	switch grouping {
-	case ByContext:
+	case GroupByContext:
 		return g.GroupByContext(todos)
-	case ByProject:
+	case GroupByProject:
 		return g.GroupByProject(todos)
-	case ByStatus:
+	case GroupByStatus:
 		return g.GroupByStatus(todos)
 	}
 	return g.GroupByNothing(todos)

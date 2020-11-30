@@ -183,15 +183,15 @@ func (p *InputParser) Parse(input string) (*ultralist.Filter, ultralist.Grouping
 }
 
 func (p *InputParser) getGrouping(input string) ultralist.Grouping {
-	grouping := ultralist.ByNone
+	grouping := ultralist.GroupByNone
 	if match, _ := regexp.MatchString("group:c.*$", input); match == true {
-		grouping = ultralist.ByContext
+		grouping = ultralist.GroupByContext
 	}
 	if match, _ := regexp.MatchString("group:p.*$", input); match == true {
-		grouping = ultralist.ByProject
+		grouping = ultralist.GroupByProject
 	}
 	if match, _ := regexp.MatchString("group:s.*$", input); match == true {
-		grouping = ultralist.ByStatus
+		grouping = ultralist.GroupByStatus
 	}
 
 	return grouping

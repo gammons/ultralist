@@ -10,6 +10,7 @@ import (
 	"github.com/skratchdot/open-golang/open"
 	"github.com/ultralist/ultralist/store"
 	"github.com/ultralist/ultralist/sync"
+	"github.com/ultralist/ultralist/tui"
 	"github.com/ultralist/ultralist/ultralist"
 )
 
@@ -188,6 +189,13 @@ func (a *App) GarbageCollect() {
 	a.TodoList.GarbageCollect()
 	a.saveTodoList()
 	fmt.Println("Garbage collection complete.")
+}
+
+// OpenManager opens the tui manager
+func (a *App) OpenManager() {
+	a.loadTodoList()
+	manager := tui.NewManager(a.TodoList)
+	manager.RunManager()
 }
 
 // SetTodosStatus will set the status for the specified todo ids
