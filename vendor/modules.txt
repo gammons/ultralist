@@ -8,19 +8,99 @@ github.com/davecgh/go-spew/spew
 # github.com/fatih/color v1.9.0
 ## explicit
 github.com/fatih/color
-# github.com/fsnotify/fsnotify v1.4.7
-github.com/fsnotify/fsnotify
-# github.com/hashicorp/hcl v1.0.0
-github.com/hashicorp/hcl
-github.com/hashicorp/hcl/hcl/ast
-github.com/hashicorp/hcl/hcl/parser
-github.com/hashicorp/hcl/hcl/printer
-github.com/hashicorp/hcl/hcl/scanner
-github.com/hashicorp/hcl/hcl/strconv
-github.com/hashicorp/hcl/hcl/token
-github.com/hashicorp/hcl/json/parser
-github.com/hashicorp/hcl/json/scanner
-github.com/hashicorp/hcl/json/token
+# github.com/gdamore/encoding v1.0.0
+github.com/gdamore/encoding
+# github.com/gdamore/tcell v1.4.0
+## explicit
+github.com/gdamore/tcell
+github.com/gdamore/tcell/terminfo
+github.com/gdamore/tcell/terminfo/a/adm3a
+github.com/gdamore/tcell/terminfo/a/aixterm
+github.com/gdamore/tcell/terminfo/a/alacritty
+github.com/gdamore/tcell/terminfo/a/ansi
+github.com/gdamore/tcell/terminfo/a/aterm
+github.com/gdamore/tcell/terminfo/b/beterm
+github.com/gdamore/tcell/terminfo/b/bsdos_pc
+github.com/gdamore/tcell/terminfo/base
+github.com/gdamore/tcell/terminfo/c/cygwin
+github.com/gdamore/tcell/terminfo/d/d200
+github.com/gdamore/tcell/terminfo/d/d210
+github.com/gdamore/tcell/terminfo/d/dtterm
+github.com/gdamore/tcell/terminfo/dynamic
+github.com/gdamore/tcell/terminfo/e/emacs
+github.com/gdamore/tcell/terminfo/e/eterm
+github.com/gdamore/tcell/terminfo/extended
+github.com/gdamore/tcell/terminfo/g/gnome
+github.com/gdamore/tcell/terminfo/h/hpterm
+github.com/gdamore/tcell/terminfo/h/hz1500
+github.com/gdamore/tcell/terminfo/k/konsole
+github.com/gdamore/tcell/terminfo/k/kterm
+github.com/gdamore/tcell/terminfo/l/linux
+github.com/gdamore/tcell/terminfo/p/pcansi
+github.com/gdamore/tcell/terminfo/r/rxvt
+github.com/gdamore/tcell/terminfo/s/screen
+github.com/gdamore/tcell/terminfo/s/simpleterm
+github.com/gdamore/tcell/terminfo/s/sun
+github.com/gdamore/tcell/terminfo/t/termite
+github.com/gdamore/tcell/terminfo/t/tvi910
+github.com/gdamore/tcell/terminfo/t/tvi912
+github.com/gdamore/tcell/terminfo/t/tvi921
+github.com/gdamore/tcell/terminfo/t/tvi925
+github.com/gdamore/tcell/terminfo/t/tvi950
+github.com/gdamore/tcell/terminfo/t/tvi970
+github.com/gdamore/tcell/terminfo/v/vt100
+github.com/gdamore/tcell/terminfo/v/vt102
+github.com/gdamore/tcell/terminfo/v/vt220
+github.com/gdamore/tcell/terminfo/v/vt320
+github.com/gdamore/tcell/terminfo/v/vt400
+github.com/gdamore/tcell/terminfo/v/vt420
+github.com/gdamore/tcell/terminfo/v/vt52
+github.com/gdamore/tcell/terminfo/w/wy50
+github.com/gdamore/tcell/terminfo/w/wy60
+github.com/gdamore/tcell/terminfo/w/wy99_ansi
+github.com/gdamore/tcell/terminfo/x/xfce
+github.com/gdamore/tcell/terminfo/x/xnuppc
+github.com/gdamore/tcell/terminfo/x/xterm
+github.com/gdamore/tcell/terminfo/x/xterm_kitty
+# github.com/gdamore/tcell/v2 v2.0.1-0.20201017141208-acf90d56d591
+github.com/gdamore/tcell/v2
+github.com/gdamore/tcell/v2/terminfo
+github.com/gdamore/tcell/v2/terminfo/a/aixterm
+github.com/gdamore/tcell/v2/terminfo/a/alacritty
+github.com/gdamore/tcell/v2/terminfo/a/ansi
+github.com/gdamore/tcell/v2/terminfo/b/beterm
+github.com/gdamore/tcell/v2/terminfo/base
+github.com/gdamore/tcell/v2/terminfo/c/cygwin
+github.com/gdamore/tcell/v2/terminfo/d/dtterm
+github.com/gdamore/tcell/v2/terminfo/dynamic
+github.com/gdamore/tcell/v2/terminfo/e/emacs
+github.com/gdamore/tcell/v2/terminfo/extended
+github.com/gdamore/tcell/v2/terminfo/g/gnome
+github.com/gdamore/tcell/v2/terminfo/h/hpterm
+github.com/gdamore/tcell/v2/terminfo/k/konsole
+github.com/gdamore/tcell/v2/terminfo/k/kterm
+github.com/gdamore/tcell/v2/terminfo/l/linux
+github.com/gdamore/tcell/v2/terminfo/p/pcansi
+github.com/gdamore/tcell/v2/terminfo/r/rxvt
+github.com/gdamore/tcell/v2/terminfo/s/screen
+github.com/gdamore/tcell/v2/terminfo/s/simpleterm
+github.com/gdamore/tcell/v2/terminfo/s/sun
+github.com/gdamore/tcell/v2/terminfo/t/termite
+github.com/gdamore/tcell/v2/terminfo/t/tmux
+github.com/gdamore/tcell/v2/terminfo/v/vt100
+github.com/gdamore/tcell/v2/terminfo/v/vt102
+github.com/gdamore/tcell/v2/terminfo/v/vt220
+github.com/gdamore/tcell/v2/terminfo/v/vt320
+github.com/gdamore/tcell/v2/terminfo/v/vt400
+github.com/gdamore/tcell/v2/terminfo/v/vt420
+github.com/gdamore/tcell/v2/terminfo/v/vt52
+github.com/gdamore/tcell/v2/terminfo/w/wy50
+github.com/gdamore/tcell/v2/terminfo/w/wy60
+github.com/gdamore/tcell/v2/terminfo/w/wy99_ansi
+github.com/gdamore/tcell/v2/terminfo/x/xfce
+github.com/gdamore/tcell/v2/terminfo/x/xterm
+github.com/gdamore/tcell/v2/terminfo/x/xterm_kitty
+github.com/gdamore/tcell/v2/terminfo/x/xterm_termite
 # github.com/inconshreveable/mousetrap v1.0.0
 github.com/inconshreveable/mousetrap
 # github.com/jinzhu/copier v0.0.0-20190924061706-b57f9002281a
@@ -32,10 +112,10 @@ github.com/juju/ansiterm/tabwriter
 # github.com/julienschmidt/httprouter v1.3.0
 ## explicit
 github.com/julienschmidt/httprouter
+# github.com/lucasb-eyer/go-colorful v1.0.3
+github.com/lucasb-eyer/go-colorful
 # github.com/lunixbochs/vtclean v0.0.0-20180621232353-2d01aacdc34a
 github.com/lunixbochs/vtclean
-# github.com/magiconair/properties v1.8.1
-github.com/magiconair/properties
 # github.com/manifoldco/promptui v0.7.0
 ## explicit
 github.com/manifoldco/promptui
@@ -45,50 +125,41 @@ github.com/manifoldco/promptui/screenbuf
 github.com/mattn/go-colorable
 # github.com/mattn/go-isatty v0.0.11
 github.com/mattn/go-isatty
-# github.com/mitchellh/mapstructure v1.1.2
-github.com/mitchellh/mapstructure
+# github.com/mattn/go-runewidth v0.0.9
+github.com/mattn/go-runewidth
 # github.com/myesui/uuid v1.0.0
 ## explicit
-# github.com/pelletier/go-toml v1.2.0
-github.com/pelletier/go-toml
 # github.com/pmezard/go-difflib v1.0.0
 github.com/pmezard/go-difflib/difflib
+# github.com/rivo/tview v0.0.0-20201118063654-f007e9ad3893
+## explicit
+github.com/rivo/tview
+# github.com/rivo/uniseg v0.2.0
+github.com/rivo/uniseg
 # github.com/skratchdot/open-golang v0.0.0-20200116055534-eef842397966
 ## explicit
 github.com/skratchdot/open-golang/open
-# github.com/spf13/afero v1.1.2
-github.com/spf13/afero
-github.com/spf13/afero/mem
-# github.com/spf13/cast v1.3.0
-github.com/spf13/cast
 # github.com/spf13/cobra v1.0.0
 ## explicit
 github.com/spf13/cobra
-# github.com/spf13/jwalterweatherman v1.0.0
-github.com/spf13/jwalterweatherman
 # github.com/spf13/pflag v1.0.3
 github.com/spf13/pflag
 # github.com/spf13/viper v1.7.0
 ## explicit
-github.com/spf13/viper
 # github.com/stretchr/testify v1.6.1
 ## explicit
 github.com/stretchr/testify/assert
-# github.com/subosito/gotenv v1.2.0
-github.com/subosito/gotenv
 # github.com/twinj/uuid v1.0.0
 ## explicit
 github.com/twinj/uuid
-# golang.org/x/sys v0.0.0-20191026070338-33540a1f6037
+# golang.org/x/sys v0.0.0-20201017003518-b09fb700fbb7
+golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
-# golang.org/x/text v0.3.2
+# golang.org/x/text v0.3.3
+golang.org/x/text/encoding
+golang.org/x/text/encoding/internal/identifier
 golang.org/x/text/transform
-golang.org/x/text/unicode/norm
-# gopkg.in/ini.v1 v1.51.0
-gopkg.in/ini.v1
 # gopkg.in/stretchr/testify.v1 v1.2.2
 ## explicit
-# gopkg.in/yaml.v2 v2.2.4
-gopkg.in/yaml.v2
 # gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 gopkg.in/yaml.v3
