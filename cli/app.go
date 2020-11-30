@@ -1,10 +1,15 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/manifoldco/promptui"
+	"github.com/skratchdot/open-golang/open"
 	"github.com/ultralist/ultralist/store"
+	"github.com/ultralist/ultralist/sync"
 	"github.com/ultralist/ultralist/ultralist"
 )
 
@@ -69,6 +74,28 @@ func (a *App) ArchiveTodos(ids ...int) {
 	a.saveTodoList()
 
 	fmt.Printf("%s archived.\n", a.pluralize("Todo", len(ids)))
+}
+
+// AuthWorkflow starts the procedure for authenticating against ultralist.io.
+func (a *App) AuthWorkflow() {
+	webapp := &sync.Webapp{}
+	backend := sync.NewBackend()
+
+	open.Start(backend.AuthURL())
+	fmt.Println("Head to your browser to complete authorization steps.")
+	fmt.Println("Listening for response...")
+	webapp.Run()
+}
+
+// CheckAuth will check a user's authentication against the ultralist.io service.
+func (a *App) CheckAuth() {
+	synchronizer := sync.NewSynchronizer()
+	name, err := synchronizer.CheckAuth()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	fmt.Printf("Hello, %s! Your credentials are valid.", name)
 }
 
 // CompleteTodos will complete todos with the specified ids.
@@ -172,6 +199,52 @@ func (a *App) SetTodosStatus(status string, ids ...int) {
 	fmt.Printf("%s status set.\n", a.pluralize("Todo", len(ids)))
 }
 
+// SetupSync will run through the process of syncing a list with ultralist.io.
+func (a *App) SetupSync() {
+	backend := sync.NewBackend()
+	if !backend.CredsFileExists() {
+		fmt.Println("You're not authenticated with ultralist.io yet.  Please run `ultralist auth` first.")
+		return
+	}
+
+	if _, err := os.Stat(a.TodoStore.GetLocation()); err == nil {
+		a.setupSyncForExistingList(backend)
+		return
+	}
+
+	// at this point, it is known that a local todos file does not exist.
+	type Response struct {
+		Todolists []ultralist.TodoList `json:"todolists"`
+	}
+
+	var response *Response
+
+	resp, err := backend.PerformRequest("GET", "/api/v1/todo_lists", []byte{})
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	json.Unmarshal(resp, &response)
+
+	var todolistNames []string
+	for _, todolist := range response.Todolists {
+		todolistNames = append(todolistNames, todolist.Name)
+	}
+	prompt2 := promptui.Select{
+		Label: "Choose a list to import",
+		Items: todolistNames,
+	}
+
+	idx, _, _ := prompt2.Run()
+	a.TodoList = &response.Todolists[idx]
+	a.TodoStore.Initialize()
+	a.TodoStore.Save(&store.Data{TodoList: a.TodoList})
+
+	// a.EventLogger = NewEventLogger(a.TodoList, a.TodoStore)
+	// a.EventLogger.WriteSyncedLists()
+}
+
 // UnarchiveTodos will unarchive todos with the specified IDs.
 func (a *App) UnarchiveTodos(ids ...int) {
 	a.loadTodoList()
@@ -213,6 +286,43 @@ func (a *App) saveTodoList() {
 	if err := a.TodoStore.Save(data); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
+	}
+}
+
+func (a *App) setupSyncForExistingList(backend *sync.Backend) {
+	a.loadTodoList()
+
+	if a.TodoList.IsSynced {
+		fmt.Println("This list is already sycned with ultralist.io. Use the --unsync flag to stop syncing this list.")
+		return
+	}
+
+	prompt := promptui.Select{
+		Label: "You have a todos list in this directory.  What would you like to do?",
+		Items: []string{"Sync my list to ultralist.io", "Pull a list from ultralist.io, replacing the list that's here"},
+	}
+	_, result, err := prompt.Run()
+	if err != nil {
+		return
+	}
+	if strings.HasPrefix(result, "Sync my list") {
+		prompt := promptui.Prompt{
+			Label: "Give this list a name",
+		}
+
+		result, err := prompt.Run()
+		if err != nil {
+			fmt.Println("A name is required to sync a list.")
+			return
+		}
+		// a.EventLogger.CurrentSyncedList.Name = result
+		a.TodoList.Name = result
+		a.TodoList.IsSynced = true
+		// a.EventLogger.WriteSyncedLists()
+
+		// create a todo list via the API.
+		backend.CreateTodoList(a.TodoList)
+		return
 	}
 }
 

@@ -2,6 +2,7 @@ package sync
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
@@ -12,29 +13,19 @@ import (
 // Synchronizer is the default struct of this file.
 type Synchronizer struct {
 	QuietSync bool
-	Success   bool
 	Backend   *Backend
 }
 
 // NewSynchronizer is creating a new synchronizer.
 func NewSynchronizer() *Synchronizer {
-	return &Synchronizer{QuietSync: false, Success: false, Backend: NewBackend()}
+	return &Synchronizer{QuietSync: false, Backend: NewBackend()}
 }
 
 func NewQuietSynchronizer() *Synchronizer {
-	return &Synchronizer{QuietSync: true, Success: false, Backend: NewBackend()}
+	return &Synchronizer{QuietSync: true, Backend: NewBackend()}
 }
 
-// NewSynchronizerWithInput is creating a new synchronizer with input.
-func NewSynchronizerWithInput(input string) *Synchronizer {
-	quietSync := false
-	if input == "sync -q" {
-		quietSync = true
-	}
-	return &Synchronizer{QuietSync: quietSync, Success: false, Backend: NewBackend()}
-}
-
-// ExecSyncInBackground is starting a new sync process with the ultralist API in the background.
+// ExecSyncInBackground starts a new sync process with the ultralist API in the background.
 func (s *Synchronizer) ExecSyncInBackground() {
 	binary, lookErr := exec.LookPath("ultralist")
 	if lookErr != nil {
@@ -56,48 +47,44 @@ func (s *Synchronizer) ExecSyncInBackground() {
 }
 
 // Sync is synchronizing the todos with the ultralist API.
-func (s *Synchronizer) Sync(todolist *ultralist.TodoList, syncedList *SyncedList) {
+func (s *Synchronizer) Sync(todolist *ultralist.TodoList, syncedList *SyncedList) error {
 
 	if s.Backend.CredsFileExists() == false {
-		s.println("Cannot find credentials file.  Please re-authorize!")
-		return
+		return errors.New("cannot find credentials file.  Please re-authorize")
 	}
 
 	if s.Backend.CanConnect() == false {
-		s.println("Cannot connect to api.ultralist.io right now.")
-		return
+		return errors.New("cannot connect to api.ultralist.io right now")
 	}
 
-	s.doSync(todolist, syncedList)
+	if err := s.doSync(todolist, syncedList); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // CheckAuth is checking the authentication status against the ultralist API.
-func (s *Synchronizer) CheckAuth() {
+func (s *Synchronizer) CheckAuth() (string, error) {
 	if s.Backend.CredsFileExists() == false {
-		fmt.Println("It looks like you are not authenticated with ultralist.io.")
-		return
+		return "", errors.New("It looks like you are not authenticated with ultralist.io")
 	}
 
 	if s.Backend.CanConnect() == false {
-		fmt.Println("Cannot connect to api.ultralist.io right now.")
-		return
+		return "", errors.New("cannot connect to api.ultralist.io right now")
 	}
 
-	bodyBytes := s.Backend.PerformRequest("GET", "/me", []byte(""))
+	bodyBytes, err := s.Backend.PerformRequest("GET", "/me", []byte(""))
+	if err != nil {
+		return "", err
+	}
 
 	var response *UserRequest
 	if err := json.Unmarshal(bodyBytes, &response); err != nil {
-		panic(err)
+		return "", err
 	}
-	if s.Backend.Success {
-		s.Success = true
-		fmt.Printf("Hello %s! You are successfully authenticated.\n", response.Name)
-	}
-}
 
-// WasSuccessful is checking if a sync process was successful.
-func (s *Synchronizer) WasSuccessful() bool {
-	return s.Success
+	return response.Name, nil
 }
 
 // UserRequest is the struct for a user request.
@@ -120,7 +107,7 @@ type Request struct {
 	Todolist *TodolistRequest `json:"todolist"`
 }
 
-func (s *Synchronizer) doSync(todolist *ultralist.TodoList, syncedList *SyncedList) {
+func (s *Synchronizer) doSync(todolist *ultralist.TodoList, syncedList *SyncedList) error {
 	data := s.buildRequest(todolist, syncedList)
 	path := "/api/v1/todo_lists/event_cache"
 
@@ -131,16 +118,18 @@ func (s *Synchronizer) doSync(todolist *ultralist.TodoList, syncedList *SyncedLi
 	// from various clients.
 
 	path = "/api/v1/todo_lists/" + syncedList.UUID
-	bodyBytes := s.Backend.PerformRequest("GET", path, []byte{})
+	bodyBytes, err := s.Backend.PerformRequest("GET", path, []byte{})
+	if err != nil {
+		return err
+	}
 
 	var response *TodolistRequest
 	if err := json.Unmarshal(bodyBytes, &response); err != nil {
-		panic(err)
+		return err
 	}
-	if s.Backend.Success {
-		s.Success = true
-		todolist.Data = response.TodoItemsAttributes
-	}
+	todolist.Data = response.TodoItemsAttributes
+
+	return nil
 }
 
 func (s *Synchronizer) buildRequest(todolist *ultralist.TodoList, syncedList *SyncedList) []byte {

@@ -20,6 +20,7 @@ const (
 )
 
 // EventLogger is the main struct of this file.
+// 2.0 notes: replace this entire class with something else
 type EventLogger struct {
 	PreviousTodoList  *ultralist.TodoList
 	CurrentTodoList   *ultralist.TodoList
