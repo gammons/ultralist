@@ -1,4 +1,4 @@
-package ultralist
+package sync
 
 import (
 	"bytes"
@@ -9,6 +9,8 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/ultralist/ultralist/ultralist"
 )
 
 const (
@@ -17,13 +19,12 @@ const (
 
 // Backend is giving you the structure of the ultralist API backend.
 type Backend struct {
-	Creds   string `json:"creds"`
-	Success bool   `json:"-"`
+	Creds string `json:"creds"`
 }
 
 // NewBackend is starting a new backend.
 func NewBackend() *Backend {
-	backend := &Backend{Success: false}
+	backend := &Backend{}
 
 	if backend.CredsFileExists() {
 		backend.loadCreds()
@@ -33,9 +34,9 @@ func NewBackend() *Backend {
 }
 
 // CreateTodoList will create a todo list on the backend
-func (b *Backend) CreateTodoList(todolist *TodoList) {
+func (b *Backend) CreateTodoList(todolist *ultralist.TodoList) {
 	type Request struct {
-		Todolist *TodoList `json:"todolist"`
+		Todolist *ultralist.TodoList `json:"todolist"`
 	}
 
 	bodyBytes, _ := json.Marshal(&Request{Todolist: todolist})
@@ -44,7 +45,7 @@ func (b *Backend) CreateTodoList(todolist *TodoList) {
 }
 
 // PerformRequest is performing a request to the ultralist API backend.
-func (b *Backend) PerformRequest(method string, path string, data []byte) []byte {
+func (b *Backend) PerformRequest(method string, path string, data []byte) ([]byte, error) {
 	url := b.apiURL(path)
 	req, _ := http.NewRequest(method, url, bytes.NewBuffer(data))
 	authHeader := fmt.Sprintf("Bearer %s", b.Creds)
@@ -52,7 +53,7 @@ func (b *Backend) PerformRequest(method string, path string, data []byte) []byte
 	req.Header.Set("Authorization", authHeader)
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("x-Ultralist-CLI-Version", VERSION)
+	req.Header.Set("x-Ultralist-CLI-Version", ultralist.Version)
 
 	client := &http.Client{}
 
@@ -63,28 +64,22 @@ func (b *Backend) PerformRequest(method string, path string, data []byte) []byte
 	//defer response.Body.Close()
 
 	if requestError != nil {
-		fmt.Println("Error contacting server: ", requestError)
-		b.Success = false
-		return nil
+		return nil, requestError
 	}
 
 	if !strings.HasPrefix(response.Status, "2") {
-		fmt.Printf("Got a status of %s from server. Aborting.", response.Status)
-		os.Exit(0)
-		return nil
+		return nil, fmt.Errorf(fmt.Sprintf("Got a status of %s from server", response.Status))
 	}
-
-	b.Success = true
 
 	bodyBytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return bodyBytes
+	return bodyBytes, nil
 }
 
-// CanConnect is checking if ultralist can connect to the API backend.
+// CanConnect checks to see if it can connect to api.ultralist.io, with a 2 second timeout.
 func (b *Backend) CanConnect() bool {
 	timeout := time.Duration(2 * time.Second)
 	client := http.Client{Timeout: timeout}
@@ -107,22 +102,21 @@ func (b *Backend) AuthURL() string {
 	return b.apiURL("/cli_auth")
 }
 
-// WriteCreds is writing the backend credential file.
-func (b *Backend) WriteCreds(token string) {
+// WriteCreds writes the backend credential file.
+func (b *Backend) WriteCreds(token string) error {
 	b.Creds = token
 	data, _ := json.Marshal(b)
 
 	if _, err := os.Stat(b.credsFolderPath()); os.IsNotExist(err) {
 		if err := os.MkdirAll(b.credsFolderPath(), os.ModePerm); err != nil {
-			fmt.Println("Could not create ~/.config/ultralist directory! Permissions issue?")
-			os.Exit(1)
+			return err
 		}
 	}
 
 	if err := ioutil.WriteFile(b.credsFilePath(), data, 0600); err != nil {
-		fmt.Println("Error writing creds file!")
-		os.Exit(1)
+		return err
 	}
+	return nil
 }
 
 func (b *Backend) apiURL(path string) string {
@@ -135,7 +129,7 @@ func (b *Backend) apiURL(path string) string {
 }
 
 func (b *Backend) credsFolderPath() string {
-	home := UserHomeDir()
+	home, _ := os.UserHomeDir()
 	return fmt.Sprintf("%s/.config/ultralist/", home)
 }
 
@@ -143,14 +137,14 @@ func (b *Backend) credsFilePath() string {
 	return b.credsFolderPath() + "creds.json"
 }
 
-func (b *Backend) loadCreds() string {
+func (b *Backend) loadCreds() (string, error) {
 	data, err := ioutil.ReadFile(b.credsFilePath())
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	err = json.Unmarshal(data, b)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
-	return string(data)
+	return string(data), nil
 }

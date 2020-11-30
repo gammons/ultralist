@@ -1,4 +1,4 @@
-package ultralist
+package sync
 
 import (
 	"encoding/json"
@@ -7,6 +7,9 @@ import (
 	"os"
 
 	"github.com/jinzhu/copier"
+	"github.com/twinj/uuid"
+	"github.com/ultralist/ultralist/store"
+	"github.com/ultralist/ultralist/ultralist"
 )
 
 // The different types of events that can occur.
@@ -17,10 +20,11 @@ const (
 )
 
 // EventLogger is the main struct of this file.
+// 2.0 notes: replace this entire class with something else
 type EventLogger struct {
-	PreviousTodoList  *TodoList
-	CurrentTodoList   *TodoList
-	Store             Store
+	PreviousTodoList  *ultralist.TodoList
+	CurrentTodoList   *ultralist.TodoList
+	Store             store.Store
 	SyncedLists       []*SyncedList
 	CurrentSyncedList *SyncedList
 	Events            []*EventLog
@@ -36,22 +40,22 @@ type SyncedList struct {
 
 // EventLog is a log of events that occurred, with the todo data.
 type EventLog struct {
-	EventType    string `json:"event_type"`
-	ObjectType   string `json:"object_type"`
-	TodoListUUID string `json:"todo_list_uuid"`
-	Object       *Todo  `json:"object"`
+	EventType    string          `json:"event_type"`
+	ObjectType   string          `json:"object_type"`
+	TodoListUUID string          `json:"todo_list_uuid"`
+	Object       *ultralist.Todo `json:"object"`
 }
 
 // NewEventLogger is creating a new event logger.
-func NewEventLogger(todoList *TodoList, store Store) *EventLogger {
-	var previousTodos []*Todo
+func NewEventLogger(todoList *ultralist.TodoList, store store.Store) *EventLogger {
+	var previousTodos []*ultralist.Todo
 
 	for _, todo := range todoList.Data {
-		var newTodo Todo
+		var newTodo ultralist.Todo
 		copier.Copy(&newTodo, &todo)
 		previousTodos = append(previousTodos, &newTodo)
 	}
-	var previousTodoList = &TodoList{Data: previousTodos}
+	var previousTodoList = &ultralist.TodoList{Data: previousTodos}
 
 	eventLogger := &EventLogger{
 		CurrentTodoList:  todoList,
@@ -138,7 +142,7 @@ func (e *EventLogger) initializeSyncedListFromCurrentTodoList() {
 
 	listUUID := e.CurrentTodoList.UUID
 	if listUUID == "" {
-		listUUID = newUUID()
+		listUUID = fmt.Sprintf("%s", uuid.NewV4())
 		e.CurrentTodoList.UUID = listUUID
 	}
 
@@ -178,7 +182,7 @@ func (e *EventLogger) WriteSyncedLists() {
 }
 
 func (e *EventLogger) syncedListsConfigDir() string {
-	home := UserHomeDir()
+	home := e.userHomeDir()
 	return fmt.Sprintf("%s/.config/ultralist/", home)
 }
 
@@ -186,11 +190,21 @@ func (e *EventLogger) syncedListsFile() string {
 	return e.syncedListsConfigDir() + "synced_lists.json"
 }
 
-func (e *EventLogger) writeTodoEvent(eventType string, todo *Todo, todoListUUID string) *EventLog {
+func (e *EventLogger) writeTodoEvent(eventType string, todo *ultralist.Todo, todoListUUID string) *EventLog {
 	return &EventLog{
 		EventType:    eventType,
 		ObjectType:   "TodoItem",
 		TodoListUUID: todoListUUID,
 		Object:       todo,
 	}
+}
+
+// UserHomeDir returns the home dir of the current user.
+func (e *EventLogger) userHomeDir() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	return home
 }

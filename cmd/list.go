@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
+	"github.com/ultralist/ultralist/cli"
 )
 
 func init() {
@@ -146,7 +146,14 @@ See the full docs at https://ultralist.io/docs/cli/showing_tasks`
 		Long:    listCmdLongDesc,
 		Short:   listCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewAppWithPrintOptions(unicodeSupport, colorSupport).ListTodos(strings.Join(args, " "), listNotes, showStatus)
+			var printer cli.Printer
+			if colorSupport {
+				printer = cli.NewScreenPrinter(unicodeSupport, listNotes, showStatus)
+			} else {
+				printer = cli.NewSimpleScreenPrinter(unicodeSupport, listNotes, showStatus)
+			}
+
+			cli.NewApp().ListTodos(strings.Join(args, " "), printer)
 		},
 	}
 

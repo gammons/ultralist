@@ -1,19 +1,21 @@
-package ultralist
+package sync
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/ultralist/ultralist/store"
+	"github.com/ultralist/ultralist/ultralist"
 )
 
 func TestCreateEventLogsWithAddingTodo(t *testing.T) {
 	assert := assert.New(t)
-	todo := &Todo{Subject: "testing", Completed: false, Archived: false}
-	list := &TodoList{}
+	todo := &ultralist.Todo{Subject: "testing", Completed: false, Archived: false}
+	list := &ultralist.TodoList{}
 	list.Add(todo)
 
-	logger := NewEventLogger(list, &MemoryStore{})
-	todo2 := NewTodo()
+	logger := NewEventLogger(list, &store.MemoryStore{})
+	todo2 := ultralist.NewTodo()
 	list.Add(todo2)
 	logger.CreateEventLogs()
 
@@ -24,14 +26,14 @@ func TestCreateEventLogsWithAddingTodo(t *testing.T) {
 
 func TestCreateEventLogsWithAddingMultipleTodos(t *testing.T) {
 	assert := assert.New(t)
-	todo := &Todo{Subject: "testing", Completed: false, Archived: false}
-	list := &TodoList{}
+	todo := &ultralist.Todo{Subject: "testing", Completed: false, Archived: false}
+	list := &ultralist.TodoList{}
 	list.Add(todo)
 
-	logger := NewEventLogger(list, &MemoryStore{})
-	todo2 := NewTodo()
+	logger := NewEventLogger(list, &store.MemoryStore{})
+	todo2 := ultralist.NewTodo()
 	list.Add(todo2)
-	todo3 := NewTodo()
+	todo3 := ultralist.NewTodo()
 	list.Add(todo3)
 	logger.CreateEventLogs()
 
@@ -44,11 +46,11 @@ func TestCreateEventLogsWithAddingMultipleTodos(t *testing.T) {
 
 func TestUpdateEvent(t *testing.T) {
 	assert := assert.New(t)
-	todo := &Todo{Subject: "testing", Completed: false, Archived: false}
-	list := &TodoList{}
+	todo := &ultralist.Todo{Subject: "testing", Completed: false, Archived: false}
+	list := &ultralist.TodoList{}
 	list.Add(todo)
 
-	logger := NewEventLogger(list, &MemoryStore{})
+	logger := NewEventLogger(list, &store.MemoryStore{})
 	todo.Subject = "testing2"
 	logger.CreateEventLogs()
 
@@ -59,13 +61,13 @@ func TestUpdateEvent(t *testing.T) {
 
 func TestDeleteEvent(t *testing.T) {
 	assert := assert.New(t)
-	todo := &Todo{Subject: "testing", Completed: false, Archived: false}
-	todo2 := &Todo{Subject: "testing", Completed: false, Archived: false}
-	list := &TodoList{}
+	todo := &ultralist.Todo{Subject: "testing", Completed: false, Archived: false}
+	todo2 := &ultralist.Todo{Subject: "testing", Completed: false, Archived: false}
+	list := &ultralist.TodoList{}
 	list.Add(todo)
 	list.Add(todo2)
 
-	logger := NewEventLogger(list, &MemoryStore{})
+	logger := NewEventLogger(list, &store.MemoryStore{})
 	list.Delete(todo.ID)
 	logger.CreateEventLogs()
 

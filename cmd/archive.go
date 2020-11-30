@@ -1,16 +1,14 @@
 package cmd
 
 import (
-	"strings"
-
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
+	"github.com/ultralist/ultralist/cli"
 )
 
 func init() {
 	var (
 		archiveCmdExample = `
-  To arvhive a todo with id 33:
+  To archive a todo with id 33:
     ultralist archive 33
     ultralist ar 33
 
@@ -40,7 +38,8 @@ func init() {
 		Example: archiveCmdExample,
 		Short:   "Archives a todo.",
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().ArchiveTodo(strings.Join(args, " "))
+			ids := argsToIDs(args)
+			cli.NewApp().ArchiveTodos(ids...)
 		},
 	}
 
@@ -50,7 +49,8 @@ func init() {
 		Example: archiveCmdExample,
 		Short:   "Un-archives a todo.",
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().UnarchiveTodo(strings.Join(args, " "))
+			ids := argsToIDs(args)
+			cli.NewApp().UnarchiveTodos(ids...)
 		},
 	}
 
@@ -61,7 +61,7 @@ func init() {
 		Long: `Achives all completed todos.
 For more info, see https://ultralist.io/docs/cli/managing_tasks/#archivingunarchiving-todos`,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().ArchiveCompleted()
+			cli.NewApp().ArchiveCompletedTodos()
 		},
 	}
 
@@ -72,7 +72,7 @@ For more info, see https://ultralist.io/docs/cli/managing_tasks/#archivingunarch
 		Long: `Delete all archived todos, reclaiming ids.
 For more info, see https://ultralist.io/docs/cli/managing_tasks/#archivingunarchiving-todos`,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().GarbageCollect()
+			cli.NewApp().GarbageCollect()
 		},
 	}
 

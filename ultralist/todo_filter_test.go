@@ -113,7 +113,7 @@ func TestFilterDue(t *testing.T) {
 	todoFilter := &TodoFilter{
 		Filter: &Filter{
 			HasDue: true,
-			Due:    time.Now().Format(DATE_FORMAT),
+			Due:    time.Now().Format(DateFormat),
 		},
 		Todos: SetupTodoList(),
 	}
@@ -130,7 +130,7 @@ func TestFilterDueBefore(t *testing.T) {
 	todoFilter := &TodoFilter{
 		Filter: &Filter{
 			HasDueBefore: true,
-			DueBefore:    time.Now().Format(DATE_FORMAT),
+			DueBefore:    time.Now().Format(DateFormat),
 		},
 		Todos: SetupTodoList(),
 	}
@@ -147,7 +147,7 @@ func TestFilterDueAfter(t *testing.T) {
 	todoFilter := &TodoFilter{
 		Filter: &Filter{
 			HasDueAfter: true,
-			DueAfter:    time.Now().Format(DATE_FORMAT),
+			DueAfter:    time.Now().Format(DateFormat),
 		},
 		Todos: SetupTodoList(),
 	}
@@ -161,43 +161,50 @@ func TestFilterDueAfter(t *testing.T) {
 func SetupTodoList() []*Todo {
 	var todos []*Todo
 
-	parser := &InputParser{}
+	todos = append(todos, &Todo{
+		Subject:    "has priority",
+		IsPriority: true,
+	})
 
-	filter, _ := parser.Parse("has priority priority:true")
-	todo, _ := CreateTodo(filter)
-	todos = append(todos, todo)
+	todos = append(todos, &Todo{
+		Subject:    "not priority",
+		IsPriority: false,
+	})
 
-	filter, _ = parser.Parse("not priority priority:false")
-	todo, _ = CreateTodo(filter)
-	todos = append(todos, todo)
+	todos = append(todos, &Todo{
+		Subject:  "archived",
+		Archived: true,
+	})
 
-	filter, _ = parser.Parse("archived archived:true")
-	todo, _ = CreateTodo(filter)
-	todos = append(todos, todo)
+	todos = append(todos, &Todo{
+		Subject:  "+p1 +p2 +p3",
+		Projects: []string{"p1", "p2", "p3"},
+	})
 
-	filter, _ = parser.Parse("+p1 +p2 +p3")
-	todo, _ = CreateTodo(filter)
-	todos = append(todos, todo)
+	todos = append(todos, &Todo{
+		Subject:  "+p1 +p3",
+		Projects: []string{"p1", "p3"},
+	})
 
-	filter, _ = parser.Parse("+p1 +p3")
-	todo, _ = CreateTodo(filter)
-	todos = append(todos, todo)
+	todos = append(todos, &Todo{
+		Subject:  "+p1",
+		Projects: []string{"p1"},
+	})
 
-	filter, _ = parser.Parse("+p1")
-	todo, _ = CreateTodo(filter)
-	todos = append(todos, todo)
+	todos = append(todos, &Todo{
+		Subject: "due today",
+		Due:     time.Now().Format(DateFormat),
+	})
 
-	filter, _ = parser.Parse("due tomorrow due:tom")
-	todo, _ = CreateTodo(filter)
-	todos = append(todos, todo)
+	todos = append(todos, &Todo{
+		Subject: "due tomorrow",
+		Due:     time.Now().AddDate(0, 0, 1).Format(DateFormat),
+	})
 
-	filter, _ = parser.Parse("due today due:tod")
-	todo, _ = CreateTodo(filter)
-	todos = append(todos, todo)
-
-	filter, _ = parser.Parse("due yesterday due:yes")
-	todo, _ = CreateTodo(filter)
-	todos = append(todos, todo)
+	todos = append(todos, &Todo{
+		Subject: "due yesterday",
+		Due:     time.Now().AddDate(0, 0, -1).Format(DateFormat),
+	})
 
 	return todos
 }

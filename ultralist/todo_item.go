@@ -40,10 +40,10 @@ func (t Todo) Valid() bool {
 // CalculateDueTime is calculating the due time of the todo item.
 func (t Todo) CalculateDueTime() time.Time {
 	if t.Due != "" {
-		parsedTime, _ := time.Parse(DATE_FORMAT, t.Due)
+		parsedTime, _ := time.Parse(DateFormat, t.Due)
 		return parsedTime
 	}
-	parsedTime, _ := time.Parse(DATE_FORMAT, "1900-01-01")
+	parsedTime, _ := time.Parse(DateFormat, "1900-01-01")
 	return parsedTime
 }
 
@@ -84,12 +84,40 @@ func (t *Todo) Unprioritize() {
 // CompletedDateToDate is returning the date when an item was completed.
 func (t Todo) CompletedDateToDate() string {
 	parsedTime, _ := time.Parse(iso8601TimestampFormat, t.CompletedDate)
-	return parsedTime.Format(DATE_FORMAT)
+	return parsedTime.Format(DateFormat)
 }
 
 // HasNotes is showing if an todo has notes.
 func (t Todo) HasNotes() bool {
 	return len(t.Notes) > 0
+}
+
+// DueToday will return if the todo is due today.
+func (t *Todo) DueToday() bool {
+	nowYear, nowMonth, nowDay := time.Now().Date()
+	date, _ := time.Parse(DateFormat, t.Due)
+	timeYear, timeMonth, timeDay := date.Date()
+
+	return nowYear == timeYear &&
+		nowMonth == timeMonth &&
+		nowDay == timeDay
+}
+
+// DueTomorrow will return if the todo is due tomorrow.
+func (t *Todo) DueTomorrow() bool {
+	nowYear, nowMonth, nowDay := time.Now().AddDate(0, 0, 1).Date()
+	date, _ := time.Parse(DateFormat, t.Due)
+	timeYear, timeMonth, timeDay := date.Date()
+
+	return nowYear == timeYear &&
+		nowMonth == timeMonth &&
+		nowDay == timeDay
+}
+
+// PastDue will return if the todo is past due.
+func (t *Todo) PastDue() bool {
+	date, _ := time.Parse(DateFormat, t.Due)
+	return time.Now().After(date)
 }
 
 // Equals compares 2 todos for equality.

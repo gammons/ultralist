@@ -5,6 +5,7 @@ import (
 )
 
 const (
+	None     = ""
 	Daily    = "daily"
 	Weekdays = "weekdays"
 	Weekly   = "weekly"
@@ -19,6 +20,7 @@ type Recurrence struct{}
 func (r *Recurrence) ValidRecurrence(input string) bool {
 	switch input {
 	case
+		None,
 		Daily,
 		Weekdays,
 		Weekly,
@@ -31,8 +33,8 @@ func (r *Recurrence) ValidRecurrence(input string) bool {
 
 // HasNextRecurringTodo determines if a todo has a next recurrence.
 func (r *Recurrence) HasNextRecurringTodo(todo *Todo) bool {
-	recurUntil, _ := time.Parse(DATE_FORMAT, todo.RecurUntil)
-	dueDate, _ := time.Parse(DATE_FORMAT, todo.Due)
+	recurUntil, _ := time.Parse(DateFormat, todo.RecurUntil)
+	dueDate, _ := time.Parse(DateFormat, todo.Due)
 
 	if todo.Recur != "" && todo.RecurUntil == "" {
 		return true
@@ -43,7 +45,7 @@ func (r *Recurrence) HasNextRecurringTodo(todo *Todo) bool {
 
 // NextRecurringTodo generates the next recurring todo from the one passed in.
 func (r *Recurrence) NextRecurringTodo(todo *Todo, completedDate time.Time) *Todo {
-	dueDate, _ := time.Parse(DATE_FORMAT, todo.Due)
+	dueDate, _ := time.Parse(DateFormat, todo.Due)
 	nextDueDate := r.nextRecurrence(dueDate, completedDate, todo.Recur)
 
 	return &Todo{
@@ -57,7 +59,7 @@ func (r *Recurrence) NextRecurringTodo(todo *Todo, completedDate time.Time) *Tod
 		IsPriority:        todo.IsPriority,
 		Notes:             todo.Notes,
 		Recur:             todo.Recur,
-		Due:               nextDueDate.Format(DATE_FORMAT),
+		Due:               nextDueDate.Format(DateFormat),
 		RecurUntil:        todo.RecurUntil,
 		PrevRecurTodoUUID: todo.UUID,
 	}

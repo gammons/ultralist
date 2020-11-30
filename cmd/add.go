@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
+	"github.com/ultralist/ultralist/cli"
 )
 
 func init() {
@@ -41,7 +41,7 @@ func init() {
 		Long:    addCmdLongDesc,
 		Short:   addCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().AddTodo(strings.Join(args, " "))
+			cli.NewApp().AddTodo(strings.Join(args, " "))
 		},
 	}
 

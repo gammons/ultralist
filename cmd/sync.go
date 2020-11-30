@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
 )
 
 func init() {
@@ -38,16 +37,16 @@ func init() {
 		Long:    syncCmdLongDesc,
 		Short:   syncCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			if setupCmd {
-				ultralist.NewApp().SetupSync()
-				return
-			}
-			if unsyncCmd {
-				ultralist.NewApp().Unsync()
-				return
-			}
-
-			ultralist.NewApp().Sync(syncCmdQuiet)
+			// if setupCmd {
+			// 	ultralist.NewApp().SetupSync()
+			// 	return
+			// }
+			// if unsyncCmd {
+			// 	ultralist.NewApp().Unsync()
+			// 	return
+			// }
+			//
+			// ultralist.NewApp().Sync(syncCmdQuiet)
 		},
 	}
 

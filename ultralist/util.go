@@ -2,7 +2,6 @@ package ultralist
 
 import (
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/twinj/uuid"
@@ -38,16 +37,6 @@ func AddTodoIfNotThere(arr []*Todo, item *Todo) []*Todo {
 	return arr
 }
 
-// UserHomeDir returns the home dir of the current user.
-func UserHomeDir() string {
-	home, err := os.UserHomeDir()
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	return home
-}
-
 func newUUID() string {
 	return fmt.Sprintf("%s", uuid.NewV4())
 }
@@ -70,24 +59,4 @@ func pluralize(count int, singular, plural string) string {
 		return plural
 	}
 	return singular
-}
-
-func isToday(t time.Time) bool {
-	nowYear, nowMonth, nowDay := time.Now().Date()
-	timeYear, timeMonth, timeDay := t.Date()
-	return nowYear == timeYear &&
-		nowMonth == timeMonth &&
-		nowDay == timeDay
-}
-
-func isTomorrow(t time.Time) bool {
-	nowYear, nowMonth, nowDay := time.Now().AddDate(0, 0, 1).Date()
-	timeYear, timeMonth, timeDay := t.Date()
-	return nowYear == timeYear &&
-		nowMonth == timeMonth &&
-		nowDay == timeDay
-}
-
-func isPastDue(t time.Time) bool {
-	return time.Now().After(t)
 }

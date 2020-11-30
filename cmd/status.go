@@ -1,10 +1,8 @@
 package cmd
 
 import (
-	"strings"
-
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
+	"github.com/ultralist/ultralist/cli"
 )
 
 func init() {
@@ -30,7 +28,9 @@ func init() {
 		Long:    setStatusCmdLongDesc,
 		Short:   setStatusCmdDesc,
 		Run: func(cmd *cobra.Command, args []string) {
-			ultralist.NewApp().SetTodoStatus(strings.Join(args, " "))
+			status := args[len(args)-1]
+			ids := argsToIDs(args[0 : len(args)-1])
+			cli.NewApp().SetTodosStatus(status, ids...)
 		},
 	}
 

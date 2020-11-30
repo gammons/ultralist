@@ -10,7 +10,7 @@ type TodoList struct {
 	Name     string `json:"name"`
 	UUID     string `json:"uuid"`
 	IsSynced bool
-	Data     []*Todo `json:"todo_items_attributes"`
+	Data     []*Todo `json:"todos"`
 }
 
 // Load is loading a list with several todos.
@@ -18,13 +18,13 @@ func (t *TodoList) Load(todos []*Todo) {
 	t.Data = todos
 }
 
-// Add is adding a single todo to a todo list.
+// Add will add a todo to the todolist, giving it an ID.
 func (t *TodoList) Add(todo *Todo) {
 	todo.ID = t.NextID()
 	t.Data = append(t.Data, todo)
 }
 
-// Delete is deleting multiple todos from a todo list.
+// Delete will Delete todos from a todo list.
 func (t *TodoList) Delete(ids ...int) {
 	for _, id := range ids {
 		todo := t.FindByID(id)
@@ -42,7 +42,7 @@ func (t *TodoList) Delete(ids ...int) {
 	}
 }
 
-// Complete is completing multiple todos in a todo list.
+// Complete will complete todos with the given ids.
 func (t *TodoList) Complete(ids ...int) {
 	for _, id := range ids {
 		todo := t.FindByID(id)
@@ -86,6 +86,15 @@ func (t *TodoList) Archive(ids ...int) {
 		todo.Archive()
 		t.Delete(id)
 		t.Data = append(t.Data, todo)
+	}
+}
+
+// ArchiveCompletedTodos will archive all completed todos.
+func (t *TodoList) ArchiveCompletedTodos() {
+	for _, todo := range t.Todos() {
+		if todo.Completed {
+			todo.Archive()
+		}
 	}
 }
 

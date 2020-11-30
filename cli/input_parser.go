@@ -1,45 +1,20 @@
-package ultralist
+package cli
 
 import (
 	"fmt"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/ultralist/ultralist/ultralist"
 )
 
 // InputParser parses text to extract a Filter struct
 type InputParser struct{}
 
-/*
-
-# status of not now
-status:-now
-
-# status of now OR next
-status:now,next
-
-# status not now
-status:-now
-status:next
-
-# due today OR tomorrow
-due:tod,tom
-due:today due:tom
-
-# filter todos before a certain date
-due:<aug15
-
-completed:true
-
-priority:false
-
-project:one,-two
-
-*/
-
 // Parse parses raw input and returns a Filter object
-func (p *InputParser) Parse(input string) (*Filter, error) {
-	filter := &Filter{
+func (p *InputParser) Parse(input string) (*ultralist.Filter, ultralist.Grouping, error) {
+	filter := &ultralist.Filter{
 		HasStatus:        false,
 		HasCompleted:     false,
 		HasCompletedAt:   false,
@@ -52,7 +27,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		HasRecur:         false,
 	}
 
-	dateParser := &DateParser{}
+	dateParser := &ultralist.DateParser{}
 
 	var subjectMatches []string
 
@@ -90,13 +65,13 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			filter.HasDueBefore = true
 			dueDate, err := dateParser.ParseDate(r.FindString(word)[10:], time.Now())
 			if err != nil {
-				return filter, err
+				return filter, p.getGrouping(input), err
 			}
 
 			if dueDate.IsZero() {
 				filter.DueBefore = ""
 			} else {
-				filter.DueBefore = dueDate.Format(DATE_FORMAT)
+				filter.DueBefore = dueDate.Format(ultralist.DateFormat)
 			}
 			match = true
 		}
@@ -107,7 +82,7 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 
 			dueDate, err := dateParser.ParseDate(r.FindString(word)[4:], time.Now())
 			if err != nil {
-				return filter, err
+				return filter, p.getGrouping(input), err
 			}
 
 			if dueDate.IsZero() {
@@ -116,9 +91,9 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 				if word == "due:agenda" {
 					filter.HasDueBefore = true
 					filter.HasDue = false
-					filter.DueBefore = dueDate.Format(DATE_FORMAT)
+					filter.DueBefore = dueDate.Format(ultralist.DateFormat)
 				} else {
-					filter.Due = dueDate.Format(DATE_FORMAT)
+					filter.Due = dueDate.Format(ultralist.DateFormat)
 				}
 			}
 			match = true
@@ -129,13 +104,13 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			filter.HasDueAfter = true
 			dueDate, err := dateParser.ParseDate(r.FindString(word)[9:], time.Now())
 			if err != nil {
-				return filter, err
+				return filter, p.getGrouping(input), err
 			}
 
 			if dueDate.IsZero() {
 				filter.DueAfter = ""
 			} else {
-				filter.DueAfter = dueDate.Format(DATE_FORMAT)
+				filter.DueAfter = dueDate.Format(ultralist.DateFormat)
 			}
 			match = true
 		}
@@ -179,9 +154,9 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 				filter.Recur = ""
 			}
 
-			r := &Recurrence{}
+			r := &ultralist.Recurrence{}
 			if !r.ValidRecurrence(filter.Recur) {
-				return filter, fmt.Errorf("I could not understand the recurrence you gave me: '%s'", filter.Recur)
+				return filter, p.getGrouping(input), fmt.Errorf("I could not understand the recurrence you gave me: '%s'", filter.Recur)
 			}
 		}
 
@@ -189,11 +164,11 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 		if r.MatchString(word) {
 			date, err := dateParser.ParseDate(r.FindString(word)[6:], time.Now())
 			if err != nil {
-				return filter, err
+				return filter, p.getGrouping(input), err
 			}
 			match = true
 
-			filter.RecurUntil = date.Format(DATE_FORMAT)
+			filter.RecurUntil = date.Format(ultralist.DateFormat)
 		}
 
 		if !match {
@@ -203,7 +178,23 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 
 	filter.Subject = strings.Join(subjectMatches, " ")
 
-	return filter, nil
+	// find the grouping, if anyone
+	return filter, p.getGrouping(input), nil
+}
+
+func (p *InputParser) getGrouping(input string) ultralist.Grouping {
+	grouping := ultralist.ByNone
+	if match, _ := regexp.MatchString("group:c.*$", input); match == true {
+		grouping = ultralist.ByContext
+	}
+	if match, _ := regexp.MatchString("group:p.*$", input); match == true {
+		grouping = ultralist.ByProject
+	}
+	if match, _ := regexp.MatchString("group:s.*$", input); match == true {
+		grouping = ultralist.ByStatus
+	}
+
+	return grouping
 }
 
 func (p *InputParser) parseString(input string) ([]string, []string) {

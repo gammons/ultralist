@@ -1,6 +1,10 @@
-package ultralist
+package cli
 
-import "regexp"
+import (
+	"regexp"
+
+	"github.com/ultralist/ultralist/ultralist"
+)
 
 var (
 	projectRegex, _ = regexp.Compile(`\+[\p{L}\d_]+`)
@@ -9,5 +13,5 @@ var (
 
 // Printer is an interface for printing grouped todos.
 type Printer interface {
-	Print(*GroupedTodos, bool, bool)
+	Print(*ultralist.GroupedTodos)
 }
