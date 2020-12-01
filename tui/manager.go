@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sort"
-	"strconv"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -39,7 +37,7 @@ const (
 type Manager struct {
 	App          *tview.Application
 	MainArea     *tview.Grid
-	TodoTextView *tview.TextView
+	TodoTextView *TodoTextView
 	FilterArea   *tview.Flex
 	CommandsArea *tview.Flex
 	DebugArea    *tview.TextView
@@ -48,10 +46,10 @@ type Manager struct {
 
 	TodoList *ultralist.TodoList
 
-	TodoIDs         []int
-	SelectedTodoIdx int
+	// TodoIDs         []int
+	// SelectedTodoIdx int
 
-	GroupBy    ultralist.Grouping
+	Grouping   ultralist.Grouping
 	TodoFilter *ultralist.Filter
 }
 
@@ -101,13 +99,7 @@ var (
 )
 
 func NewManager(todoList *ultralist.TodoList) *Manager {
-	textView := tview.NewTextView()
-	textView.SetWrap(false)
-	// textView.SetScrollable(false)
-	textView.SetBackgroundColor(tcell.NewHexColor(0x101010))
-	textView.SetDynamicColors(true)
-	textView.SetBorder(false)
-	textView.SetRegions(true)
+	textView := NewTodoTextView(todoList)
 
 	mainArea := tview.NewGrid()
 	mainArea.SetBackgroundColor(tcell.NewHexColor(ColorBackground))
@@ -135,7 +127,7 @@ func NewManager(todoList *ultralist.TodoList) *Manager {
 		false) // focus
 
 	mainArea.AddItem(
-		textView,
+		textView.TextView,
 		1,    // row
 		0,    // column
 		1,    // rowSpan
@@ -164,16 +156,15 @@ func NewManager(todoList *ultralist.TodoList) *Manager {
 	log.SetOutput(file)
 
 	manager := &Manager{
-		App:             app,
-		TodoList:        todoList,
-		TodoTextView:    textView,
-		CommandsArea:    commandsArea,
-		FilterArea:      filterArea,
-		MainArea:        mainArea,
-		DebugArea:       debugArea,
-		SelectedTodoIdx: 0,
-		TodoFilter:      &ultralist.Filter{},
-		GroupBy:         ultralist.GroupByNone,
+		App:          app,
+		TodoList:     todoList,
+		TodoTextView: textView,
+		CommandsArea: commandsArea,
+		FilterArea:   filterArea,
+		MainArea:     mainArea,
+		DebugArea:    debugArea,
+		TodoFilter:   &ultralist.Filter{},
+		Grouping:     ultralist.GroupByNone,
 	}
 
 	manager.App.SetInputCapture(manager.inputCapture)
@@ -210,15 +201,10 @@ func (m *Manager) inputCapture(event *tcell.EventKey) *tcell.EventKey {
 
 func (m *Manager) focusModeInputCapture(event *tcell.EventKey) {
 	if event.Rune() == 'j' || event.Key() == tcell.KeyDown {
-		if m.SelectedTodoIdx < len(m.TodoIDs)-1 {
-			m.SelectedTodoIdx += 1
-		}
-		m.switchStateToModeTodoManaging()
+		m.TodoTextView.HighlightNextTodo()
 	}
 	if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
-		if m.SelectedTodoIdx > 0 {
-			m.SelectedTodoIdx -= 1
-		}
+		m.TodoTextView.HighlightPrevTodo()
 		m.switchStateToModeTodoManaging()
 	}
 
@@ -244,47 +230,42 @@ func (m *Manager) focusModeInputCapture(event *tcell.EventKey) {
 }
 
 func (m *Manager) todoEventsInputCapture(event *tcell.EventKey) {
-	if len(m.TodoIDs) == 0 {
+	todo := m.TodoTextView.SelectedTodo()
+	if todo == nil {
 		return
 	}
 
-	todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
-
 	if event.Rune() == 'j' || event.Key() == tcell.KeyDown {
-		if m.SelectedTodoIdx < len(m.TodoIDs)-1 {
-			m.SelectedTodoIdx += 1
-		}
+		m.TodoTextView.HighlightNextTodo()
 	}
 	if event.Rune() == 'k' || event.Key() == tcell.KeyUp {
-		if m.SelectedTodoIdx > 0 {
-			m.SelectedTodoIdx -= 1
-		}
+		m.TodoTextView.HighlightPrevTodo()
 	}
 
 	// complete
 	if event.Rune() == 'c' {
 		if todo.Completed {
-			m.TodoList.Uncomplete(m.TodoIDs[m.SelectedTodoIdx])
+			todo.Uncomplete()
 		} else {
-			m.TodoList.Complete(m.TodoIDs[m.SelectedTodoIdx])
+			todo.Complete()
 		}
 	}
 
 	// prioritize
 	if event.Rune() == 'p' {
 		if todo.IsPriority {
-			m.TodoList.Unprioritize(m.TodoIDs[m.SelectedTodoIdx])
+			todo.Unprioritize()
 		} else {
-			m.TodoList.Prioritize(m.TodoIDs[m.SelectedTodoIdx])
+			todo.Prioritize()
 		}
 	}
 
 	// archive
 	if event.Rune() == 'a' {
 		if todo.Archived {
-			m.TodoList.Unarchive(m.TodoIDs[m.SelectedTodoIdx])
+			todo.Unarchive()
 		} else {
-			m.TodoList.Archive(m.TodoIDs[m.SelectedTodoIdx])
+			todo.Archive()
 		}
 	}
 
@@ -365,7 +346,7 @@ func (m *Manager) switchStateToSearching() {
 	})
 
 	input.SetDoneFunc(func(key tcell.Key) {
-		m.SelectedTodoIdx = 0
+		m.TodoTextView.ResetSelectedTodoIdx()
 		m.switchStateToModeTodoManaging()
 		m.App.SetFocus(m.MainArea)
 	})
@@ -378,7 +359,11 @@ func (m *Manager) switchStateToSearching() {
 func (m *Manager) editTodoStatus() {
 	m.State = ModeEditing
 	m.CommandsArea.Clear()
-	todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
+
+	todo := m.TodoTextView.SelectedTodo()
+	if todo == nil {
+		return
+	}
 
 	StatusInput.SetText(todo.Status)
 
@@ -397,7 +382,11 @@ func (m *Manager) editTodoStatus() {
 func (m *Manager) editTodoDue() {
 	m.State = ModeEditing
 	m.CommandsArea.Clear()
-	todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
+
+	todo := m.TodoTextView.SelectedTodo()
+	if todo == nil {
+		return
+	}
 
 	DueInput.SetText(todo.Due)
 
@@ -419,83 +408,6 @@ func (m *Manager) RunManager() {
 	}
 }
 
-func (m *Manager) drawTodos() {
-	var todoIDs []int
-	var keys []string
-	viewPrinter := &ViewPrinter{}
-
-	filter := &ultralist.TodoFilter{
-		Filter: m.TodoFilter,
-		Todos:  m.TodoList.Todos(),
-	}
-
-	grouper := &ultralist.Grouper{}
-	var groups *ultralist.GroupedTodos
-
-	switch m.GroupBy {
-	case ultralist.GroupByNone:
-		groups = grouper.GroupByNothing(filter.ApplyFilter())
-	case ultralist.GroupByProject:
-		groups = grouper.GroupByProject(filter.ApplyFilter())
-	case ultralist.GroupByContext:
-		groups = grouper.GroupByContext(filter.ApplyFilter())
-	case ultralist.GroupByStatus:
-		groups = grouper.GroupByStatus(filter.ApplyFilter())
-	}
-
-	for key := range groups.Groups {
-		keys = append(keys, key)
-	}
-	sort.Strings(keys)
-
-	m.TodoTextView.Clear()
-	m.TodoTextView.Highlight("-1")
-
-	totalDisplayedTodos := 0
-	for _, key := range keys {
-		if len(groups.Groups[key]) > 0 {
-			fmt.Fprintf(m.TodoTextView, "\n[%s]%s[%s]\n", ColorBlue, key, ColorForeground)
-		}
-
-		for _, todo := range groups.Groups[key] {
-			fmt.Fprintf(
-				m.TodoTextView,
-				"[\"%v\"]%s  %s  %s  %s  %s[\"\"]\n",
-				totalDisplayedTodos,
-				viewPrinter.FormatID(todo),
-				viewPrinter.FormatCompleted(todo),
-				viewPrinter.FormatDue(todo),
-				viewPrinter.FormatStatus(todo),
-				viewPrinter.FormatSubject(todo),
-			)
-
-			todoIDs = append(todoIDs, todo.ID)
-
-			if totalDisplayedTodos == m.SelectedTodoIdx && m.State == ModeTodoManaging {
-				m.buildTodoCommandsMenu(todo)
-				m.TodoTextView.Highlight(strconv.Itoa(m.SelectedTodoIdx))
-			}
-
-			totalDisplayedTodos++
-		}
-	}
-	m.TodoTextView.ScrollTo(m.SelectedTodoIdx, 0)
-	m.TodoIDs = todoIDs
-}
-
-// func (m *Manager) handleTodoScrollLocation(selectedTodoLineLocation int) {
-// 	_, _, _, height := m.TodoTextView.GetRect()
-//
-// 	// handle the top of the list
-// 	// handle when scrolling in the middle
-//
-// 	// hight is 5
-// 	// selectedTodoLineLocation is 5
-// 	// todo list length is 10
-// 	// keep highlighted todo in middle
-//
-// }
-//
 func (m *Manager) buildTodoCommandsMenu(todo *ultralist.Todo) {
 	m.CommandsArea.Clear()
 
@@ -536,7 +448,7 @@ func (m *Manager) setupSearchInput() {
 	})
 
 	SearchInput.SetDoneFunc(func(key tcell.Key) {
-		m.SelectedTodoIdx = 0
+		m.TodoTextView.ResetSelectedTodoIdx()
 		if key == tcell.KeyTab || key == tcell.KeyBacktab {
 			m.App.SetFocus(GroupSelect)
 		} else {
@@ -583,26 +495,26 @@ func (m *Manager) setupGroupSelect() {
 	GroupSelect.SetLabelColor(tcell.NewHexColor(0xd0d0d0))
 
 	GroupSelect.AddOption("None", func() {
-		m.GroupBy = ultralist.GroupByNone
+		m.Grouping = ultralist.GroupByNone
 		m.drawTodos()
 		m.switchStateToModeTodoManaging()
 		m.App.SetFocus(m.MainArea)
 
 	})
 	GroupSelect.AddOption("Project", func() {
-		m.GroupBy = ultralist.GroupByProject
+		m.Grouping = ultralist.GroupByProject
 		m.drawTodos()
 		m.switchStateToModeTodoManaging()
 		m.App.SetFocus(m.MainArea)
 	})
 	GroupSelect.AddOption("Context", func() {
-		m.GroupBy = ultralist.GroupByContext
+		m.Grouping = ultralist.GroupByContext
 		m.drawTodos()
 		m.switchStateToModeTodoManaging()
 		m.App.SetFocus(m.MainArea)
 	})
 	GroupSelect.AddOption("Status", func() {
-		m.GroupBy = ultralist.GroupByStatus
+		m.Grouping = ultralist.GroupByStatus
 		m.drawTodos()
 		m.switchStateToModeTodoManaging()
 		m.App.SetFocus(m.MainArea)
@@ -628,6 +540,10 @@ func (m *Manager) setupDueInput() {
 	DueInput.SetLabel("Set due: ").SetFieldWidth(10)
 	DueInput.SetFieldBackgroundColor(tcell.NewHexColor(0x505050))
 	DueInput.SetLabelColor(tcell.NewHexColor(0xd0d0d0))
+}
+
+func (m *Manager) drawTodos() {
+	m.TodoTextView.DrawTodos(m.TodoFilter, m.Grouping)
 }
 
 func buildTextView(label string) *tview.TextView {
