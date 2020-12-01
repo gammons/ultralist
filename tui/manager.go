@@ -12,43 +12,30 @@ import (
 	"github.com/ultralist/ultralist/ultralist"
 )
 
-/*
-**filtering**
-* [ ] filter by priority
-* [ ] filter by completed
-* [ ] filter by archived
-* [ ] filter by status
-* [ ] filter by due
-
-**todo editing**
-* [ ] edit due date
-* [ ] edit recurring
-* [ ] edit todo
-* [ ] delete todo (with prompt)
-
-**Adding todos**
-* [ ] quick add
-* [ ] add modal?
-
-**other**
-* [ ] help modal with keys
-* [ ] see if I can make todo highlighting look a little nicer
-* [ ] mouse click on a todo to select it
-* [ ] handle ctrl+c event (maybe with a "type q to quit" msg)
-* [ ] scrolling seems to not follow highlighted todo
-
- */
-
+// ManagerState represents the state of the tui.
 type ManagerState string
 
 const (
-	ModeFocus         ManagerState = "focus_mode"
-	ModeTodoManaging  ManagerState = "todo_managing"
-	ModeTodoEditing   ManagerState = "todo_editing"
+	// ModeFocus is "focus mode", where the todos are listed without anything else on the screen.
+	ModeFocus ManagerState = "focus_mode"
+
+	// ModeTodoManaging is when the user is actively managing their todos.  There is a highlighted todo,
+	// and there are text views at the bottom the represent the commands someone can do on the highlighted todo.
+	ModeTodoManaging ManagerState = "todo_managing"
+
+	// ModeEditing is when an input box is focused.  This is mainly used to disable global commands like
+	// quitting the app with "q" and switching to other modes.
+	ModeEditing ManagerState = "todo_editing"
+
+	// ModeListFiltering is when the user is actively filtering the list.
+	// It can be thought of as a subset of ModeEditing.
 	ModeListFiltering ManagerState = "list_filtering"
-	ModeSearching     ManagerState = "searching"
+
+	// ModeSearching is when a user is searching
+	ModeSearching ManagerState = "searching"
 )
 
+// Manager represents the core of the TUI
 type Manager struct {
 	App          *tview.Application
 	MainArea     *tview.Grid
@@ -389,7 +376,7 @@ func (m *Manager) switchStateToSearching() {
 }
 
 func (m *Manager) editTodoStatus() {
-	m.State = ModeTodoEditing
+	m.State = ModeEditing
 	m.CommandsArea.Clear()
 	todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
 
@@ -408,7 +395,7 @@ func (m *Manager) editTodoStatus() {
 }
 
 func (m *Manager) editTodoDue() {
-	m.State = ModeTodoEditing
+	m.State = ModeEditing
 	m.CommandsArea.Clear()
 	todo := m.TodoList.FindByID(m.TodoIDs[m.SelectedTodoIdx])
 
