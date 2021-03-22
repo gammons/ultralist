@@ -30,7 +30,7 @@ func init() {
   To edit a status
     ultralist edit 33 status:next
 
-	To remove a status:
+  To remove a status:
     ultralist edit 33 status:none`
 	)
 
