@@ -104,7 +104,7 @@ func init() {
     ultralist list group:p
 
   List all todos grouped by status:
- 	  ultralist list group:s
+    ultralist list group:s
 
   Combining filters:
   ------------------
@@ -153,6 +153,6 @@ See the full docs at https://ultralist.io/docs/cli/showing_tasks`
 	rootCmd.AddCommand(listCmd)
 	listCmd.Flags().BoolVarP(&unicodeSupport, "unicode", "", true, "Allows unicode support in Ultralist output")
 	listCmd.Flags().BoolVarP(&colorSupport, "color", "", true, "Allows color in Ultralist output")
-	listCmd.Flags().BoolVarP(&listNotes, "notes", "", false, "Show a todo's notes when listing. ")
+	listCmd.Flags().BoolVarP(&listNotes, "notes", "", false, "Show a todo's notes when listing")
 	listCmd.Flags().BoolVarP(&showStatus, "status", "", false, "Show a todo's status")
 }

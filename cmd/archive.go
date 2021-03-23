@@ -26,10 +26,6 @@ func init() {
     ultralist archive gc
     ultralist ar gc
 
-  ultralist archive gc
-  ultralist ar gc
-	  Run garbage collection. Delete all archived todos and reclaim ids
-
   See the full docs here:
   https://ultralist.io/docs/cli/managing_tasks`
 	)
