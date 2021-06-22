@@ -10,6 +10,7 @@ const (
 	Weekly   = "weekly"
 	Monthly  = "monthly"
 	Yearly   = "yearly"
+	None     = "none"
 )
 
 // Recurrence struct contains the logic for dealing with recurring todos.
@@ -19,6 +20,7 @@ type Recurrence struct{}
 func (r *Recurrence) ValidRecurrence(input string) bool {
 	switch input {
 	case
+		None,
 		Daily,
 		Weekdays,
 		Weekly,
