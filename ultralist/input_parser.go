@@ -175,14 +175,17 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			filter.HasRecur = true
 			filter.Recur = r.FindString(word)[6:]
 
+			r := &Recurrence{}
+
+			if !r.ValidRecurrence(filter.Recur) {
+				return filter, fmt.Errorf("I could not understand the recurrence you gave me: '%s'", filter.Recur)
+			}
+
+			// a Recur of none is "" in the Todo store, lets set that now
 			if filter.Recur == "none" {
 				filter.Recur = ""
 			}
 
-			r := &Recurrence{}
-			if !r.ValidRecurrence(filter.Recur) {
-				return filter, fmt.Errorf("I could not understand the recurrence you gave me: '%s'", filter.Recur)
-			}
 		}
 
 		r, _ = regexp.Compile(`until:.*$`)
