@@ -113,12 +113,25 @@ func (p *InputParser) Parse(input string) (*Filter, error) {
 			if dueDate.IsZero() {
 				filter.Due = ""
 			} else {
-				if word == "due:agenda" {
-					filter.HasDueBefore = true
-					filter.HasDue = false
-					filter.DueBefore = dueDate.Format(DATE_FORMAT)
-				} else {
-					filter.Due = dueDate.Format(DATE_FORMAT)
+				switch word {
+					case "due:agenda":
+						filter.HasDueBefore = true
+						filter.HasDue = false
+						filter.DueBefore = dueDate.Format(DATE_FORMAT)
+					case "due:lastweek", "due:thisweek", "due:nextweek":
+						filter.HasDue = false
+						filter.HasDueBefore = true
+						filter.DueBefore = dueDate.AddDate(0,0,7).Format(DATE_FORMAT)
+						filter.HasDueAfter = true
+						filter.DueAfter = dueDate.AddDate(0,0,-1).Format(DATE_FORMAT)
+					case "due:lastmonth", "due:thismonth", "due:nextmonth":
+						filter.HasDue = false
+						filter.HasDueBefore = true
+						filter.DueBefore = dueDate.AddDate(0,1,0).Format(DATE_FORMAT)
+						filter.HasDueAfter = true
+						filter.DueAfter = dueDate.AddDate(0,0,-1).Format(DATE_FORMAT)
+					default:
+						filter.Due = dueDate.Format(DATE_FORMAT)
 				}
 			}
 			match = true
