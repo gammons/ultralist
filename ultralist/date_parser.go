@@ -41,6 +41,18 @@ func (dp *DateParser) ParseDate(dateString string, pivotDay time.Time) (date tim
 	case "nextweek":
 		n := bod(pivotDay)
 		return dp.getNearestMonday(n).AddDate(0, 0, 7), nil
+	case "thisweek":
+		n := bod(pivotDay)
+		return dp.getNearestMonday(n), nil
+	case "thismonth":
+		n := bod(pivotDay)
+		return dp.getNearestFirstOfMonth(n), nil
+	case "lastmonth":
+		n := bod(pivotDay)
+		return dp.getNearestFirstOfMonth(n).AddDate(0,-1,0), nil
+	case "nextmonth":
+		n := bod(pivotDay)
+		return dp.getNearestFirstOfMonth(n).AddDate(0,1,0), nil
 	}
 	return dp.parseSpecificDate(dateString, pivotDay)
 }
@@ -113,6 +125,16 @@ func (dp *DateParser) parseSpecificDate(date string, pivot time.Time) (time.Time
 func (dp *DateParser) getNearestMonday(t time.Time) time.Time {
 	for {
 		if t.Weekday() != time.Monday {
+			t = t.AddDate(0, 0, -1)
+		} else {
+			return t
+		}
+	}
+}
+
+func (dp *DateParser) getNearestFirstOfMonth(t time.Time) time.Time {
+	for {
+		if t.Day() != 1 {
 			t = t.AddDate(0, 0, -1)
 		} else {
 			return t
