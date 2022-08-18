@@ -10,7 +10,7 @@ import (
 func init() {
 	var (
 		archiveCmdExample = `
-  To arvhive a todo with id 33:
+  To archive a todo with id 33:
     ultralist archive 33
     ultralist ar 33
 
