@@ -1,8 +1,8 @@
 package cmd
 
 import (
+	"github.com/sboysel/ultralist/ultralist"
 	"github.com/spf13/cobra"
-	"github.com/ultralist/ultralist/ultralist"
 )
 
 func init() {
